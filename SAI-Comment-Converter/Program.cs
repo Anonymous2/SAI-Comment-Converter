@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 
-enum SMARTAI_TARGETS
+enum SmartTarget
 {
     SMART_TARGET_NONE                           = 0,    // NONE, defaulting to invoket
     SMART_TARGET_SELF                           = 1,    // Self cast
@@ -35,7 +35,7 @@ enum SMARTAI_TARGETS
     SMART_TARGET_OWNER_OR_SUMMONER              = 23,   // Unit's owner or summoner
     SMART_TARGET_THREAT_LIST                    = 24,   // All units on creature's threat list
     SMART_TARGET_CLOSEST_ENEMY                  = 25,   // maxDist
-    SMART_TARGET_CLOSEST_FRIENDLY               = 26,   // maxDist
+    SMART_TARGET_CLOSEST_FRIENDLY               = 26   // maxDist
 }
 
 enum SmartEventFlags
@@ -54,7 +54,7 @@ enum SmartEventFlags
     SMART_EVENT_FLAGS_ALL                  = (SMART_EVENT_FLAG_NOT_REPEATABLE|SMART_EVENT_FLAG_DIFFICULTY_ALL|SMART_EVENT_FLAG_RESERVED_5|SMART_EVENT_FLAG_RESERVED_6|SMART_EVENT_FLAG_DEBUG_ONLY|SMART_EVENT_FLAG_DONT_RESET)
 }
 
-enum SMART_EVENT_PHASE
+enum SmartEventPhase
 {
     SMART_EVENT_PHASE_ALWAYS  = 0,
     SMART_EVENT_PHASE_1       = 1,
@@ -63,10 +63,10 @@ enum SMART_EVENT_PHASE
     SMART_EVENT_PHASE_4       = 4,
     SMART_EVENT_PHASE_5       = 5,
     SMART_EVENT_PHASE_6       = 6,
-    SMART_EVENT_PHASE_MAX     = 7,
+    SMART_EVENT_PHASE_MAX     = 7
 }
 
-enum SMART_EVENT
+enum SmartEvent
 {
     SMART_EVENT_UPDATE_IC                = 0,       // InitialMin, InitialMax, RepeatMin, RepeatMax
     SMART_EVENT_UPDATE_OOC               = 1,       // InitialMin, InitialMax, RepeatMin, RepeatMax
@@ -149,8 +149,89 @@ namespace SAI_Comment_Converter
 {
     class Program
     {
+        private static Dictionary<SmartEvent, string> smartEventStrings = new Dictionary<SmartEvent, string>();
+
         static void Main(string[] args)
         {
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_SPELLHIT, "On Spellhit By _spellName_");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_HAS_AURA, "On Has Aura _spellName_");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_TARGET_BUFFED, "On Target Buffed With _spellName_");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_SPELLHIT_TARGET, "On Target Spellhit By _spellName_");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_FRIENDLY_MISSING_BUFF, "On Friendly Unit Missing Buff _spellName_");
+
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_LINK, "_previousLineComment_");
+
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_HEALT_PCT, "Between _eventParamOne_-_eventParamTwo_% Health");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_MANA_PCT, "Between _eventParamOne_-_eventParamTwo_% Mana");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_RANGE, "Within _eventParamOne_-_eventParamTwo_ Range");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_OOC_LOS, "Within _eventParamOne_-_eventParamTwo_ Range Out of Combat LoS");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_TARGET_HEALTH_PCT, "Target Between _eventParamOne_-_eventParamTwo_% Health");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_FRIENDLY_HEALTH, "Friendly At _eventParamOne_ Health");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_TARGET_MANA_PCT, "Target Between _eventParamOne_-_eventParamTwo_% Mana");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_RECEIVE_EMOTE, "Received Emote _eventParamOne_");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_DAMAGED, "On Damaged Between _eventParamOne_-_eventParamTwo_");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_DAMAGED_TARGET, "On Target Damaged Between _eventParamOne_-_eventParamTwo_");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_MOVEMENTINFORM, "On Reached Point _eventParamTwo_");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_SUMMON_DESPAWNED, "On Summon _npcNameFirstParam_ Despawned");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_DATA_SET, "On Data Set _eventParamOne_ _eventParamTwo_");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_WAYPOINT_REACHED, "On Waypoint _eventParamOne_ Reached");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_TEXT_OVER, "On Text _eventParamOne_ Finished");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_RECEIVE_HEAL, "On Received Heal Between _eventParamOne_-_eventParamTwo_");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_TIMED_EVENT_TRIGGERED, "On Timed Event _eventParamOne_ Triggered");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_GOSSIP_SELECT, "On Gossip _eventParamOne_ _paramTwo Selected");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_GAME_EVENT_START, "On Game Event _eventParamOne_ Started");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_GAME_EVENT_END, "On Game Event _eventParamOne_ Ended");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_GO_EVENT_INFORM, "On Event _eventParamOne_ Inform");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_ACTION_DONE, "On Action _eventParamOne_ Done");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_FRIENDLY_HEALTH_PCT, "On Friendly Between _eventParamOne_-_eventParamTwo_% Health");
+
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_UPDATE_IC, "In Combat");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_UPDATE_OOC, "Out of Combat");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_AGGRO, "On Aggro");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_KILL, "On Killed Unit");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_DEATH, "On Just Died");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_EVADE, "On Evade");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_RESPAWN, "On Respawn");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_TARGET_CASTING, "Target Casting");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_FRIENDLY_IS_CC, "Friendly Crowd Controlled");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_SUMMONED_UNIT, "On Summoned Unit");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_ACCEPTED_QUEST, "On Quest Taken");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_REWARD_QUEST, "On Quest Finished");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_REACHED_HOME, "On Reached Home");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_RESET, "On Reset");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_IC_LOS, "In Combat LoS");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_PASSENGER_BOARDED, "On Passenger Boarded");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_PASSENGER_REMOVED, "On Passenger Removed");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_CHARMED, "On Charmed");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_CHARMED_TARGET, "On Target Charmed");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_CORPSE_REMOVED, "On Corpse Removed");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_AI_INIT, "On Initialize");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_WAYPOINT_START, "On Waypoint Started");
+            //smartEventStrings.Add(SmartEvent.SMART_EVENT_TRANSPORT_ADDPLAYER, "");
+            //smartEventStrings.Add(SmartEvent.SMART_EVENT_TRANSPORT_ADDCREATURE, "");
+            //smartEventStrings.Add(SmartEvent.SMART_EVENT_TRANSPORT_REMOVE_PLAYER, "");
+            //smartEventStrings.Add(SmartEvent.SMART_EVENT_TRANSPORT_RELOCATE, "");
+            //smartEventStrings.Add(SmartEvent.SMART_EVENT_INSTANCE_PLAYER_ENTER, "");
+            //smartEventStrings.Add(SmartEvent.SMART_EVENT_AREATRIGGER_ONTRIGGER, "");
+            //smartEventStrings.Add(SmartEvent.SMART_EVENT_QUEST_ACCEPTED, "");
+            //smartEventStrings.Add(SmartEvent.SMART_EVENT_QUEST_OBJ_COPLETETION, "");
+            //smartEventStrings.Add(SmartEvent.SMART_EVENT_QUEST_COMPLETION, "");
+            //smartEventStrings.Add(SmartEvent.SMART_EVENT_QUEST_REWARDED, "");
+            //smartEventStrings.Add(SmartEvent.SMART_EVENT_QUEST_FAIL, "");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_JUST_SUMMONED, "On Just Summoned");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_WAYPOINT_PAUSED, "On Waypoint Paused");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_WAYPOINT_RESUMED, "On Waypoint Resumed");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_WAYPOINT_STOPPED, "On Waypoint Stopped");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_WAYPOINT_ENDED, "On Waypoint Finished");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_UPDATE, "On Update");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_JUST_CREATED, "On Just Created");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_GOSSIP_HELLO, "On Gossip Hello");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_FOLLOW_COMPLETED, "On Follow Complete");
+            //smartEventStrings.Add(SmartEvent.SMART_EVENT_DUMMY_EFFECT, "");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_IS_BEHIND_TARGET, "On Behind Target");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_GO_STATE_CHANGED, "On Gameobject State Changed");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_ON_SPELLCLICK, "On Spellclick");
+
             while (true)
             {
                 Console.WriteLine("SQL Information:");
@@ -169,7 +250,7 @@ namespace SAI_Comment_Converter
                 string user = "root";
                 string pass = "123";
                 string worldDB = "trinitycore_world";
-                string port = "3307";
+                string port = "3306";
 
                 //Console.WriteLine(host);
                 //Console.WriteLine(user);
@@ -227,92 +308,34 @@ namespace SAI_Comment_Converter
                             Console.ReadKey();
 
                             //! Event type
-                            fullLine += GetStringForEventType(Convert.ToInt32(row.ItemArray[4].ToString()));
+                            fullLine += smartEventStrings[(SmartEvent)Convert.ToInt32(row.ItemArray[4].ToString())];
+
+                            //! TODO: Figure out how to make this work with linking several lines TO each other
+                            if (fullLine.Contains("_previousLineComment_"))
+                            {
+                                MySqlCommand commandPreviousComment = new MySqlCommand(String.Format("SELECT event_type FROM smart_scripts WHERE entryorguid={0} AND id={1}", entryorguid, (Convert.ToInt32(row.ItemArray[2]) - 1).ToString()), connection);
+                                MySqlDataReader readerPreviousLineComment = commandPreviousComment.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerPreviousLineComment.Read())
+                                    fullLine = fullLine.Replace("_previousLineComment_", smartEventStrings[(SmartEvent)Convert.ToInt32(readerPreviousLineComment[0].ToString())]);
+                                else
+                                    fullLine = fullLine.Replace("_previousLineComment_", "Link not found!");
+
+                                readerPreviousLineComment.Close();
+                            }
+
+                            //! This must be called AFTER we check for _previousLineComment_ so that copied event types don't need special handling
+                            if (fullLine.Contains("_eventParamOne_"))
+                                fullLine = fullLine.Replace("_eventParamOne_", row.ItemArray[8].ToString());
+
+                            if (fullLine.Contains("_eventParamTwo_"))
+                                fullLine = fullLine.Replace("_eventParamTwo_", row.ItemArray[9].ToString());
+
                             fullLine += " - ";
-                            fullLine += GetStringForEventType(Convert.ToInt32(row.ItemArray[4].ToString()));
+                            Console.WriteLine(fullLine);
                         }
                     }
                 }
-            }
-        }
-
-        private static string GetStringForEventType(int eventType)
-        {
-            switch (eventType)
-            {
-                case SMART_EVENT_UPDATE_IC:
-                    return "In Combat";
-                case SMART_EVENT_UPDATE_OOC:
-                    return "Out Of Combat";
-                case SMART_EVENT_AGGRO:
-                    return "On Aggro";
-                case SMART_EVENT_KILL:
-                    return "On Killed Unit";
-                case SMART_EVENT_DEATH:
-                    return "On Death";
-                case SMART_EVENT_EVADE:
-                    return "On Evade";
-                case SMART_EVENT_OOC_LOS:
-                    return "On LOS Out Of Combat";
-                case SMART_EVENT_IC_LOS:
-                    return "On LOS In Combat";
-                case SMART_EVENT_RESPAWN:
-                    return "On Respawn";
-                case SMART_EVENT_TARGET_CASTING:
-                    return "On Target Casting";
-                case SMART_EVENT_FRIENDLY_IS_CC:
-                    return "On Friendly Unit CC'd";
-                case SMART_EVENT_FRIENDLY_MISSING_BUFF:
-                    return "On Friendly Unit Missing Buff _spellNameFirstParam_";
-                case SMART_EVENT_SUMMONED_UNIT:
-                    return "On Summoned Unit";
-                case SMART_EVENT_ACCEPTED_QUEST:
-                    return "On Quest Accepted";
-                case SMART_EVENT_REWARD_QUEST:
-                    return "On Quest Rewarded";
-                case SMART_EVENT_REACHED_HOME:
-                    return "On Just Reached Home";
-                case SMART_EVENT_RECEIVE_EMOTE:
-                    return "On Received Emote";
-                case SMART_EVENT_TARGET_BUFFED:
-                    return "On Target Buffed";
-                case SMART_EVENT_RESET:
-                    return "On Reset";
-                case SMART_EVENT_PASSENGER_BOARDED:
-                    return "On Passenger Boarded";
-                case SMART_EVENT_PASSENGER_REMOVED:
-                    return "On Passenger Removed";
-                case SMART_EVENT_CHARMED:
-                    return "On Charmed";
-                case SMART_EVENT_CHARMED_TARGET:
-                    return "On Target Charmed";
-                case SMART_EVENT_MOVEMENTINFORM:
-                    return "On Movement Inform";
-                case SMART_EVENT_SUMMON_DESPAWNED:
-                    return "On Summoned Unit Despawned";
-                case SMART_EVENT_CORPSE_REMOVED:
-                    return "On Corpse Removed";
-                case SMART_EVENT_SPELLHIT:
-                    return "On Spellhit By _spellNameFirstParam_";
-                case SMART_EVENT_SPELLHIT_TARGET:
-                    return "On Target Spellhit By _spellNameFirstParam_";
-                case SMART_EVENT_RANGE:
-                    return "Between ${param1}-${param2} Range";
-                case SMART_EVENT_HEALT_PCT:
-                    return "Between ${param1}-${param2}% Health";
-                case SMART_EVENT_MANA_PCT:
-                    return "Between ${param1}-${param2}% Mana";
-                case SMART_EVENT_TARGET_HEALTH_PCT:
-                    return "On Target Between ${param1}-${param2}% Health";
-                case SMART_EVENT_TARGET_MANA_PCT:
-                    return "On Target Between ${param1}-${param2}% Mana";
-                case SMART_EVENT_FRIENDLY_HEALTH:
-                    return "On Friendly Unit At ${param1} Health Within ${param2} Range";
-                case SMART_EVENT_HAS_AURA:
-                    //if ($param1 < 0)
-                        return "On Aura _hasAuraSpellId_ Not Present";
-                    
-                    return "On Aura _hasAuraSpellId_ Present";
             }
         }
     }
