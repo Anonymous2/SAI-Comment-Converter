@@ -145,11 +145,127 @@ enum SmartEvent
     SMART_EVENT_FRIENDLY_HEALTH_PCT      = 74      // minHpPct, maxHpPct, repeatMin, repeatMax
 }
 
+enum SmartAction
+{
+    SMART_ACTION_NONE                               = 0,      // No action
+    SMART_ACTION_TALK                               = 1,      // groupID from creature_text, duration to wait before TEXT_OVER event is triggered
+    SMART_ACTION_SET_FACTION                        = 2,      // FactionId (or 0 for default)
+    SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL            = 3,      // Creature_template entry(param1) OR ModelId (param2) (or 0 for both to demorph)
+    SMART_ACTION_SOUND                              = 4,      // SoundId, onlySelf
+    SMART_ACTION_PLAY_EMOTE                         = 5,      // EmoteId
+    SMART_ACTION_FAIL_QUEST                         = 6,      // QuestID
+    SMART_ACTION_ADD_QUEST                          = 7,      // QuestID
+    SMART_ACTION_SET_REACT_STATE                    = 8,      // state
+    SMART_ACTION_ACTIVATE_GOBJECT                   = 9,      //
+    SMART_ACTION_RANDOM_EMOTE                       = 10,     // EmoteId1, EmoteId2, EmoteId3...
+    SMART_ACTION_CAST                               = 11,     // SpellId, CastFlags
+    SMART_ACTION_SUMMON_CREATURE                    = 12,     // CreatureID, summonType, duration in ms, storageID, attackInvoker,
+    SMART_ACTION_THREAT_SINGLE_PCT                  = 13,     // Threat%
+    SMART_ACTION_THREAT_ALL_PCT                     = 14,     // Threat%
+    SMART_ACTION_CALL_AREAEXPLOREDOREVENTHAPPENS    = 15,     // QuestID
+    SMART_ACTION_UNUSED_16                          = 16,     // UNUSED
+    SMART_ACTION_SET_EMOTE_STATE                    = 17,     // emoteID
+    SMART_ACTION_SET_UNIT_FLAG                      = 18,     // Flags (may be more than one field OR'd together), Target
+    SMART_ACTION_REMOVE_UNIT_FLAG                   = 19,     // Flags (may be more than one field OR'd together), Target
+    SMART_ACTION_AUTO_ATTACK                        = 20,     // AllowAttackState (0 = stop attack, anything else means continue attacking)
+    SMART_ACTION_ALLOW_COMBAT_MOVEMENT              = 21,     // AllowCombatMovement (0 = stop combat based movement, anything else continue attacking)
+    SMART_ACTION_SET_EVENT_PHASE                    = 22,     // Phase
+    SMART_ACTION_INC_EVENT_PHASE                    = 23,     // Value (may be negative to decrement phase, should not be 0)
+    SMART_ACTION_EVADE                              = 24,     // No Params
+    SMART_ACTION_FLEE_FOR_ASSIST                    = 25,     // With Emote
+    SMART_ACTION_CALL_GROUPEVENTHAPPENS             = 26,     // QuestID
+    SMART_ACTION_CALL_CASTEDCREATUREORGO            = 27,     // CreatureId, SpellId
+    SMART_ACTION_REMOVEAURASFROMSPELL               = 28,     // Spellid, 0 removes all auras
+    SMART_ACTION_FOLLOW                             = 29,     // Distance (0 = default), Angle (0 = default), EndCreatureEntry, credit, creditType (0monsterkill, 1event)
+    SMART_ACTION_RANDOM_PHASE                       = 30,     // PhaseId1, PhaseId2, PhaseId3...
+    SMART_ACTION_RANDOM_PHASE_RANGE                 = 31,     // PhaseMin, PhaseMax
+    SMART_ACTION_RESET_GOBJECT                      = 32,     //
+    SMART_ACTION_CALL_KILLEDMONSTER                 = 33,     // CreatureId,
+    SMART_ACTION_SET_INST_DATA                      = 34,     // Field, Data
+    SMART_ACTION_SET_INST_DATA64                    = 35,     // Field,
+    SMART_ACTION_UPDATE_TEMPLATE                    = 36,     // Entry, Team
+    SMART_ACTION_DIE                                = 37,     // No Params
+    SMART_ACTION_SET_IN_COMBAT_WITH_ZONE            = 38,     // No Params
+    SMART_ACTION_CALL_FOR_HELP                      = 39,     // Radius, With Emote
+    SMART_ACTION_SET_SHEATH                         = 40,     // Sheath (0-unarmed, 1-melee, 2-ranged)
+    SMART_ACTION_FORCE_DESPAWN                      = 41,     // timer
+    SMART_ACTION_SET_INVINCIBILITY_HP_LEVEL         = 42,     // MinHpValue(+pct, -flat)
+    SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL            = 43,     // Creature_template entry(param1) OR ModelId (param2) (or 0 for both to dismount)
+    SMART_ACTION_SET_INGAME_PHASE_MASK              = 44,     // mask
+    SMART_ACTION_SET_DATA                           = 45,     // Field, Data (only creature @todo)
+    SMART_ACTION_MOVE_FORWARD                       = 46,     // distance
+    SMART_ACTION_SET_VISIBILITY                     = 47,     // on/off
+    SMART_ACTION_SET_ACTIVE                         = 48,     // on/off
+    SMART_ACTION_ATTACK_START                       = 49,     //
+    SMART_ACTION_SUMMON_GO                          = 50,     // GameObjectID, DespawnTime in ms,
+    SMART_ACTION_KILL_UNIT                          = 51,     //
+    SMART_ACTION_ACTIVATE_TAXI                      = 52,     // TaxiID
+    SMART_ACTION_WP_START                           = 53,     // run/walk, pathID, canRepeat, quest, despawntime, reactState
+    SMART_ACTION_WP_PAUSE                           = 54,     // time
+    SMART_ACTION_WP_STOP                            = 55,     // despawnTime, quest, fail?
+    SMART_ACTION_ADD_ITEM                           = 56,     // itemID, count
+    SMART_ACTION_REMOVE_ITEM                        = 57,     // itemID, count
+    SMART_ACTION_INSTALL_AI_TEMPLATE                = 58,     // AITemplateID
+    SMART_ACTION_SET_RUN                            = 59,     // 0/1
+    SMART_ACTION_SET_FLY                            = 60,     // 0/1
+    SMART_ACTION_SET_SWIM                           = 61,     // 0/1
+    SMART_ACTION_TELEPORT                           = 62,     // mapID,
+    SMART_ACTION_STORE_VARIABLE_DECIMAL             = 63,     // varID, number
+    SMART_ACTION_STORE_TARGET_LIST                  = 64,     // varID,
+    SMART_ACTION_WP_RESUME                          = 65,     // none
+    SMART_ACTION_SET_ORIENTATION                    = 66,     //
+    SMART_ACTION_CREATE_TIMED_EVENT                 = 67,     // id, InitialMin, InitialMax, RepeatMin(only if it repeats), RepeatMax(only if it repeats), chance
+    SMART_ACTION_PLAYMOVIE                          = 68,     // entry
+    SMART_ACTION_MOVE_TO_POS                        = 69,     // PointId, xyz
+    SMART_ACTION_RESPAWN_TARGET                     = 70,     //
+    SMART_ACTION_EQUIP                              = 71,     // entry, slotmask slot1, slot2, slot3   , only slots with mask set will be sent to client, bits are 1, 2, 4, leaving mask 0 is defaulted to mask 7 (send all), slots1-3 are only used if no entry is set
+    SMART_ACTION_CLOSE_GOSSIP                       = 72,     // none
+    SMART_ACTION_TRIGGER_TIMED_EVENT                = 73,     // id(>1)
+    SMART_ACTION_REMOVE_TIMED_EVENT                 = 74,     // id(>1)
+    SMART_ACTION_ADD_AURA                           = 75,     // spellid,  targets
+    SMART_ACTION_OVERRIDE_SCRIPT_BASE_OBJECT        = 76,     // WARNING: CAN CRASH CORE, do not use if you dont know what you are doing
+    SMART_ACTION_RESET_SCRIPT_BASE_OBJECT           = 77,     // none
+    SMART_ACTION_CALL_SCRIPT_RESET                  = 78,     // none
+    SMART_ACTION_SET_RANGED_MOVEMENT                = 79,     // Distance, angle
+    SMART_ACTION_CALL_TIMED_ACTIONLIST              = 80,     // ID (overwrites already running actionlist), stop after combat?(0/1), timer update type(0-OOC, 1-IC, 2-ALWAYS)
+    SMART_ACTION_SET_NPC_FLAG                       = 81,     // Flags
+    SMART_ACTION_ADD_NPC_FLAG                       = 82,     // Flags
+    SMART_ACTION_REMOVE_NPC_FLAG                    = 83,     // Flags
+    SMART_ACTION_SIMPLE_TALK                        = 84,     // groupID, can be used to make players say groupID, Text_over event is not triggered, whisper can not be used (Target units will say the text)
+    SMART_ACTION_INVOKER_CAST                       = 85,     // spellID, castFlags,   if avaliable, last used invoker will cast spellId with castFlags on targets
+    SMART_ACTION_CROSS_CAST                         = 86,     // spellID, castFlags, CasterTargetType, CasterTarget param1, CasterTarget param2, CasterTarget param3, ( + the origonal target fields as Destination target),   CasterTargets will cast spellID on all Targets (use with caution if targeting multiple * multiple units)
+    SMART_ACTION_CALL_RANDOM_TIMED_ACTIONLIST       = 87,     // script9 ids 1-9
+    SMART_ACTION_CALL_RANDOM_RANGE_TIMED_ACTIONLIST = 88,     // script9 id min, max
+    SMART_ACTION_RANDOM_MOVE                        = 89,     // maxDist
+    SMART_ACTION_SET_UNIT_FIELD_BYTES_1             = 90,     // bytes, target
+    SMART_ACTION_REMOVE_UNIT_FIELD_BYTES_1          = 91,     // bytes, target
+    SMART_ACTION_INTERRUPT_SPELL                    = 92,
+    SMART_ACTION_SEND_GO_CUSTOM_ANIM                = 93,     // anim id
+    SMART_ACTION_SET_DYNAMIC_FLAG                   = 94,     // Flags
+    SMART_ACTION_ADD_DYNAMIC_FLAG                   = 95,     // Flags
+    SMART_ACTION_REMOVE_DYNAMIC_FLAG                = 96,     // Flags
+    SMART_ACTION_JUMP_TO_POS                        = 97,     // speedXY, speedZ, targetX, targetY, targetZ
+    SMART_ACTION_SEND_GOSSIP_MENU                   = 98,     // menuId, optionId
+    SMART_ACTION_GO_SET_LOOT_STATE                  = 99,     // state
+    SMART_ACTION_SEND_TARGET_TO_TARGET              = 100,    // id
+    SMART_ACTION_SET_HOME_POS                       = 101,    // none
+    SMART_ACTION_SET_HEALTH_REGEN                   = 102,    // 0/1
+    SMART_ACTION_SET_ROOT                           = 103,    // off/on
+    SMART_ACTION_SET_GO_FLAG                        = 104,    // Flags
+    SMART_ACTION_ADD_GO_FLAG                        = 105,    // Flags
+    SMART_ACTION_REMOVE_GO_FLAG                     = 106,    // Flags
+    SMART_ACTION_SUMMON_CREATURE_GROUP              = 107,    // Group, attackInvoker
+    SMART_ACTION_SET_POWER                          = 108,    // PowerType, newPower
+    SMART_ACTION_ADD_POWER                          = 109,    // PowerType, newPower
+    SMART_ACTION_REMOVE_POWER                       = 110     // PowerType, newPower
+}
+
 namespace SAI_Comment_Converter
 {
     class Program
     {
         private static Dictionary<SmartEvent, string> smartEventStrings = new Dictionary<SmartEvent, string>();
+        private static Dictionary<SmartAction, string> smartActionStrings = new Dictionary<SmartAction, string>();
 
         static void Main(string[] args)
         {
@@ -232,6 +348,119 @@ namespace SAI_Comment_Converter
             smartEventStrings.Add(SmartEvent.SMART_EVENT_GO_STATE_CHANGED, "On Gameobject State Changed");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_ON_SPELLCLICK, "On Spellclick");
 
+            //! Filling up actions
+            smartActionStrings.Add(SmartAction.SMART_ACTION_NONE, "Incorrect Action");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_TALK, "Say Line _actionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_FACTION, "Set Faction _actionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SOUND, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_PLAY_EMOTE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_FAIL_QUEST, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_QUEST, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_REACT_STATE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ACTIVATE_GOBJECT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_EMOTE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CAST, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_CREATURE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_THREAT_SINGLE_PCT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_THREAT_ALL_PCT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_AREAEXPLOREDOREVENTHAPPENS, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_UNUSED_16, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_EMOTE_STATE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_UNIT_FLAG, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_UNIT_FLAG, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_AUTO_ATTACK, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ALLOW_COMBAT_MOVEMENT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_EVENT_PHASE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_INC_EVENT_PHASE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_EVADE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_FLEE_FOR_ASSIST, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_GROUPEVENTHAPPENS, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_CASTEDCREATUREORGO, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVEAURASFROMSPELL, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_FOLLOW, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE_RANGE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RESET_GOBJECT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_KILLEDMONSTER, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INST_DATA, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INST_DATA64, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_UPDATE_TEMPLATE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_DIE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_IN_COMBAT_WITH_ZONE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_FOR_HELP, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_SHEATH, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_FORCE_DESPAWN, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INVINCIBILITY_HP_LEVEL, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INGAME_PHASE_MASK, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DATA, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MOVE_FORWARD, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_VISIBILITY, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_ACTIVE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ATTACK_START, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_GO, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_KILL_UNIT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ACTIVATE_TAXI, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_START, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_PAUSE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_STOP, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_ITEM, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_ITEM, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_INSTALL_AI_TEMPLATE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_RUN, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_FLY, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_SWIM, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_TELEPORT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_STORE_VARIABLE_DECIMAL, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_STORE_TARGET_LIST, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_RESUME, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_ORIENTATION, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CREATE_TIMED_EVENT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_PLAYMOVIE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MOVE_TO_POS, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RESPAWN_TARGET, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_EQUIP, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CLOSE_GOSSIP, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_TRIGGER_TIMED_EVENT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_TIMED_EVENT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_AURA, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_OVERRIDE_SCRIPT_BASE_OBJECT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RESET_SCRIPT_BASE_OBJECT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_SCRIPT_RESET, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_RANGED_MOVEMENT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_TIMED_ACTIONLIST, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_NPC_FLAG, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_NPC_FLAG, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_NPC_FLAG, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SIMPLE_TALK, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_INVOKER_CAST, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CROSS_CAST, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_RANDOM_TIMED_ACTIONLIST, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_RANDOM_RANGE_TIMED_ACTIONLIST, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_MOVE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_UNIT_FIELD_BYTES_1, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_UNIT_FIELD_BYTES_1, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_INTERRUPT_SPELL, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SEND_GO_CUSTOM_ANIM, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DYNAMIC_FLAG, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_DYNAMIC_FLAG, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_DYNAMIC_FLAG, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_JUMP_TO_POS, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SEND_GOSSIP_MENU, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_GO_SET_LOOT_STATE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SEND_TARGET_TO_TARGET, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_HOME_POS, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_HEALTH_REGEN, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_ROOT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_GO_FLAG, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_GO_FLAG, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_GO_FLAG, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_CREATURE_GROUP, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_POWER, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_POWER, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_POWER, "");
+
             while (true)
             {
                 Console.WriteLine("SQL Information:");
@@ -310,7 +539,9 @@ namespace SAI_Comment_Converter
                             //! Event type
                             fullLine += smartEventStrings[(SmartEvent)Convert.ToInt32(row.ItemArray[4].ToString())];
 
-                            //! TODO: Figure out how to make this work with linking several lines TO each other
+                            //! TODO: Figure out how to make this work with linking several lines TO each other. Perhaps read
+                            //! from last to first line?
+                            // SELECT * FROM smart_scripts ORDER BY entryorguid ASC, id DESC
                             if (fullLine.Contains("_previousLineComment_"))
                             {
                                 MySqlCommand commandPreviousComment = new MySqlCommand(String.Format("SELECT event_type FROM smart_scripts WHERE entryorguid={0} AND id={1}", entryorguid, (Convert.ToInt32(row.ItemArray[2]) - 1).ToString()), connection);
