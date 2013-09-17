@@ -260,24 +260,24 @@ namespace SAI_Comment_Converter
                 {
                     foreach (DataRow row in dataTable.Rows)
                     {
+                        SmartScript smartScript = BuildSmartScript(row);
+
                         totalLoadedScripts++;
 
                         MySqlCommand command = new MySqlCommand();
                         command.Connection = connection;
 
                         string fullLine = String.Empty;
-                        int entryorguid = Convert.ToInt32(row.ItemArray[0].ToString());
-                        int entry = entryorguid;
+                        int entry = smartScript.entryorguid;
                         MySqlDataReader readerSourceName = null;
                         MySqlDataReader readerSourceId = null;
 
-                        //! Sourcetype switch
-                        switch (Convert.ToInt32(row.ItemArray[1].ToString()))
+                        switch (smartScript.source_type)
                         {
                             case 0: //! Creature
-                                if (Convert.ToInt32(row.ItemArray[0].ToString()) < 0)
+                                if (smartScript.entryorguid < 0)
                                 {
-                                    command.CommandText = (String.Format("SELECT id FROM creature WHERE guid={0}", -entryorguid));
+                                    command.CommandText = (String.Format("SELECT id FROM creature WHERE guid={0}", -smartScript.entryorguid));
                                     readerSourceId = command.ExecuteReader(CommandBehavior.Default);
 
                                     if (readerSourceId.Read())
@@ -295,9 +295,9 @@ namespace SAI_Comment_Converter
                                 readerSourceName.Close();
                                 break;
                             case 1: //! Gammeobject
-                                if (Convert.ToInt32(row.ItemArray[0].ToString()) < 0)
+                                if (smartScript.entryorguid < 0)
                                 {
-                                    command.CommandText = (String.Format("SELECT id FROM gameobject WHERE guid={0}", -entryorguid));
+                                    command.CommandText = (String.Format("SELECT id FROM gameobject WHERE guid={0}", -smartScript.entryorguid));
                                     readerSourceId = command.ExecuteReader(CommandBehavior.Default);
 
                                     if (readerSourceId.Read())
@@ -321,14 +321,14 @@ namespace SAI_Comment_Converter
                         }
 
                         //! Event type
-                        fullLine += smartEventStrings[(SmartEvent)Convert.ToInt32(row.ItemArray[4].ToString())];
+                        fullLine += smartEventStrings[(SmartEvent)smartScript.event_type];
 
                         //! TODO: Figure out how to make this work with linking several lines TO each other. Perhaps read from last to first line?
                         //! TODO: Consider linkto/linkfrom
                         // SELECT * FROM smart_scripts ORDER BY entryorguid ASC, id DESC
                         if (fullLine.Contains("_previousLineComment_"))
                         {
-                            MySqlCommand commandPreviousComment = new MySqlCommand(String.Format("SELECT event_type FROM smart_scripts WHERE entryorguid={0} AND id={1}", entryorguid, (Convert.ToInt32(row.ItemArray[2]) - 1).ToString()), connection);
+                            MySqlCommand commandPreviousComment = new MySqlCommand(String.Format("SELECT event_type FROM smart_scripts WHERE entryorguid={0} AND id={1}", smartScript.entryorguid, (Convert.ToInt32(row.ItemArray[2]) - 1).ToString()), connection);
                             MySqlDataReader readerPreviousLineComment = commandPreviousComment.ExecuteReader(CommandBehavior.Default);
 
                             if (readerPreviousLineComment.Read())
@@ -341,20 +341,20 @@ namespace SAI_Comment_Converter
 
                         //! This must be called AFTER we check for _previousLineComment_ so that copied event types don't need special handling
                         if (fullLine.Contains("_eventParamOne_"))
-                            fullLine = fullLine.Replace("_eventParamOne_", row.ItemArray[8].ToString());
+                            fullLine = fullLine.Replace("_eventParamOne_", smartScript.event_param1.ToString());
 
                         if (fullLine.Contains("_eventParamTwo_"))
-                            fullLine = fullLine.Replace("_eventParamTwo_", row.ItemArray[9].ToString());
+                            fullLine = fullLine.Replace("_eventParamTwo_", smartScript.event_param2.ToString());
 
                         if (fullLine.Contains("_eventParamThree_"))
-                            fullLine = fullLine.Replace("_eventParamThree_", row.ItemArray[10].ToString());
+                            fullLine = fullLine.Replace("_eventParamThree_", smartScript.event_param3.ToString());
 
                         if (fullLine.Contains("_eventParamFour_"))
-                            fullLine = fullLine.Replace("_eventParamFour_", row.ItemArray[11].ToString());
+                            fullLine = fullLine.Replace("_eventParamFour_", smartScript.event_param4.ToString());
 
                         if (fullLine.Contains("_spellNameEventParamOne_"))
                         {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[8].ToString()), connection);
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param1.ToString()), connection);
                             MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                             if (readerSelect.Read())
@@ -367,9 +367,9 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_targetCastingSpellName_"))
                         {
-                            if (row.ItemArray[10].ToString() != "0")
+                            if (smartScript.event_param3.ToString() != "0")
                             {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[10].ToString()), connection);
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param3.ToString()), connection);
                                 MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                                 if (readerSelect.Read())
@@ -385,11 +385,11 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_questNameEventParamOne_"))
                         {
-                            if (row.ItemArray[8].ToString() == "0") //! Any quest (SMART_EVENT_ACCEPTED_QUEST / SMART_EVENT_REWARD_QUEST)
+                            if (smartScript.event_param1.ToString() == "0") //! Any quest (SMART_EVENT_ACCEPTED_QUEST / SMART_EVENT_REWARD_QUEST)
                                 fullLine = fullLine.Replace(" '_questNameEventParamOne_'", String.Empty);
                             else
                             {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", row.ItemArray[8].ToString()), connection);
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", smartScript.event_param1.ToString()), connection);
                                 MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                                 if (readerSelect.Read())
@@ -402,29 +402,29 @@ namespace SAI_Comment_Converter
                         }
 
                         //! Action type
-                        fullLine += " - " + smartActionStrings[(SmartAction)Convert.ToInt32(row.ItemArray[12].ToString())];
+                        fullLine += " - " + smartActionStrings[(SmartAction)smartScript.action_type];
 
                         if (fullLine.Contains("_actionParamOne_"))
-                            fullLine = fullLine.Replace("_actionParamOne_", row.ItemArray[13].ToString());
+                            fullLine = fullLine.Replace("_actionParamOne_", smartScript.action_param1.ToString());
 
                         if (fullLine.Contains("_actionParamTwo_"))
-                            fullLine = fullLine.Replace("_actionParamTwo_", row.ItemArray[14].ToString());
+                            fullLine = fullLine.Replace("_actionParamTwo_", smartScript.action_param2.ToString());
 
                         if (fullLine.Contains("_actionParamThree_"))
-                            fullLine = fullLine.Replace("_actionParamThree_", row.ItemArray[15].ToString());
+                            fullLine = fullLine.Replace("_actionParamThree_", smartScript.action_param3.ToString());
 
                         if (fullLine.Contains("_actionParamFour_"))
-                            fullLine = fullLine.Replace("_actionParamFour_", row.ItemArray[16].ToString());
+                            fullLine = fullLine.Replace("_actionParamFour_", smartScript.action_param4.ToString());
 
                         if (fullLine.Contains("_actionParamFive_"))
-                            fullLine = fullLine.Replace("_actionParamFive_", row.ItemArray[17].ToString());
+                            fullLine = fullLine.Replace("_actionParamFive_", smartScript.action_param5.ToString());
 
                         if (fullLine.Contains("_actionParamSix_"))
-                            fullLine = fullLine.Replace("_actionParamSix_", row.ItemArray[18].ToString());
+                            fullLine = fullLine.Replace("_actionParamSix_", smartScript.action_param6.ToString());
 
                         if (fullLine.Contains("_spellNameActionParamOne_"))
                         {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[13].ToString()), connection);
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.action_param1.ToString()), connection);
                             MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                             if (readerSelect.Read())
@@ -437,7 +437,7 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_spellNameActionParamTwo_"))
                         {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[14].ToString()), connection);
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.action_param2.ToString()), connection);
                             MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                             if (readerSelect.Read())
@@ -450,7 +450,7 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_questNameActionParamOne_"))
                         {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", row.ItemArray[13].ToString()), connection);
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", smartScript.action_param1.ToString()), connection);
                             MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                             if (readerSelect.Read())
@@ -463,15 +463,15 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_reactStateParamOne_"))
                         {
-                            switch (row.ItemArray[13].ToString())
+                            switch (smartScript.action_param1)
                             {
-                                case "0":
+                                case 0:
                                     fullLine = fullLine.Replace("_reactStateParamOne_", "Passive");
                                     break;
-                                case "1":
+                                case 1:
                                     fullLine = fullLine.Replace("_reactStateParamOne_", "Defensive");
                                     break;
-                                case "2":
+                                case 2:
                                     fullLine = fullLine.Replace("_reactStateParamOne_", "Aggressive");
                                     break;
                                 default:
@@ -482,7 +482,7 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_creatureNameActionParamOne_"))
                         {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM creature_template WHERE entry = {0}", row.ItemArray[13].ToString()), connection);
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM creature_template WHERE entry = {0}", smartScript.action_param1.ToString()), connection);
                             MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                             if (readerSelect.Read())
@@ -496,7 +496,7 @@ namespace SAI_Comment_Converter
                         if (fullLine.Contains("_getUnitFlags_"))
                         {
                             string commentUnitFlag = "";
-                            int unitFlags = Convert.ToInt32(row.ItemArray[13].ToString());
+                            int unitFlags = smartScript.action_param1;
 
                             if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SERVER_CONTROLLED) != 0)  commentUnitFlag += "Server Controlled & ";
                             if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NON_ATTACKABLE) != 0)     commentUnitFlag += "Not Attackable & ";
@@ -533,7 +533,7 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_startOrStopActionParamOne_"))
                         {
-                            if (row.ItemArray[13].ToString() == "0")
+                            if (smartScript.action_param1.ToString() == "0")
                                 fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Stop");
                             else //! Even if above 1 or below 0 we start attacking/allow-combat-movement
                                 fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Start");
@@ -541,24 +541,24 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_incrementOrDecrementActionParamOne_"))
                         {
-                            if (row.ItemArray[13].ToString() == "1")
+                            if (smartScript.action_param1.ToString() == "1")
                                 fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Increment");
-                            else if (row.ItemArray[14].ToString() == "1")
+                            else if (smartScript.action_param2.ToString() == "1")
                                 fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Decrement");
                             //else //? What to do?
                         }
 
                         if (fullLine.Contains("_sheathActionParamOne_"))
                         {
-                            switch (row.ItemArray[13].ToString())
+                            switch (smartScript.action_param1)
                             {
-                                case "0":
+                                case 0:
                                     fullLine = fullLine.Replace("_sheathActionParamOne_", "Unarmed");
                                     break;
-                                case "1":
+                                case 1:
                                     fullLine = fullLine.Replace("_sheathActionParamOne_", "Melee");
                                     break;
-                                case "2":
+                                case 2:
                                     fullLine = fullLine.Replace("_sheathActionParamOne_", "Ranged");
                                     break;
                                 default:
@@ -571,15 +571,15 @@ namespace SAI_Comment_Converter
                         fullLine = fullLine.Insert(0, "UPDATE `smart_scripts` SET `comment`=" + '"');
 
                         //! Don't update the script if the comment is already correct
-                        if (cleanNewComment == row.ItemArray[27].ToString())
+                        if (cleanNewComment == smartScript.comment.ToString())
                         {
                             totalSkippedScripts++;
                             continue;
                         }
 
-                        fullLine += '"' + " WHERE `entryorguid`=" + entryorguid + " AND `id`=" + row.ItemArray[2].ToString() + ';';
+                        fullLine += '"' + " WHERE `entryorguid`=" + smartScript.entryorguid + " AND `id`=" + smartScript.id.ToString() + ';';
                         Console.WriteLine(fullLine);
-                        fullLine += " -- Old comment: '" + row.ItemArray[27].ToString() + "'"; //! Don't print the old comment in console
+                        fullLine += " -- Old comment: '" + smartScript.comment.ToString() + "'"; //! Don't print the old comment in console
                         outputFile.WriteLine(fullLine);
                     }
                 }
@@ -589,6 +589,40 @@ namespace SAI_Comment_Converter
             Console.WriteLine("If you wish to open the output file with your selected .sql file editor, press Enter.");
             if (Console.ReadKey().Key == ConsoleKey.Enter)
                 Process.Start("output.sql");
+        }
+
+        private static SmartScript BuildSmartScript(DataRow row)
+        {
+            var smartScript = new SmartScript();
+            smartScript.entryorguid = row["entryorguid"] != DBNull.Value ? Convert.ToInt32(row["entryorguid"]) : -1;
+            smartScript.source_type = row["source_type"] != DBNull.Value ? Convert.ToInt32(row["source_type"]) : 0;
+            smartScript.id = row["id"] != DBNull.Value ? Convert.ToInt32(row["id"]) : 0;
+            smartScript.link = row["link"] != DBNull.Value ? Convert.ToInt32(row["link"]) : 0;
+            smartScript.event_type = row["event_type"] != DBNull.Value ? Convert.ToInt32(row["event_type"]) : 0;
+            smartScript.event_phase_mask = row["event_phase_mask"] != DBNull.Value ? Convert.ToInt32(row["event_phase_mask"]) : 0;
+            smartScript.event_chance = row["event_chance"] != DBNull.Value ? Convert.ToInt32(row["event_chance"]) : 0;
+            smartScript.event_flags = row["event_flags"] != DBNull.Value ? Convert.ToInt32(row["event_flags"]) : 0;
+            smartScript.event_param1 = row["event_param1"] != DBNull.Value ? Convert.ToInt32(row["event_param1"]) : 0;
+            smartScript.event_param2 = row["event_param2"] != DBNull.Value ? Convert.ToInt32(row["event_param2"]) : 0;
+            smartScript.event_param3 = row["event_param3"] != DBNull.Value ? Convert.ToInt32(row["event_param3"]) : 0;
+            smartScript.event_param4 = row["event_param4"] != DBNull.Value ? Convert.ToInt32(row["event_param4"]) : 0;
+            smartScript.action_type = row["action_type"] != DBNull.Value ? Convert.ToInt32(row["action_type"]) : 0;
+            smartScript.action_param1 = row["action_param1"] != DBNull.Value ? Convert.ToInt32(row["action_param1"]) : 0;
+            smartScript.action_param2 = row["action_param2"] != DBNull.Value ? Convert.ToInt32(row["action_param2"]) : 0;
+            smartScript.action_param3 = row["action_param3"] != DBNull.Value ? Convert.ToInt32(row["action_param3"]) : 0;
+            smartScript.action_param4 = row["action_param4"] != DBNull.Value ? Convert.ToInt32(row["action_param4"]) : 0;
+            smartScript.action_param5 = row["action_param5"] != DBNull.Value ? Convert.ToInt32(row["action_param5"]) : 0;
+            smartScript.action_param6 = row["action_param6"] != DBNull.Value ? Convert.ToInt32(row["action_param6"]) : 0;
+            smartScript.target_type = row["target_type"] != DBNull.Value ? Convert.ToInt32(row["target_type"]) : 0;
+            smartScript.target_param1 = row["target_param1"] != DBNull.Value ? Convert.ToInt32(row["target_param1"]) : 0;
+            smartScript.target_param2 = row["target_param2"] != DBNull.Value ? Convert.ToInt32(row["target_param2"]) : 0;
+            smartScript.target_param3 = row["target_param3"] != DBNull.Value ? Convert.ToInt32(row["target_param3"]) : 0;
+            smartScript.target_x = row["target_x"] != DBNull.Value ? Convert.ToInt32(row["target_x"]) : 0;
+            smartScript.target_y = row["target_y"] != DBNull.Value ? Convert.ToInt32(row["target_y"]) : 0;
+            smartScript.target_z = row["target_z"] != DBNull.Value ? Convert.ToInt32(row["target_z"]) : 0;
+            smartScript.target_o = row["target_o"] != DBNull.Value ? Convert.ToInt32(row["target_o"]) : 0;
+            smartScript.comment = row["comment"] != DBNull.Value ? (string)row["comment"] : String.Empty;
+            return smartScript;
         }
     }
 }
