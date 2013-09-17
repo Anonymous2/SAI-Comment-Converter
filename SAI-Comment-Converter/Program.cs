@@ -99,8 +99,8 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "todo dbc");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SOUND, "Play Sound _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_EMOTE, "Play Emote _actionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_FAIL_QUEST, "Fail Quest '_questNameParamOne_'");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_QUEST, "Add Quest '_questNameParamOne_'");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_FAIL_QUEST, "Fail Quest '_questNameActionParamOne_'");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_QUEST, "Add Quest '_questNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_REACT_STATE, "Set Reactstate _reactStateParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ACTIVATE_GOBJECT, "Activate Gameobject");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_EMOTE, "Play Random Emote (_actionRandomEmotes_)");
@@ -108,7 +108,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_CREATURE, "Summon Creature '_creatureNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_THREAT_SINGLE_PCT, "Set Single Threat _actionParamOne_-_actionParamTwo_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_THREAT_ALL_PCT, "Set All Threat _actionParamOne_-_actionParamTwo_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_AREAEXPLOREDOREVENTHAPPENS, "Give Quest Credit '_questNameParamOne_'");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_AREAEXPLOREDOREVENTHAPPENS, "Give Quest Credit '_questNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_UNUSED_16, "Unused Action Type (16)");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_EMOTE_STATE, "Set Emote State _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_UNIT_FLAG, "Set Unit Flag _getUnitFlags_");
@@ -428,15 +428,15 @@ namespace SAI_Comment_Converter
                                 readerSpellName.Close();
                             }
 
-                            if (fullLine.Contains("_questNameParamOne_"))
+                            if (fullLine.Contains("_questNameActionParamOne_"))
                             {
                                 MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", row.ItemArray[13].ToString()), connection);
                                 MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
 
                                 if (readerSpellName.Read())
-                                    fullLine = fullLine.Replace("_questNameParamOne_", readerSpellName[0].ToString());
+                                    fullLine = fullLine.Replace("_questNameActionParamOne_", readerSpellName[0].ToString());
                                 else
-                                    fullLine = fullLine.Replace("_questNameParamOne_", "Quest not found!");
+                                    fullLine = fullLine.Replace("_questNameActionParamOne_", "Quest not found!");
 
                                 readerSpellName.Close();
                             }
