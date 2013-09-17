@@ -111,8 +111,8 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_AREAEXPLOREDOREVENTHAPPENS, "Give Quest Credit '_questNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_UNUSED_16, "Unused Action Type (16)");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_EMOTE_STATE, "Set Emote State _actionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_UNIT_FLAG, "Set Unit Flag _getUnitFlags_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_UNIT_FLAG, "Remove Unit Flag _getUnitFlags_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_UNIT_FLAG, "Set Flag_getUnitFlags_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_UNIT_FLAG, "Remove Flag_getUnitFlags_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_AUTO_ATTACK, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_COMBAT_MOVEMENT, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_EVENT_PHASE, "");
@@ -489,6 +489,44 @@ namespace SAI_Comment_Converter
                                     fullLine = fullLine.Replace("_creatureNameActionParamOne_", "Creature not found!");
 
                                 readerSelect.Close();
+                            }
+
+                            if (fullLine.Contains("_getUnitFlags_"))
+                            {
+                                string commentUnitFlag = "";
+                                int unitFlags = Convert.ToInt32(row.ItemArray[13].ToString());
+
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SERVER_CONTROLLED) != 0)  commentUnitFlag += "Server Controlled & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NON_ATTACKABLE) != 0)     commentUnitFlag += "Not Attackable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISABLE_MOVE) != 0)       commentUnitFlag += "Disable Movement & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP_ATTACKABLE) != 0)     commentUnitFlag += "Pvp Attackable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_RENAME) != 0)             commentUnitFlag += "Rename & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PREPARATION) != 0)        commentUnitFlag += "Preparation & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_ATTACKABLE_1) != 0)   commentUnitFlag += "Not Attackable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_PC) != 0)       commentUnitFlag += "Immune To Players & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC) != 0)      commentUnitFlag += "Immune To NPC's & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_LOOTING) != 0)            commentUnitFlag += "Looting & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PET_IN_COMBAT) != 0)      commentUnitFlag += "Pet In Combat & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP) != 0)                commentUnitFlag += "PvP & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SILENCED) != 0)           commentUnitFlag += "Silenced & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PACIFIED) != 0)           commentUnitFlag += "Pacified & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_STUNNED) != 0)            commentUnitFlag += "Stunned & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)          commentUnitFlag += "In Combat & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISARMED) != 0)           commentUnitFlag += "Disarmed & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_CONFUSED) != 0)           commentUnitFlag += "Confused & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_FLEEING) != 0)            commentUnitFlag += "Fleeing & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PLAYER_CONTROLLED) != 0)  commentUnitFlag += "Player Controlled & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_SELECTABLE) != 0)     commentUnitFlag += "Not Selectable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SKINNABLE) != 0)          commentUnitFlag += "Skinnable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_MOUNT) != 0)              commentUnitFlag += "Mounted & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SHEATHE) != 0)            commentUnitFlag += "Sheathed & ";
+
+                                commentUnitFlag = commentUnitFlag.Trim(new Char[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
+
+                                if (commentUnitFlag.Contains("&"))
+                                    fullLine = fullLine.Replace("_getUnitFlags_", "s_getUnitFlags_");
+
+                                fullLine = fullLine.Replace("_getUnitFlags_", " " + commentUnitFlag);
                             }
 
                             Console.WriteLine(fullLine);
