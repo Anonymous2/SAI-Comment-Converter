@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 
 namespace SAI_Comment_Converter
@@ -101,7 +98,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_FACTION, "Set Faction _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SOUND, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_PLAY_EMOTE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_EMOTE, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FAIL_QUEST, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_QUEST, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_REACT_STATE, "");
@@ -117,7 +114,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_UNIT_FLAG, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_UNIT_FLAG, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_AUTO_ATTACK, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_ALLOW_COMBAT_MOVEMENT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_COMBAT_MOVEMENT, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_EVENT_PHASE, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_INC_EVENT_PHASE, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_EVADE, "");
@@ -129,7 +126,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE_RANGE, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RESET_GOBJECT, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_KILLEDMONSTER, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_KILLED_MONSTER, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INST_DATA, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INST_DATA64, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_UPDATE_TEMPLATE, "");
@@ -140,7 +137,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_FORCE_DESPAWN, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INVINCIBILITY_HP_LEVEL, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INGAME_PHASE_MASK, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_PHASE_MASK, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DATA, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_MOVE_FORWARD, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_VISIBILITY, "");
@@ -208,6 +205,12 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_POWER, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_POWER, "");
 
+            string host = "127.0.0.1";
+            string user = "root";
+            string pass = "1234";
+            string worldDB = "trinitycore_world";
+            string port = "3306";
+
             while (true)
             {
                 Console.WriteLine("SQL Information:");
@@ -222,11 +225,11 @@ namespace SAI_Comment_Converter
                 //Console.Write("Port: ");
                 //string port = Console.ReadLine();
 
-                string host = "127.0.0.1";
-                string user = "root";
-                string pass = "123";
-                string worldDB = "trinitycore_world";
-                string port = "3306";
+                //string host = "127.0.0.1";
+                //string user = "root";
+                //string pass = "1234";
+                //string worldDB = "trinitycore_world";
+                //string port = "3306";
 
                 //Console.WriteLine(host);
                 //Console.WriteLine(user);
@@ -281,13 +284,13 @@ namespace SAI_Comment_Converter
 
                             readerCreatureName.Close();
                             Console.WriteLine(fullLine);
-                            Console.ReadKey();
+                            //Console.ReadKey();
 
                             //! Event type
                             fullLine += smartEventStrings[(SmartEvent)Convert.ToInt32(row.ItemArray[4].ToString())];
 
-                            //! TODO: Figure out how to make this work with linking several lines TO each other. Perhaps read
-                            //! from last to first line?
+                            //! TODO: Figure out how to make this work with linking several lines TO each other. Perhaps read from last to first line?
+                            //! TODO: Consider linkto/linkfrom
                             // SELECT * FROM smart_scripts ORDER BY entryorguid ASC, id DESC
                             if (fullLine.Contains("_previousLineComment_"))
                             {
@@ -308,6 +311,19 @@ namespace SAI_Comment_Converter
 
                             if (fullLine.Contains("_eventParamTwo_"))
                                 fullLine = fullLine.Replace("_eventParamTwo_", row.ItemArray[9].ToString());
+
+                            if (fullLine.Contains("_spellName_"))
+                            {
+                                MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[8].ToString()), connection);
+                                MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerSpellName.Read())
+                                    fullLine = fullLine.Replace("_spellName_", readerSpellName[0].ToString());
+                                else
+                                    fullLine = fullLine.Replace("_spellName_", "Link not found!");
+
+                                readerSpellName.Close();
+                            }
 
                             fullLine += " - ";
                             Console.WriteLine(fullLine);
