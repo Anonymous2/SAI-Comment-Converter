@@ -262,7 +262,7 @@ namespace SAI_Comment_Converter
                         MySqlCommand command = new MySqlCommand();
                         command.Connection = connection;
 
-                        string fullLine = "UPDATE `smart_scripts` SET `comment`=" + '"';
+                        string fullLine = String.Empty;//"UPDATE `smart_scripts` SET `comment`=" + '"';
                         int entryorguid = Convert.ToInt32(row.ItemArray[0].ToString());
                         int entry = entryorguid;
                         MySqlDataReader readerSourceName = null;
@@ -520,7 +520,7 @@ namespace SAI_Comment_Converter
                             if ((unitFlags & (int)UnitFlags.UNIT_FLAG_MOUNT) != 0)              commentUnitFlag += "Mounted & ";
                             if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SHEATHE) != 0)            commentUnitFlag += "Sheathed & ";
 
-                            commentUnitFlag = commentUnitFlag.Trim(new Char[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
+                            commentUnitFlag = commentUnitFlag.Trim(new char[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
 
                             if (commentUnitFlag.Contains("&"))
                                 fullLine = fullLine.Replace("_getUnitFlags_", "s_getUnitFlags_");
@@ -545,15 +545,16 @@ namespace SAI_Comment_Converter
                             //else //? What to do?
                         }
 
-                        string cleanNewComment = fullLine.Replace("UPDATE `smart_scripts` SET `comment`='", String.Empty);
+                        string cleanNewComment = fullLine;
+                        fullLine = fullLine.Insert(0, "UPDATE `smart_scripts` SET `comment`=" + '"');
 
                         //! Don't update the script if the comment is already correct
                         if (cleanNewComment == row.ItemArray[27].ToString())
                             continue;
 
-                        fullLine += '"' + " WHERE `entryorguid`=" + entryorguid + " AND `id`=" + row.ItemArray[2].ToString();
+                        fullLine += '"' + " WHERE `entryorguid`=" + entryorguid + " AND `id`=" + row.ItemArray[2].ToString() + ';';
                         Console.WriteLine(fullLine);
-                        fullLine += " -- Old comment: '" + row.ItemArray[27].ToString() + "'";
+                        fullLine += " -- Old comment: '" + row.ItemArray[27].ToString() + "'"; //! Don't print the old comment in console
                         outputFile.WriteLine(fullLine);
                     }
                 }
