@@ -381,6 +381,9 @@ namespace SAI_Comment_Converter
                                     fullLine = fullLine.Replace(" _targetCastingSpellName_", String.Empty);
                             }
 
+                            //! Action type
+                            fullLine += " - " + smartActionStrings[(SmartAction)Convert.ToInt32(row.ItemArray[12].ToString())];
+
                             if (fullLine.Contains("_actionParamOne_"))
                                 fullLine = fullLine.Replace("_actionParamOne_", row.ItemArray[13].ToString());
 
@@ -438,7 +441,6 @@ namespace SAI_Comment_Converter
                                 readerSpellName.Close();
                             }
 
-                            fullLine += " - ";
                             Console.WriteLine(fullLine);
                             outputFile.WriteLine(fullLine);
                         }
