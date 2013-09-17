@@ -330,6 +330,7 @@ namespace SAI_Comment_Converter
 
                                 readerSpellName.Close();
                             }
+
                             if (fullLine.Contains("_actionParamOne_"))
                                 fullLine = fullLine.Replace("_actionParamOne_", row.ItemArray[13].ToString());
 
@@ -347,6 +348,19 @@ namespace SAI_Comment_Converter
 
                             if (fullLine.Contains("_actionParamSix_"))
                                 fullLine = fullLine.Replace("_actionParamSix_", row.ItemArray[18].ToString());
+
+                            if (fullLine.Contains("_spellNameActionParamOne_"))
+                            {
+                                MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[8].ToString()), connection);
+                                MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerSpellName.Read())
+                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", readerSpellName[0].ToString());
+                                else
+                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", "Link not found!");
+
+                                readerSpellName.Close();
+                            }
 
                             fullLine += " - ";
                             Console.WriteLine(fullLine);
