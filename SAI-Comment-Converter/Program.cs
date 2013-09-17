@@ -72,7 +72,7 @@ namespace SAI_Comment_Converter
             //smartEventStrings.Add(SmartEvent.SMART_EVENT_TRANSPORT_REMOVE_PLAYER, "");
             //smartEventStrings.Add(SmartEvent.SMART_EVENT_TRANSPORT_RELOCATE, "");
             //smartEventStrings.Add(SmartEvent.SMART_EVENT_INSTANCE_PLAYER_ENTER, "");
-            //smartEventStrings.Add(SmartEvent.SMART_EVENT_AREATRIGGER_ONTRIGGER, "");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_AREATRIGGER_ONTRIGGER, "On Trigger");
             //smartEventStrings.Add(SmartEvent.SMART_EVENT_QUEST_ACCEPTED, "");
             //smartEventStrings.Add(SmartEvent.SMART_EVENT_QUEST_OBJ_COPLETETION, "");
             //smartEventStrings.Add(SmartEvent.SMART_EVENT_QUEST_COMPLETION, "");
