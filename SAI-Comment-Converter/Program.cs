@@ -55,8 +55,8 @@ namespace SAI_Comment_Converter
             smartEventStrings.Add(SmartEvent.SMART_EVENT_TARGET_CASTING, "Target Casting _targetCastingSpellName_");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_FRIENDLY_IS_CC, "Friendly Crowd Controlled");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_SUMMONED_UNIT, "On Summoned Unit");
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_ACCEPTED_QUEST, "On Quest Taken");
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_REWARD_QUEST, "On Quest Finished");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_ACCEPTED_QUEST, "On Quest '_questNameEventParamOne_' Taken");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_REWARD_QUEST, "On Quest '_questNameEventParamOne_' Finished");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_REACHED_HOME, "On Reached Home");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_RESET, "On Reset");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_IC_LOS, "In Combat LoS");
@@ -379,6 +379,24 @@ namespace SAI_Comment_Converter
                                 }
                                 else
                                     fullLine = fullLine.Replace(" _targetCastingSpellName_", String.Empty);
+                            }
+
+                            if (fullLine.Contains("_questNameEventParamOne_"))
+                            {
+                                if (row.ItemArray[8].ToString() == "0") //! Any quest (SMART_EVENT_ACCEPTED_QUEST / SMART_EVENT_REWARD_QUEST)
+                                    fullLine = fullLine.Replace(" '_questNameEventParamOne_'", String.Empty);
+                                else
+                                {
+                                    MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", row.ItemArray[8].ToString()), connection);
+                                    MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
+
+                                    if (readerSpellName.Read())
+                                        fullLine = fullLine.Replace("_questNameEventParamOne_", readerSpellName[0].ToString());
+                                    else
+                                        fullLine = fullLine.Replace("_questNameEventParamOne_", " Quest not found!");
+
+                                    readerSpellName.Close();
+                                }
                             }
 
                             //! Action type
