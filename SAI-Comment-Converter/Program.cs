@@ -266,25 +266,58 @@ namespace SAI_Comment_Converter
                             string fullLine = "UPDATE `smart_scripts` SET `comment`='";
                             int entryorguid = Convert.ToInt32(row.ItemArray[0].ToString());
                             int entry = entryorguid;
+                            MySqlDataReader readerSourceName = null;
+                            MySqlDataReader readerSourceId = null;
 
-                            if (Convert.ToInt32(row.ItemArray[0].ToString()) < 0)
+                            //! Sourcetype switch
+                            switch (Convert.ToInt32(row.ItemArray[1].ToString()))
                             {
-                                command.CommandText = (String.Format("SELECT id FROM creature WHERE guid={0}", -entryorguid));
-                                MySqlDataReader readerCreatureId = command.ExecuteReader(CommandBehavior.Default);
+                                case 0: //! Creature
+                                    if (Convert.ToInt32(row.ItemArray[0].ToString()) < 0)
+                                    {
+                                        command.CommandText = (String.Format("SELECT id FROM creature WHERE guid={0}", -entryorguid));
+                                        readerSourceId = command.ExecuteReader(CommandBehavior.Default);
 
-                                if (readerCreatureId.Read())
-                                    entry = Convert.ToInt32(readerCreatureId[0].ToString());
+                                        if (readerSourceId.Read())
+                                            entry = Convert.ToInt32(readerSourceId[0].ToString());
 
-                                readerCreatureId.Close();
+                                        readerSourceId.Close();
+                                    }
+
+                                    command.CommandText = (String.Format("SELECT name FROM creature_template WHERE entry={0}", entry));
+                                    readerSourceName = command.ExecuteReader(CommandBehavior.Default);
+
+                                    if (readerSourceName.Read())
+                                        fullLine += readerSourceName[0].ToString() + " - ";
+
+                                    readerSourceName.Close();
+                                    break;
+                                case 1: //! Gammeobject
+                                    if (Convert.ToInt32(row.ItemArray[0].ToString()) < 0)
+                                    {
+                                        command.CommandText = (String.Format("SELECT id FROM creature WHERE guid={0}", -entryorguid));
+                                        readerSourceId = command.ExecuteReader(CommandBehavior.Default);
+
+                                        if (readerSourceId.Read())
+                                            entry = Convert.ToInt32(readerSourceId[0].ToString());
+
+                                        readerSourceId.Close();
+                                    }
+
+                                    command.CommandText = (String.Format("SELECT name FROM creature_template WHERE entry={0}", entry));
+                                    readerSourceName = command.ExecuteReader(CommandBehavior.Default);
+
+                                    if (readerSourceName.Read())
+                                        fullLine += readerSourceName[0].ToString() + " - ";
+
+                                    readerSourceName.Close();
+                                    break;
+                                case 2: //! Areatrigger
+                                    continue;
+                                case 9: //! Actionlist
+                                    continue;
                             }
 
-                            command.CommandText = (String.Format("SELECT name FROM creature_template WHERE entry={0}", entry));
-                            MySqlDataReader readerCreatureName = command.ExecuteReader(CommandBehavior.Default);
-
-                            if (readerCreatureName.Read())
-                                fullLine += readerCreatureName[0].ToString() + " - ";
-
-                            readerCreatureName.Close();
                             Console.WriteLine(fullLine);
                             //Console.ReadKey();
 
