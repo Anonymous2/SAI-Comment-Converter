@@ -11,6 +11,7 @@ namespace SAI_Comment_Converter
     {
         private static Dictionary<SmartEvent, string> smartEventStrings = new Dictionary<SmartEvent, string>();
         private static Dictionary<SmartAction, string> smartActionStrings = new Dictionary<SmartAction, string>();
+        private static int totalSkippedScripts = 0, totalLoadedScripts = 0;
 
         static void Main(string[] args)
         {
@@ -259,10 +260,12 @@ namespace SAI_Comment_Converter
                 {
                     foreach (DataRow row in dataTable.Rows)
                     {
+                        totalLoadedScripts++;
+
                         MySqlCommand command = new MySqlCommand();
                         command.Connection = connection;
 
-                        string fullLine = String.Empty;//"UPDATE `smart_scripts` SET `comment`=" + '"';
+                        string fullLine = String.Empty;
                         int entryorguid = Convert.ToInt32(row.ItemArray[0].ToString());
                         int entry = entryorguid;
                         MySqlDataReader readerSourceName = null;
@@ -550,7 +553,10 @@ namespace SAI_Comment_Converter
 
                         //! Don't update the script if the comment is already correct
                         if (cleanNewComment == row.ItemArray[27].ToString())
+                        {
+                            totalSkippedScripts++;
                             continue;
+                        }
 
                         fullLine += '"' + " WHERE `entryorguid`=" + entryorguid + " AND `id`=" + row.ItemArray[2].ToString() + ';';
                         Console.WriteLine(fullLine);
@@ -560,7 +566,8 @@ namespace SAI_Comment_Converter
                 }
             }
 
-            Console.WriteLine("\n\n\nThe converting has finished, if you wish to open the output file with your selected .sql file editor, press Enter.");
+            Console.WriteLine("\n\n\nThe converting has finished. A total of {0} scripts were loaded of which {1} were skipped because their comments already fit the correct codestyle.", totalLoadedScripts, totalSkippedScripts);
+            Console.WriteLine("If you wish to open the output file with your selected .sql file editor, press Enter.");
             if (Console.ReadKey().Key == ConsoleKey.Enter)
                 Process.Start("output.sql");
         }
