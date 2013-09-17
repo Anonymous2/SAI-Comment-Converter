@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using MySql.Data.MySqlClient;
 
@@ -211,355 +212,356 @@ namespace SAI_Comment_Converter
             string worldDB = "trinitycore_world";
             string port = "3306";
 
-            while (true)
+            Console.WriteLine("SQL Information:");
+            //Console.Write("Host: ");
+            //string host = Console.ReadLine();
+            //Console.Write("User: ");
+            //string user = Console.ReadLine();
+            //Console.Write("Pass: ");
+            //string pass = Console.ReadLine();
+            //Console.Write("World DB: ");
+            //string worldDB = Console.ReadLine();
+            //Console.Write("Port: ");
+            //string port = Console.ReadLine();
+
+            //string host = "127.0.0.1";
+            //string user = "root";
+            //string pass = "1234";
+            //string worldDB = "trinitycore_world";
+            //string port = "3306";
+
+            //Console.WriteLine(host);
+            //Console.WriteLine(user);
+            //Console.WriteLine(pass);
+            //Console.WriteLine(worldDB);
+            //Console.WriteLine(port);
+
+            MySqlConnectionStringBuilder connectionString = new MySqlConnectionStringBuilder();
+            connectionString.UserID = user;
+            connectionString.Password = pass;
+            connectionString.Server = host;
+            connectionString.Database = worldDB;
+            connectionString.Port = Convert.ToUInt32(port);
+
+            using (var connection = new MySqlConnection(connectionString.ToString()))
             {
-                Console.WriteLine("SQL Information:");
-                //Console.Write("Host: ");
-                //string host = Console.ReadLine();
-                //Console.Write("User: ");
-                //string user = Console.ReadLine();
-                //Console.Write("Pass: ");
-                //string pass = Console.ReadLine();
-                //Console.Write("World DB: ");
-                //string worldDB = Console.ReadLine();
-                //Console.Write("Port: ");
-                //string port = Console.ReadLine();
+                connection.Open();
+                var returnVal = new MySqlDataAdapter(String.Format("SELECT * FROM smart_scripts ORDER BY entryorguid"), connection);
+                var dataTable = new DataTable();
+                returnVal.Fill(dataTable);
 
-                //string host = "127.0.0.1";
-                //string user = "root";
-                //string pass = "1234";
-                //string worldDB = "trinitycore_world";
-                //string port = "3306";
+                if (dataTable.Rows.Count <= 0)
+                    return;
 
-                //Console.WriteLine(host);
-                //Console.WriteLine(user);
-                //Console.WriteLine(pass);
-                //Console.WriteLine(worldDB);
-                //Console.WriteLine(port);
+                File.Delete("output.sql");
 
-                MySqlConnectionStringBuilder connectionString = new MySqlConnectionStringBuilder();
-                connectionString.UserID = user;
-                connectionString.Password = pass;
-                connectionString.Server = host;
-                connectionString.Database = worldDB;
-                connectionString.Port = Convert.ToUInt32(port);
-
-                using (var connection = new MySqlConnection(connectionString.ToString()))
+                using (var outputFile = new StreamWriter("output.sql", true))
                 {
-                    connection.Open();
-                    var returnVal = new MySqlDataAdapter(String.Format("SELECT * FROM smart_scripts ORDER BY entryorguid"), connection);
-                    var dataTable = new DataTable();
-                    returnVal.Fill(dataTable);
-
-                    if (dataTable.Rows.Count <= 0)
-                        break;
-
-                    File.Delete("output.sql");
-
-                    using (var outputFile = new StreamWriter("output.sql", true))
+                    foreach (DataRow row in dataTable.Rows)
                     {
-                        foreach (DataRow row in dataTable.Rows)
+                        MySqlCommand command = new MySqlCommand();
+                        command.Connection = connection;
+
+                        string fullLine = "UPDATE `smart_scripts` SET `comment`=" + '"';
+                        int entryorguid = Convert.ToInt32(row.ItemArray[0].ToString());
+                        int entry = entryorguid;
+                        MySqlDataReader readerSourceName = null;
+                        MySqlDataReader readerSourceId = null;
+
+                        //! Sourcetype switch
+                        switch (Convert.ToInt32(row.ItemArray[1].ToString()))
                         {
-                            MySqlCommand command = new MySqlCommand();
-                            command.Connection = connection;
-
-                            string fullLine = "UPDATE `smart_scripts` SET `comment`=" + '"';
-                            int entryorguid = Convert.ToInt32(row.ItemArray[0].ToString());
-                            int entry = entryorguid;
-                            MySqlDataReader readerSourceName = null;
-                            MySqlDataReader readerSourceId = null;
-
-                            //! Sourcetype switch
-                            switch (Convert.ToInt32(row.ItemArray[1].ToString()))
-                            {
-                                case 0: //! Creature
-                                    if (Convert.ToInt32(row.ItemArray[0].ToString()) < 0)
-                                    {
-                                        command.CommandText = (String.Format("SELECT id FROM creature WHERE guid={0}", -entryorguid));
-                                        readerSourceId = command.ExecuteReader(CommandBehavior.Default);
-
-                                        if (readerSourceId.Read())
-                                            entry = Convert.ToInt32(readerSourceId[0].ToString());
-
-                                        readerSourceId.Close();
-                                    }
-
-                                    command.CommandText = (String.Format("SELECT name FROM creature_template WHERE entry={0}", entry));
-                                    readerSourceName = command.ExecuteReader(CommandBehavior.Default);
-
-                                    if (readerSourceName.Read())
-                                        fullLine += readerSourceName[0].ToString() + " - ";
-
-                                    readerSourceName.Close();
-                                    break;
-                                case 1: //! Gammeobject
-                                    if (Convert.ToInt32(row.ItemArray[0].ToString()) < 0)
-                                    {
-                                        command.CommandText = (String.Format("SELECT id FROM gameobject WHERE guid={0}", -entryorguid));
-                                        readerSourceId = command.ExecuteReader(CommandBehavior.Default);
-
-                                        if (readerSourceId.Read())
-                                            entry = Convert.ToInt32(readerSourceId[0].ToString());
-
-                                        readerSourceId.Close();
-                                    }
-
-                                    command.CommandText = (String.Format("SELECT name FROM gameobject_template WHERE entry={0}", entry));
-                                    readerSourceName = command.ExecuteReader(CommandBehavior.Default);
-
-                                    if (readerSourceName.Read())
-                                        fullLine += readerSourceName[0].ToString() + " - ";
-
-                                    readerSourceName.Close();
-                                    break;
-                                case 2: //! Areatrigger
-                                    continue;
-                                case 9: //! Actionlist
-                                    continue;
-                            }
-
-                            //! Event type
-                            fullLine += smartEventStrings[(SmartEvent)Convert.ToInt32(row.ItemArray[4].ToString())];
-
-                            //! TODO: Figure out how to make this work with linking several lines TO each other. Perhaps read from last to first line?
-                            //! TODO: Consider linkto/linkfrom
-                            // SELECT * FROM smart_scripts ORDER BY entryorguid ASC, id DESC
-                            if (fullLine.Contains("_previousLineComment_"))
-                            {
-                                MySqlCommand commandPreviousComment = new MySqlCommand(String.Format("SELECT event_type FROM smart_scripts WHERE entryorguid={0} AND id={1}", entryorguid, (Convert.ToInt32(row.ItemArray[2]) - 1).ToString()), connection);
-                                MySqlDataReader readerPreviousLineComment = commandPreviousComment.ExecuteReader(CommandBehavior.Default);
-
-                                if (readerPreviousLineComment.Read())
-                                    fullLine = fullLine.Replace("_previousLineComment_", smartEventStrings[(SmartEvent)Convert.ToInt32(readerPreviousLineComment[0].ToString())]);
-                                else
-                                    fullLine = fullLine.Replace("_previousLineComment_", "Link not found!");
-
-                                readerPreviousLineComment.Close();
-                            }
-
-                            //! This must be called AFTER we check for _previousLineComment_ so that copied event types don't need special handling
-                            if (fullLine.Contains("_eventParamOne_"))
-                                fullLine = fullLine.Replace("_eventParamOne_", row.ItemArray[8].ToString());
-
-                            if (fullLine.Contains("_eventParamTwo_"))
-                                fullLine = fullLine.Replace("_eventParamTwo_", row.ItemArray[9].ToString());
-
-                            if (fullLine.Contains("_eventParamThree_"))
-                                fullLine = fullLine.Replace("_eventParamThree_", row.ItemArray[10].ToString());
-
-                            if (fullLine.Contains("_eventParamFour_"))
-                                fullLine = fullLine.Replace("_eventParamFour_", row.ItemArray[11].ToString());
-
-                            if (fullLine.Contains("_spellNameEventParamOne_"))
-                            {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[8].ToString()), connection);
-                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                if (readerSelect.Read())
-                                    fullLine = fullLine.Replace("_spellNameEventParamOne_", readerSelect[0].ToString());
-                                else
-                                    fullLine = fullLine.Replace("_spellNameEventParamOne_", "Spell not found!");
-
-                                readerSelect.Close();
-                            }
-
-                            if (fullLine.Contains("_targetCastingSpellName_"))
-                            {
-                                if (row.ItemArray[10].ToString() != "0")
+                            case 0: //! Creature
+                                if (Convert.ToInt32(row.ItemArray[0].ToString()) < 0)
                                 {
-                                    MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[10].ToString()), connection);
-                                    MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+                                    command.CommandText = (String.Format("SELECT id FROM creature WHERE guid={0}", -entryorguid));
+                                    readerSourceId = command.ExecuteReader(CommandBehavior.Default);
 
-                                    if (readerSelect.Read())
-                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSelect[0].ToString() + "'");
-                                    else
-                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "Spell not found!");
+                                    if (readerSourceId.Read())
+                                        entry = Convert.ToInt32(readerSourceId[0].ToString());
 
-                                    readerSelect.Close();
+                                    readerSourceId.Close();
                                 }
-                                else
-                                    fullLine = fullLine.Replace(" _targetCastingSpellName_", String.Empty);
-                            }
 
-                            if (fullLine.Contains("_questNameEventParamOne_"))
-                            {
-                                if (row.ItemArray[8].ToString() == "0") //! Any quest (SMART_EVENT_ACCEPTED_QUEST / SMART_EVENT_REWARD_QUEST)
-                                    fullLine = fullLine.Replace(" '_questNameEventParamOne_'", String.Empty);
-                                else
+                                command.CommandText = (String.Format("SELECT name FROM creature_template WHERE entry={0}", entry));
+                                readerSourceName = command.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerSourceName.Read())
+                                    fullLine += readerSourceName[0].ToString() + " - ";
+
+                                readerSourceName.Close();
+                                break;
+                            case 1: //! Gammeobject
+                                if (Convert.ToInt32(row.ItemArray[0].ToString()) < 0)
                                 {
-                                    MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", row.ItemArray[8].ToString()), connection);
-                                    MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+                                    command.CommandText = (String.Format("SELECT id FROM gameobject WHERE guid={0}", -entryorguid));
+                                    readerSourceId = command.ExecuteReader(CommandBehavior.Default);
 
-                                    if (readerSelect.Read())
-                                        fullLine = fullLine.Replace("_questNameEventParamOne_", readerSelect[0].ToString());
-                                    else
-                                        fullLine = fullLine.Replace("_questNameEventParamOne_", " Quest not found!");
+                                    if (readerSourceId.Read())
+                                        entry = Convert.ToInt32(readerSourceId[0].ToString());
 
-                                    readerSelect.Close();
+                                    readerSourceId.Close();
                                 }
-                            }
 
-                            //! Action type
-                            fullLine += " - " + smartActionStrings[(SmartAction)Convert.ToInt32(row.ItemArray[12].ToString())];
+                                command.CommandText = (String.Format("SELECT name FROM gameobject_template WHERE entry={0}", entry));
+                                readerSourceName = command.ExecuteReader(CommandBehavior.Default);
 
-                            if (fullLine.Contains("_actionParamOne_"))
-                                fullLine = fullLine.Replace("_actionParamOne_", row.ItemArray[13].ToString());
+                                if (readerSourceName.Read())
+                                    fullLine += readerSourceName[0].ToString() + " - ";
 
-                            if (fullLine.Contains("_actionParamTwo_"))
-                                fullLine = fullLine.Replace("_actionParamTwo_", row.ItemArray[14].ToString());
-
-                            if (fullLine.Contains("_actionParamThree_"))
-                                fullLine = fullLine.Replace("_actionParamThree_", row.ItemArray[15].ToString());
-
-                            if (fullLine.Contains("_actionParamFour_"))
-                                fullLine = fullLine.Replace("_actionParamFour_", row.ItemArray[16].ToString());
-
-                            if (fullLine.Contains("_actionParamFive_"))
-                                fullLine = fullLine.Replace("_actionParamFive_", row.ItemArray[17].ToString());
-
-                            if (fullLine.Contains("_actionParamSix_"))
-                                fullLine = fullLine.Replace("_actionParamSix_", row.ItemArray[18].ToString());
-
-                            if (fullLine.Contains("_spellNameActionParamOne_"))
-                            {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[13].ToString()), connection);
-                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                if (readerSelect.Read())
-                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", readerSelect[0].ToString());
-                                else
-                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", "Spell not found!");
-
-                                readerSelect.Close();
-                            }
-
-                            if (fullLine.Contains("_spellNameActionParamTwo_"))
-                            {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[14].ToString()), connection);
-                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                if (readerSelect.Read())
-                                    fullLine = fullLine.Replace("_spellNameActionParamTwo_", readerSelect[0].ToString());
-                                else
-                                    fullLine = fullLine.Replace("_spellNameActionParamTwo_", "Spell not found!");
-
-                                readerSelect.Close();
-                            }
-
-                            if (fullLine.Contains("_questNameActionParamOne_"))
-                            {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", row.ItemArray[13].ToString()), connection);
-                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                if (readerSelect.Read())
-                                    fullLine = fullLine.Replace("_questNameActionParamOne_", readerSelect[0].ToString());
-                                else
-                                    fullLine = fullLine.Replace("_questNameActionParamOne_", "Quest not found!");
-
-                                readerSelect.Close();
-                            }
-
-                            if (fullLine.Contains("_reactStateParamOne_"))
-                            {
-                                switch (row.ItemArray[13].ToString())
-                                {
-                                    case "0":
-                                        fullLine = fullLine.Replace("_reactStateParamOne_", "Passive");
-                                        break;
-                                    case "1":
-                                        fullLine = fullLine.Replace("_reactStateParamOne_", "Defensive");
-                                        break;
-                                    case "2":
-                                        fullLine = fullLine.Replace("_reactStateParamOne_", "Aggressive");
-                                        break;
-                                    default:
-                                        fullLine = fullLine.Replace("_reactStateParamOne_", "<Unknown Reactstate>");
-                                        break;
-                                }
-                            }
-
-                            if (fullLine.Contains("_creatureNameActionParamOne_"))
-                            {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM creature_template WHERE entry = {0}", row.ItemArray[13].ToString()), connection);
-                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                if (readerSelect.Read())
-                                    fullLine = fullLine.Replace("_creatureNameActionParamOne_", readerSelect[0].ToString());
-                                else
-                                    fullLine = fullLine.Replace("_creatureNameActionParamOne_", "Creature not found!");
-
-                                readerSelect.Close();
-                            }
-
-                            if (fullLine.Contains("_getUnitFlags_"))
-                            {
-                                string commentUnitFlag = "";
-                                int unitFlags = Convert.ToInt32(row.ItemArray[13].ToString());
-
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SERVER_CONTROLLED) != 0)  commentUnitFlag += "Server Controlled & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NON_ATTACKABLE) != 0)     commentUnitFlag += "Not Attackable & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISABLE_MOVE) != 0)       commentUnitFlag += "Disable Movement & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP_ATTACKABLE) != 0)     commentUnitFlag += "Pvp Attackable & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_RENAME) != 0)             commentUnitFlag += "Rename & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PREPARATION) != 0)        commentUnitFlag += "Preparation & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_ATTACKABLE_1) != 0)   commentUnitFlag += "Not Attackable & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_PC) != 0)       commentUnitFlag += "Immune To Players & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC) != 0)      commentUnitFlag += "Immune To NPC's & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_LOOTING) != 0)            commentUnitFlag += "Looting & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PET_IN_COMBAT) != 0)      commentUnitFlag += "Pet In Combat & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP) != 0)                commentUnitFlag += "PvP & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SILENCED) != 0)           commentUnitFlag += "Silenced & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PACIFIED) != 0)           commentUnitFlag += "Pacified & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_STUNNED) != 0)            commentUnitFlag += "Stunned & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)          commentUnitFlag += "In Combat & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISARMED) != 0)           commentUnitFlag += "Disarmed & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_CONFUSED) != 0)           commentUnitFlag += "Confused & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_FLEEING) != 0)            commentUnitFlag += "Fleeing & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PLAYER_CONTROLLED) != 0)  commentUnitFlag += "Player Controlled & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_SELECTABLE) != 0)     commentUnitFlag += "Not Selectable & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SKINNABLE) != 0)          commentUnitFlag += "Skinnable & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_MOUNT) != 0)              commentUnitFlag += "Mounted & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SHEATHE) != 0)            commentUnitFlag += "Sheathed & ";
-
-                                commentUnitFlag = commentUnitFlag.Trim(new Char[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
-
-                                if (commentUnitFlag.Contains("&"))
-                                    fullLine = fullLine.Replace("_getUnitFlags_", "s_getUnitFlags_");
-
-                                fullLine = fullLine.Replace("_getUnitFlags_", " " + commentUnitFlag);
-                            }
-
-                            if (fullLine.Contains("_startOrStopActionParamOne_"))
-                            {
-                                if (row.ItemArray[13].ToString() == "0")
-                                    fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Stop");
-                                else //! Even if above 1 or below 0 we start attacking/allow-combat-movement
-                                    fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Start");
-                            }
-
-                            if (fullLine.Contains("_incrementOrDecrementActionParamOne_"))
-                            {
-                                if (row.ItemArray[13].ToString() == "1")
-                                    fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Increment");
-                                else if (row.ItemArray[14].ToString() == "1")
-                                    fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Decrement");
-                                //else //? What to do?
-                            }
-
-                            string cleanNewComment = fullLine.Replace("UPDATE `smart_scripts` SET `comment`='", String.Empty);
-
-                            //! Don't update the script if the comment is already correct
-                            if (cleanNewComment == row.ItemArray[27].ToString())
+                                readerSourceName.Close();
+                                break;
+                            case 2: //! Areatrigger
                                 continue;
-
-                            fullLine += '"' + "WHERE `entryorguid`=" + entryorguid + " AND `id`=" + row.ItemArray[2].ToString();
-                            Console.WriteLine(fullLine);
-                            fullLine += " -- Old comment: '" + row.ItemArray[27].ToString() + "'";
-                            outputFile.WriteLine(fullLine);
+                            case 9: //! Actionlist
+                                continue;
                         }
+
+                        //! Event type
+                        fullLine += smartEventStrings[(SmartEvent)Convert.ToInt32(row.ItemArray[4].ToString())];
+
+                        //! TODO: Figure out how to make this work with linking several lines TO each other. Perhaps read from last to first line?
+                        //! TODO: Consider linkto/linkfrom
+                        // SELECT * FROM smart_scripts ORDER BY entryorguid ASC, id DESC
+                        if (fullLine.Contains("_previousLineComment_"))
+                        {
+                            MySqlCommand commandPreviousComment = new MySqlCommand(String.Format("SELECT event_type FROM smart_scripts WHERE entryorguid={0} AND id={1}", entryorguid, (Convert.ToInt32(row.ItemArray[2]) - 1).ToString()), connection);
+                            MySqlDataReader readerPreviousLineComment = commandPreviousComment.ExecuteReader(CommandBehavior.Default);
+
+                            if (readerPreviousLineComment.Read())
+                                fullLine = fullLine.Replace("_previousLineComment_", smartEventStrings[(SmartEvent)Convert.ToInt32(readerPreviousLineComment[0].ToString())]);
+                            else
+                                fullLine = fullLine.Replace("_previousLineComment_", "Link not found!");
+
+                            readerPreviousLineComment.Close();
+                        }
+
+                        //! This must be called AFTER we check for _previousLineComment_ so that copied event types don't need special handling
+                        if (fullLine.Contains("_eventParamOne_"))
+                            fullLine = fullLine.Replace("_eventParamOne_", row.ItemArray[8].ToString());
+
+                        if (fullLine.Contains("_eventParamTwo_"))
+                            fullLine = fullLine.Replace("_eventParamTwo_", row.ItemArray[9].ToString());
+
+                        if (fullLine.Contains("_eventParamThree_"))
+                            fullLine = fullLine.Replace("_eventParamThree_", row.ItemArray[10].ToString());
+
+                        if (fullLine.Contains("_eventParamFour_"))
+                            fullLine = fullLine.Replace("_eventParamFour_", row.ItemArray[11].ToString());
+
+                        if (fullLine.Contains("_spellNameEventParamOne_"))
+                        {
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[8].ToString()), connection);
+                            MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                            if (readerSelect.Read())
+                                fullLine = fullLine.Replace("_spellNameEventParamOne_", readerSelect[0].ToString());
+                            else
+                                fullLine = fullLine.Replace("_spellNameEventParamOne_", "Spell not found!");
+
+                            readerSelect.Close();
+                        }
+
+                        if (fullLine.Contains("_targetCastingSpellName_"))
+                        {
+                            if (row.ItemArray[10].ToString() != "0")
+                            {
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[10].ToString()), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerSelect.Read())
+                                    fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSelect[0].ToString() + "'");
+                                else
+                                    fullLine = fullLine.Replace("_targetCastingSpellName_", "Spell not found!");
+
+                                readerSelect.Close();
+                            }
+                            else
+                                fullLine = fullLine.Replace(" _targetCastingSpellName_", String.Empty);
+                        }
+
+                        if (fullLine.Contains("_questNameEventParamOne_"))
+                        {
+                            if (row.ItemArray[8].ToString() == "0") //! Any quest (SMART_EVENT_ACCEPTED_QUEST / SMART_EVENT_REWARD_QUEST)
+                                fullLine = fullLine.Replace(" '_questNameEventParamOne_'", String.Empty);
+                            else
+                            {
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", row.ItemArray[8].ToString()), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerSelect.Read())
+                                    fullLine = fullLine.Replace("_questNameEventParamOne_", readerSelect[0].ToString());
+                                else
+                                    fullLine = fullLine.Replace("_questNameEventParamOne_", " Quest not found!");
+
+                                readerSelect.Close();
+                            }
+                        }
+
+                        //! Action type
+                        fullLine += " - " + smartActionStrings[(SmartAction)Convert.ToInt32(row.ItemArray[12].ToString())];
+
+                        if (fullLine.Contains("_actionParamOne_"))
+                            fullLine = fullLine.Replace("_actionParamOne_", row.ItemArray[13].ToString());
+
+                        if (fullLine.Contains("_actionParamTwo_"))
+                            fullLine = fullLine.Replace("_actionParamTwo_", row.ItemArray[14].ToString());
+
+                        if (fullLine.Contains("_actionParamThree_"))
+                            fullLine = fullLine.Replace("_actionParamThree_", row.ItemArray[15].ToString());
+
+                        if (fullLine.Contains("_actionParamFour_"))
+                            fullLine = fullLine.Replace("_actionParamFour_", row.ItemArray[16].ToString());
+
+                        if (fullLine.Contains("_actionParamFive_"))
+                            fullLine = fullLine.Replace("_actionParamFive_", row.ItemArray[17].ToString());
+
+                        if (fullLine.Contains("_actionParamSix_"))
+                            fullLine = fullLine.Replace("_actionParamSix_", row.ItemArray[18].ToString());
+
+                        if (fullLine.Contains("_spellNameActionParamOne_"))
+                        {
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[13].ToString()), connection);
+                            MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                            if (readerSelect.Read())
+                                fullLine = fullLine.Replace("_spellNameActionParamOne_", readerSelect[0].ToString());
+                            else
+                                fullLine = fullLine.Replace("_spellNameActionParamOne_", "Spell not found!");
+
+                            readerSelect.Close();
+                        }
+
+                        if (fullLine.Contains("_spellNameActionParamTwo_"))
+                        {
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[14].ToString()), connection);
+                            MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                            if (readerSelect.Read())
+                                fullLine = fullLine.Replace("_spellNameActionParamTwo_", readerSelect[0].ToString());
+                            else
+                                fullLine = fullLine.Replace("_spellNameActionParamTwo_", "Spell not found!");
+
+                            readerSelect.Close();
+                        }
+
+                        if (fullLine.Contains("_questNameActionParamOne_"))
+                        {
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", row.ItemArray[13].ToString()), connection);
+                            MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                            if (readerSelect.Read())
+                                fullLine = fullLine.Replace("_questNameActionParamOne_", readerSelect[0].ToString());
+                            else
+                                fullLine = fullLine.Replace("_questNameActionParamOne_", "Quest not found!");
+
+                            readerSelect.Close();
+                        }
+
+                        if (fullLine.Contains("_reactStateParamOne_"))
+                        {
+                            switch (row.ItemArray[13].ToString())
+                            {
+                                case "0":
+                                    fullLine = fullLine.Replace("_reactStateParamOne_", "Passive");
+                                    break;
+                                case "1":
+                                    fullLine = fullLine.Replace("_reactStateParamOne_", "Defensive");
+                                    break;
+                                case "2":
+                                    fullLine = fullLine.Replace("_reactStateParamOne_", "Aggressive");
+                                    break;
+                                default:
+                                    fullLine = fullLine.Replace("_reactStateParamOne_", "<Unknown Reactstate>");
+                                    break;
+                            }
+                        }
+
+                        if (fullLine.Contains("_creatureNameActionParamOne_"))
+                        {
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM creature_template WHERE entry = {0}", row.ItemArray[13].ToString()), connection);
+                            MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                            if (readerSelect.Read())
+                                fullLine = fullLine.Replace("_creatureNameActionParamOne_", readerSelect[0].ToString());
+                            else
+                                fullLine = fullLine.Replace("_creatureNameActionParamOne_", "Creature not found!");
+
+                            readerSelect.Close();
+                        }
+
+                        if (fullLine.Contains("_getUnitFlags_"))
+                        {
+                            string commentUnitFlag = "";
+                            int unitFlags = Convert.ToInt32(row.ItemArray[13].ToString());
+
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SERVER_CONTROLLED) != 0)  commentUnitFlag += "Server Controlled & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NON_ATTACKABLE) != 0)     commentUnitFlag += "Not Attackable & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISABLE_MOVE) != 0)       commentUnitFlag += "Disable Movement & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP_ATTACKABLE) != 0)     commentUnitFlag += "Pvp Attackable & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_RENAME) != 0)             commentUnitFlag += "Rename & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PREPARATION) != 0)        commentUnitFlag += "Preparation & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_ATTACKABLE_1) != 0)   commentUnitFlag += "Not Attackable & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_PC) != 0)       commentUnitFlag += "Immune To Players & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC) != 0)      commentUnitFlag += "Immune To NPC's & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_LOOTING) != 0)            commentUnitFlag += "Looting & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PET_IN_COMBAT) != 0)      commentUnitFlag += "Pet In Combat & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP) != 0)                commentUnitFlag += "PvP & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SILENCED) != 0)           commentUnitFlag += "Silenced & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PACIFIED) != 0)           commentUnitFlag += "Pacified & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_STUNNED) != 0)            commentUnitFlag += "Stunned & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)          commentUnitFlag += "In Combat & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISARMED) != 0)           commentUnitFlag += "Disarmed & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_CONFUSED) != 0)           commentUnitFlag += "Confused & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_FLEEING) != 0)            commentUnitFlag += "Fleeing & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PLAYER_CONTROLLED) != 0)  commentUnitFlag += "Player Controlled & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_SELECTABLE) != 0)     commentUnitFlag += "Not Selectable & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SKINNABLE) != 0)          commentUnitFlag += "Skinnable & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_MOUNT) != 0)              commentUnitFlag += "Mounted & ";
+                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SHEATHE) != 0)            commentUnitFlag += "Sheathed & ";
+
+                            commentUnitFlag = commentUnitFlag.Trim(new Char[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
+
+                            if (commentUnitFlag.Contains("&"))
+                                fullLine = fullLine.Replace("_getUnitFlags_", "s_getUnitFlags_");
+
+                            fullLine = fullLine.Replace("_getUnitFlags_", " " + commentUnitFlag);
+                        }
+
+                        if (fullLine.Contains("_startOrStopActionParamOne_"))
+                        {
+                            if (row.ItemArray[13].ToString() == "0")
+                                fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Stop");
+                            else //! Even if above 1 or below 0 we start attacking/allow-combat-movement
+                                fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Start");
+                        }
+
+                        if (fullLine.Contains("_incrementOrDecrementActionParamOne_"))
+                        {
+                            if (row.ItemArray[13].ToString() == "1")
+                                fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Increment");
+                            else if (row.ItemArray[14].ToString() == "1")
+                                fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Decrement");
+                            //else //? What to do?
+                        }
+
+                        string cleanNewComment = fullLine.Replace("UPDATE `smart_scripts` SET `comment`='", String.Empty);
+
+                        //! Don't update the script if the comment is already correct
+                        if (cleanNewComment == row.ItemArray[27].ToString())
+                            continue;
+
+                        fullLine += '"' + "WHERE `entryorguid`=" + entryorguid + " AND `id`=" + row.ItemArray[2].ToString();
+                        Console.WriteLine(fullLine);
+                        fullLine += " -- Old comment: '" + row.ItemArray[27].ToString() + "'";
+                        outputFile.WriteLine(fullLine);
                     }
                 }
             }
+
+            Console.WriteLine("\n\n\nThe converting has finished, if you wish to open the output file with your selected .sql file editor, press Enter.");
+            if (Console.ReadKey().Key == ConsoleKey.Enter)
+                Process.Start("output.sql");
         }
     }
 }
