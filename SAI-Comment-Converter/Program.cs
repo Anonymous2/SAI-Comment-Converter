@@ -546,6 +546,12 @@ namespace SAI_Comment_Converter
                                 //else //? What to do?
                             }
 
+                            string cleanNewComment = fullLine.Replace("UPDATE `smart_scripts` SET `comment`='", String.Empty);
+
+                            //! Don't update the script if the comment is already correct
+                            if (cleanNewComment == row.ItemArray[27].ToString())
+                                continue;
+
                             Console.WriteLine(fullLine);
                             outputFile.WriteLine(fullLine);
                         }
