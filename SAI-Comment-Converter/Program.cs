@@ -96,14 +96,14 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_NONE, "Incorrect Action");
             smartActionStrings.Add(SmartAction.SMART_ACTION_TALK, "Say Line _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_FACTION, "Set Faction _actionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "todo dbc");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "todo dbc"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_SOUND, "Play Sound _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_EMOTE, "Play Emote _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FAIL_QUEST, "Fail Quest '_questNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_QUEST, "Add Quest '_questNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_REACT_STATE, "Set Reactstate _reactStateParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ACTIVATE_GOBJECT, "Activate Gameobject");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_EMOTE, "Play Random Emote (_actionRandomEmotes_)");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_EMOTE, "Play Random Emote (_actionRandomEmotes_)"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_CAST, "Cast '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_CREATURE, "Summon Creature '_creatureNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_THREAT_SINGLE_PCT, "Set Single Threat _actionParamOne_-_actionParamTwo_");
@@ -352,30 +352,30 @@ namespace SAI_Comment_Converter
 
                             if (fullLine.Contains("_spellNameEventParamOne_"))
                             {
-                                MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[8].ToString()), connection);
-                                MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[8].ToString()), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
-                                if (readerSpellName.Read())
-                                    fullLine = fullLine.Replace("_spellNameEventParamOne_", readerSpellName[0].ToString());
+                                if (readerSelect.Read())
+                                    fullLine = fullLine.Replace("_spellNameEventParamOne_", readerSelect[0].ToString());
                                 else
                                     fullLine = fullLine.Replace("_spellNameEventParamOne_", "Spell not found!");
 
-                                readerSpellName.Close();
+                                readerSelect.Close();
                             }
 
                             if (fullLine.Contains("_targetCastingSpellName_"))
                             {
                                 if (row.ItemArray[10].ToString() != "0")
                                 {
-                                    MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[10].ToString()), connection);
-                                    MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
+                                    MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[10].ToString()), connection);
+                                    MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
-                                    if (readerSpellName.Read())
-                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSpellName[0].ToString() + "'");
+                                    if (readerSelect.Read())
+                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSelect[0].ToString() + "'");
                                     else
                                         fullLine = fullLine.Replace("_targetCastingSpellName_", "Spell not found!");
 
-                                    readerSpellName.Close();
+                                    readerSelect.Close();
                                 }
                                 else
                                     fullLine = fullLine.Replace(" _targetCastingSpellName_", String.Empty);
@@ -387,15 +387,15 @@ namespace SAI_Comment_Converter
                                     fullLine = fullLine.Replace(" '_questNameEventParamOne_'", String.Empty);
                                 else
                                 {
-                                    MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", row.ItemArray[8].ToString()), connection);
-                                    MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
+                                    MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", row.ItemArray[8].ToString()), connection);
+                                    MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
-                                    if (readerSpellName.Read())
-                                        fullLine = fullLine.Replace("_questNameEventParamOne_", readerSpellName[0].ToString());
+                                    if (readerSelect.Read())
+                                        fullLine = fullLine.Replace("_questNameEventParamOne_", readerSelect[0].ToString());
                                     else
                                         fullLine = fullLine.Replace("_questNameEventParamOne_", " Quest not found!");
 
-                                    readerSpellName.Close();
+                                    readerSelect.Close();
                                 }
                             }
 
@@ -422,41 +422,41 @@ namespace SAI_Comment_Converter
 
                             if (fullLine.Contains("_spellNameActionParamOne_"))
                             {
-                                MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[13].ToString()), connection);
-                                MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[13].ToString()), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
-                                if (readerSpellName.Read())
-                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", readerSpellName[0].ToString());
+                                if (readerSelect.Read())
+                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", readerSelect[0].ToString());
                                 else
                                     fullLine = fullLine.Replace("_spellNameActionParamOne_", "Spell not found!");
 
-                                readerSpellName.Close();
+                                readerSelect.Close();
                             }
 
                             if (fullLine.Contains("_spellNameActionParamTwo_"))
                             {
-                                MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[14].ToString()), connection);
-                                MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[14].ToString()), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
-                                if (readerSpellName.Read())
-                                    fullLine = fullLine.Replace("_spellNameActionParamTwo_", readerSpellName[0].ToString());
+                                if (readerSelect.Read())
+                                    fullLine = fullLine.Replace("_spellNameActionParamTwo_", readerSelect[0].ToString());
                                 else
                                     fullLine = fullLine.Replace("_spellNameActionParamTwo_", "Spell not found!");
 
-                                readerSpellName.Close();
+                                readerSelect.Close();
                             }
 
                             if (fullLine.Contains("_questNameActionParamOne_"))
                             {
-                                MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", row.ItemArray[13].ToString()), connection);
-                                MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", row.ItemArray[13].ToString()), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
-                                if (readerSpellName.Read())
-                                    fullLine = fullLine.Replace("_questNameActionParamOne_", readerSpellName[0].ToString());
+                                if (readerSelect.Read())
+                                    fullLine = fullLine.Replace("_questNameActionParamOne_", readerSelect[0].ToString());
                                 else
                                     fullLine = fullLine.Replace("_questNameActionParamOne_", "Quest not found!");
 
-                                readerSpellName.Close();
+                                readerSelect.Close();
                             }
 
                             if (fullLine.Contains("_reactStateParamOne_"))
@@ -476,6 +476,19 @@ namespace SAI_Comment_Converter
                                         fullLine = fullLine.Replace("_reactStateParamOne_", "<Unknown Reactstate>");
                                         break;
                                 }
+                            }
+
+                            if (fullLine.Contains("_creatureNameActionParamOne_"))
+                            {
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM creature_template WHERE entry = {0}", row.ItemArray[13].ToString()), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerSelect.Read())
+                                    fullLine = fullLine.Replace("_creatureNameActionParamOne_", readerSelect[0].ToString());
+                                else
+                                    fullLine = fullLine.Replace("_creatureNameActionParamOne_", "Creature not found!");
+
+                                readerSelect.Close();
                             }
 
                             Console.WriteLine(fullLine);
