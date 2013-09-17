@@ -318,9 +318,6 @@ namespace SAI_Comment_Converter
                                     continue;
                             }
 
-                            Console.WriteLine(fullLine);
-                            //Console.ReadKey();
-
                             //! Event type
                             fullLine += smartEventStrings[(SmartEvent)Convert.ToInt32(row.ItemArray[4].ToString())];
 
