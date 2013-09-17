@@ -355,11 +355,29 @@ namespace SAI_Comment_Converter
                                 MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
 
                                 if (readerSpellName.Read())
-                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", readerSpellName[0].ToString());
+                                    fullLine = fullLine.Replace("_targetCastingSpellName_", readerSpellName[0].ToString());
                                 else
-                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", "Spell not found!");
+                                    fullLine = fullLine.Replace("_targetCastingSpellName_", "Spell not found!");
 
                                 readerSpellName.Close();
+                            }
+
+                            if (fullLine.Contains("_targetCastingSpellName_"))
+                            {
+                                if (row.ItemArray[10].ToString() != "0")
+                                {
+                                    MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[10].ToString()), connection);
+                                    MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
+
+                                    if (readerSpellName.Read())
+                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSpellName[0].ToString() + "'");
+                                    else
+                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "Spell not found!");
+
+                                    readerSpellName.Close();
+                                }
+                                else
+                                    fullLine = fullLine.Replace(" _targetCastingSpellName_", String.Empty);
                             }
 
                             fullLine += " - ";
