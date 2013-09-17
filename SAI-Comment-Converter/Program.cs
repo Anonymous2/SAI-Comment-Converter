@@ -115,9 +115,9 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_UNIT_FLAG, "Remove Flag_getUnitFlags_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_AUTO_ATTACK, "_startOrStopActionParamOne_ Attacking");
             smartActionStrings.Add(SmartAction.SMART_ACTION_COMBAT_MOVEMENT, "_startOrStopActionParamOne_ Combat Movement");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_EVENT_PHASE, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_INC_EVENT_PHASE, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_EVADE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_EVENT_PHASE, "Set Event Phase _actionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_INC_EVENT_PHASE, "_incrementOrDecrementActionParamOne_ Phase");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_EVADE, "Evade");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FLEE_FOR_ASSIST, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_GROUPEVENTHAPPENS, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_CASTEDCREATUREORGO, "");
@@ -535,6 +535,15 @@ namespace SAI_Comment_Converter
                                     fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Stop");
                                 else //! Even if above 1 or below 0 we start attacking/allow-combat-movement
                                     fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Start");
+                            }
+
+                            if (fullLine.Contains("_incrementOrDecrementActionParamOne_"))
+                            {
+                                if (row.ItemArray[13].ToString() == "1")
+                                    fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Increment");
+                                else if (row.ItemArray[14].ToString() == "1")
+                                    fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Decrement");
+                                //else //? What to do?
                             }
 
                             Console.WriteLine(fullLine);
