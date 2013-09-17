@@ -136,7 +136,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_IN_COMBAT_WITH_ZONE, "Set In Combat With Zone");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_FOR_HELP, "Call For Help");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_SHEATH, "Set Sheath _sheathActionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_FORCE_DESPAWN, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_FORCE_DESPAWN, "Despawn _forceDespawnActionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INVINCIBILITY_HP_LEVEL, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_PHASE_MASK, "");
@@ -580,6 +580,14 @@ namespace SAI_Comment_Converter
                                     fullLine = fullLine.Replace("_sheathActionParamOne_", "<Unknown Sheath>");
                                     break;
                             }
+                        }
+
+                        if (fullLine.Contains("_forceDespawnActionParamOne_"))
+                        {
+                            if (smartScript.action_param1 == 0)
+                                fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "In " + smartScript.action_param1.ToString() + " ms");
+                            else
+                                fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "Instant");
                         }
 
                         string cleanNewComment = fullLine;
