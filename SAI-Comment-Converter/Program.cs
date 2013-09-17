@@ -459,6 +459,25 @@ namespace SAI_Comment_Converter
                                 readerSpellName.Close();
                             }
 
+                            if (fullLine.Contains("_reactStateParamOne_"))
+                            {
+                                switch (row.ItemArray[13].ToString())
+                                {
+                                    case "0":
+                                        fullLine = fullLine.Replace("_reactStateParamOne_", "Passive");
+                                        break;
+                                    case "1":
+                                        fullLine = fullLine.Replace("_reactStateParamOne_", "Defensive");
+                                        break;
+                                    case "2":
+                                        fullLine = fullLine.Replace("_reactStateParamOne_", "Aggressive");
+                                        break;
+                                    default:
+                                        fullLine = fullLine.Replace("_reactStateParamOne_", "<Unknown Reactstate>");
+                                        break;
+                                }
+                            }
+
                             Console.WriteLine(fullLine);
                             outputFile.WriteLine(fullLine);
                         }
