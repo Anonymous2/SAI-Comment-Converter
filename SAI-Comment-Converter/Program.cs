@@ -290,7 +290,7 @@ namespace SAI_Comment_Converter
                                 readerSourceName = command.ExecuteReader(CommandBehavior.Default);
 
                                 if (readerSourceName.Read())
-                                    fullLine += readerSourceName[0].ToString() + " - ";
+                                    fullLine += readerSourceName[0] + " - ";
 
                                 readerSourceName.Close();
                                 break;
@@ -310,7 +310,7 @@ namespace SAI_Comment_Converter
                                 readerSourceName = command.ExecuteReader(CommandBehavior.Default);
 
                                 if (readerSourceName.Read())
-                                    fullLine += readerSourceName[0].ToString() + " - ";
+                                    fullLine += readerSourceName[0] + " - ";
 
                                 readerSourceName.Close();
                                 break;
@@ -354,7 +354,7 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_spellNameEventParamOne_"))
                         {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param1.ToString()), connection);
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param1), connection);
                             MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                             if (readerSelect.Read())
@@ -369,11 +369,11 @@ namespace SAI_Comment_Converter
                         {
                             if (smartScript.event_param3.ToString() != "0")
                             {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param3.ToString()), connection);
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param3), connection);
                                 MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                                 if (readerSelect.Read())
-                                    fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSelect[0].ToString() + "'");
+                                    fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSelect[0] + "'");
                                 else
                                     fullLine = fullLine.Replace("_targetCastingSpellName_", "Spell not found!");
 
@@ -389,7 +389,7 @@ namespace SAI_Comment_Converter
                                 fullLine = fullLine.Replace(" '_questNameEventParamOne_'", String.Empty);
                             else
                             {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", smartScript.event_param1.ToString()), connection);
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", smartScript.event_param1), connection);
                                 MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                                 if (readerSelect.Read())
@@ -424,7 +424,7 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_spellNameActionParamOne_"))
                         {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.action_param1.ToString()), connection);
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.action_param1), connection);
                             MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                             if (readerSelect.Read())
@@ -437,7 +437,7 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_spellNameActionParamTwo_"))
                         {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.action_param2.ToString()), connection);
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.action_param2), connection);
                             MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                             if (readerSelect.Read())
@@ -450,7 +450,7 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_questNameActionParamOne_"))
                         {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", smartScript.action_param1.ToString()), connection);
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", smartScript.action_param1), connection);
                             MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                             if (readerSelect.Read())
@@ -482,7 +482,7 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_creatureNameActionParamOne_"))
                         {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM creature_template WHERE entry = {0}", smartScript.action_param1.ToString()), connection);
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM creature_template WHERE entry = {0}", smartScript.action_param1), connection);
                             MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                             if (readerSelect.Read())
@@ -571,15 +571,15 @@ namespace SAI_Comment_Converter
                         fullLine = fullLine.Insert(0, "UPDATE `smart_scripts` SET `comment`=" + '"');
 
                         //! Don't update the script if the comment is already correct
-                        if (cleanNewComment == smartScript.comment.ToString())
+                        if (cleanNewComment == smartScript.comment)
                         {
                             totalSkippedScripts++;
                             continue;
                         }
 
-                        fullLine += '"' + " WHERE `entryorguid`=" + smartScript.entryorguid + " AND `id`=" + smartScript.id.ToString() + ';';
+                        fullLine += '"' + " WHERE `entryorguid`=" + smartScript.entryorguid + " AND `id`=" + smartScript.id + ';';
                         Console.WriteLine(fullLine);
-                        fullLine += " -- Old comment: '" + smartScript.comment.ToString() + "'"; //! Don't print the old comment in console
+                        fullLine += " -- Old comment: '" + smartScript.comment + "'"; //! Don't print the old comment in console
                         outputFile.WriteLine(fullLine);
                     }
                 }
