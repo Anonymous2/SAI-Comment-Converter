@@ -104,7 +104,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_REACT_STATE, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ACTIVATE_GOBJECT, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_EMOTE, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CAST, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CAST, "Cast '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_CREATURE, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_THREAT_SINGLE_PCT, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_THREAT_ALL_PCT, "");
@@ -121,7 +121,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_FLEE_FOR_ASSIST, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_GROUPEVENTHAPPENS, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_CASTEDCREATUREORGO, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVEAURASFROMSPELL, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVEAURASFROMSPELL, "Remove Aura '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FOLLOW, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE_RANGE, "");
@@ -168,7 +168,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_CLOSE_GOSSIP, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_TRIGGER_TIMED_EVENT, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_TIMED_EVENT, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_AURA, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_AURA, "Add Aura '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_OVERRIDE_SCRIPT_BASE_OBJECT, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RESET_SCRIPT_BASE_OBJECT, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_SCRIPT_RESET, "");
@@ -178,14 +178,14 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_NPC_FLAG, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_NPC_FLAG, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SIMPLE_TALK, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_INVOKER_CAST, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CROSS_CAST, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_INVOKER_CAST, "Invoker Cast '_spellNameActionParamOne_'");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CROSS_CAST, "Cross Cast '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_RANDOM_TIMED_ACTIONLIST, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_RANDOM_RANGE_TIMED_ACTIONLIST, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_MOVE, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_UNIT_FIELD_BYTES_1, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_UNIT_FIELD_BYTES_1, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_INTERRUPT_SPELL, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_INTERRUPT_SPELL, "Interrupt Spell '_spellNameActionParamTwo_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SEND_GO_CUSTOM_ANIM, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DYNAMIC_FLAG, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_DYNAMIC_FLAG, "");
@@ -331,6 +331,24 @@ namespace SAI_Comment_Converter
                                 readerSpellName.Close();
                             }
 
+                            if (fullLine.Contains("_targetCastingSpellName_"))
+                            {
+                                if (row.ItemArray[10].ToString() != "0")
+                                {
+                                    MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[10].ToString()), connection);
+                                    MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
+
+                                    if (readerSpellName.Read())
+                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSpellName[0].ToString() + "'");
+                                    else
+                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "Spell not found!");
+
+                                    readerSpellName.Close();
+                                }
+                                else
+                                    fullLine = fullLine.Replace(" _targetCastingSpellName_", String.Empty);
+                            }
+
                             if (fullLine.Contains("_actionParamOne_"))
                                 fullLine = fullLine.Replace("_actionParamOne_", row.ItemArray[13].ToString());
 
@@ -351,33 +369,28 @@ namespace SAI_Comment_Converter
 
                             if (fullLine.Contains("_spellNameActionParamOne_"))
                             {
-                                MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[8].ToString()), connection);
+                                MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[13].ToString()), connection);
                                 MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
 
                                 if (readerSpellName.Read())
-                                    fullLine = fullLine.Replace("_targetCastingSpellName_", readerSpellName[0].ToString());
+                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", readerSpellName[0].ToString());
                                 else
-                                    fullLine = fullLine.Replace("_targetCastingSpellName_", "Spell not found!");
+                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", "Spell not found!");
 
                                 readerSpellName.Close();
                             }
 
-                            if (fullLine.Contains("_targetCastingSpellName_"))
+                            if (fullLine.Contains("_spellNameActionParamTwo_"))
                             {
-                                if (row.ItemArray[10].ToString() != "0")
-                                {
-                                    MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[10].ToString()), connection);
-                                    MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
+                                MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[14].ToString()), connection);
+                                MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
 
-                                    if (readerSpellName.Read())
-                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSpellName[0].ToString() + "'");
-                                    else
-                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "Spell not found!");
-
-                                    readerSpellName.Close();
-                                }
+                                if (readerSpellName.Read())
+                                    fullLine = fullLine.Replace("_spellNameActionParamTwo_", readerSpellName[0].ToString());
                                 else
-                                    fullLine = fullLine.Replace(" _targetCastingSpellName_", String.Empty);
+                                    fullLine = fullLine.Replace("_spellNameActionParamTwo_", "Spell not found!");
+
+                                readerSpellName.Close();
                             }
 
                             fullLine += " - ";
