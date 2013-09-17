@@ -254,7 +254,7 @@ namespace SAI_Comment_Converter
                     if (dataTable.Rows.Count <= 0)
                         break;
 
-                    using (var outputFile = new StreamWriter("sai_update.sql", true))
+                    using (var outputFile = new StreamWriter("output.sql", true))
                     {
                         foreach (DataRow row in dataTable.Rows)
                         {
@@ -280,7 +280,7 @@ namespace SAI_Comment_Converter
                             MySqlDataReader readerCreatureName = command.ExecuteReader(CommandBehavior.Default);
 
                             if (readerCreatureName.Read())
-                                fullLine = readerCreatureName[0].ToString() + " - ";
+                                fullLine += readerCreatureName[0].ToString() + " - ";
 
                             readerCreatureName.Close();
                             Console.WriteLine(fullLine);
@@ -395,6 +395,7 @@ namespace SAI_Comment_Converter
 
                             fullLine += " - ";
                             Console.WriteLine(fullLine);
+                            outputFile.WriteLine(fullLine);
                         }
                     }
                 }
