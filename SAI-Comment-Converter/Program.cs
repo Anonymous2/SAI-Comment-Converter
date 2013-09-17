@@ -113,7 +113,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_EMOTE_STATE, "Set Emote State _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_UNIT_FLAG, "Set Flag_getUnitFlags_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_UNIT_FLAG, "Remove Flag_getUnitFlags_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_AUTO_ATTACK, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_AUTO_ATTACK, "_startOrStopAttackingActionParamOne_ Attacking");
             smartActionStrings.Add(SmartAction.SMART_ACTION_COMBAT_MOVEMENT, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_EVENT_PHASE, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_INC_EVENT_PHASE, "");
@@ -527,6 +527,14 @@ namespace SAI_Comment_Converter
                                     fullLine = fullLine.Replace("_getUnitFlags_", "s_getUnitFlags_");
 
                                 fullLine = fullLine.Replace("_getUnitFlags_", " " + commentUnitFlag);
+                            }
+
+                            if (fullLine.Contains("_startOrStopAttackingActionParamOne_"))
+                            {
+                                if (row.ItemArray[13].ToString() == "0")
+                                    fullLine = fullLine.Replace("_startOrStopAttackingActionParamOne_", "Stop");
+                                else //! Even if above 1 or below 0 we start attacking
+                                    fullLine = fullLine.Replace("_startOrStopAttackingActionParamOne_", "Start");
                             }
 
                             Console.WriteLine(fullLine);
