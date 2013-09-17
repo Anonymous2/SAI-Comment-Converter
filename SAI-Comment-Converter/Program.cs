@@ -13,11 +13,11 @@ namespace SAI_Comment_Converter
 
         static void Main(string[] args)
         {
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_SPELLHIT, "On Spellhit By _spellName_");
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_HAS_AURA, "On Has Aura _spellName_");
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_TARGET_BUFFED, "On Target Buffed With _spellName_");
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_SPELLHIT_TARGET, "On Target Spellhit By _spellName_");
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_FRIENDLY_MISSING_BUFF, "On Friendly Unit Missing Buff _spellName_");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_SPELLHIT, "On Spellhit '_spellName_'");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_HAS_AURA, "On Has Aura '_spellName_'");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_TARGET_BUFFED, "On Target Buffed With '_spellName_'");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_SPELLHIT_TARGET, "On Target Spellhit By '_spellName_'");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_FRIENDLY_MISSING_BUFF, "On Friendly Unit Missing Buff '_spellName_'");
 
             smartEventStrings.Add(SmartEvent.SMART_EVENT_LINK, "_previousLineComment_");
 
