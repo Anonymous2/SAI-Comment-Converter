@@ -551,7 +551,7 @@ namespace SAI_Comment_Converter
                         if (cleanNewComment == row.ItemArray[27].ToString())
                             continue;
 
-                        fullLine += '"' + "WHERE `entryorguid`=" + entryorguid + " AND `id`=" + row.ItemArray[2].ToString();
+                        fullLine += '"' + " WHERE `entryorguid`=" + entryorguid + " AND `id`=" + row.ItemArray[2].ToString();
                         Console.WriteLine(fullLine);
                         fullLine += " -- Old comment: '" + row.ItemArray[27].ToString() + "'";
                         outputFile.WriteLine(fullLine);
