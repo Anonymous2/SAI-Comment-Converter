@@ -263,7 +263,7 @@ namespace SAI_Comment_Converter
                             MySqlCommand command = new MySqlCommand();
                             command.Connection = connection;
 
-                            string fullLine = "UPDATE `smart_scripts` SET `comment`='";
+                            string fullLine = "UPDATE `smart_scripts` SET `comment`=" + '"';
                             int entryorguid = Convert.ToInt32(row.ItemArray[0].ToString());
                             int entry = entryorguid;
                             MySqlDataReader readerSourceName = null;
@@ -552,7 +552,9 @@ namespace SAI_Comment_Converter
                             if (cleanNewComment == row.ItemArray[27].ToString())
                                 continue;
 
+                            fullLine += '"' + "WHERE `entryorguid`=" + entryorguid + " AND `id`=" + row.ItemArray[2].ToString();
                             Console.WriteLine(fullLine);
+                            fullLine += " -- Old comment: '" + row.ItemArray[27].ToString() + "'";
                             outputFile.WriteLine(fullLine);
                         }
                     }
