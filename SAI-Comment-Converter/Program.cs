@@ -354,15 +354,20 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_spellNameEventParamOne_"))
                         {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param1), connection);
-                            MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+                            if (smartScript.event_param1 > 0)
+                            {
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param1), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
-                            if (readerSelect.Read())
-                                fullLine = fullLine.Replace("_spellNameEventParamOne_", readerSelect[0].ToString());
+                                if (readerSelect.Read())
+                                    fullLine = fullLine.Replace("_spellNameEventParamOne_", readerSelect[0].ToString());
+                                else
+                                    fullLine = fullLine.Replace("_spellNameEventParamOne_", "Spell not found!");
+
+                                readerSelect.Close();
+                            }
                             else
-                                fullLine = fullLine.Replace("_spellNameEventParamOne_", "Spell not found!");
-
-                            readerSelect.Close();
+                                fullLine = fullLine.Replace(" '_spellNameEventParamOne_'", String.Empty);
                         }
 
                         if (fullLine.Contains("_targetCastingSpellName_"))
@@ -587,6 +592,7 @@ namespace SAI_Comment_Converter
 
             Console.WriteLine("\n\n\nThe converting has finished. A total of {0} scripts were loaded of which {1} were skipped because their comments already fit the correct codestyle.", totalLoadedScripts, totalSkippedScripts);
             Console.WriteLine("If you wish to open the output file with your selected .sql file editor, press Enter.");
+
             if (Console.ReadKey().Key == ConsoleKey.Enter)
                 Process.Start("output.sql");
         }
