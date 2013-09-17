@@ -13,11 +13,11 @@ namespace SAI_Comment_Converter
 
         static void Main(string[] args)
         {
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_SPELLHIT, "On Spellhit '_spellName_'");
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_HAS_AURA, "On Has Aura '_spellName_'");
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_TARGET_BUFFED, "On Target Buffed With '_spellName_'");
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_SPELLHIT_TARGET, "On Target Spellhit By '_spellName_'");
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_FRIENDLY_MISSING_BUFF, "On Friendly Unit Missing Buff '_spellName_'");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_SPELLHIT, "On Spellhit '_spellNameEventParamOne_'");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_HAS_AURA, "On Has Aura '_spellNameEventParamOne_'");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_TARGET_BUFFED, "On Target Buffed With '_spellNameEventParamOne_'");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_SPELLHIT_TARGET, "On Target Spellhit By '_spellNameEventParamOne_'");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_FRIENDLY_MISSING_BUFF, "On Friendly Unit Missing Buff '_spellNameEventParamOne_'");
 
             smartEventStrings.Add(SmartEvent.SMART_EVENT_LINK, "_previousLineComment_");
 
@@ -312,18 +312,41 @@ namespace SAI_Comment_Converter
                             if (fullLine.Contains("_eventParamTwo_"))
                                 fullLine = fullLine.Replace("_eventParamTwo_", row.ItemArray[9].ToString());
 
-                            if (fullLine.Contains("_spellName_"))
+                            if (fullLine.Contains("_eventParamThree_"))
+                                fullLine = fullLine.Replace("_eventParamThree_", row.ItemArray[10].ToString());
+
+                            if (fullLine.Contains("_eventParamFour_"))
+                                fullLine = fullLine.Replace("_eventParamFour_", row.ItemArray[11].ToString());
+
+                            if (fullLine.Contains("_spellNameEventParamOne_"))
                             {
                                 MySqlCommand commandSpellName = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", row.ItemArray[8].ToString()), connection);
                                 MySqlDataReader readerSpellName = commandSpellName.ExecuteReader(CommandBehavior.Default);
 
                                 if (readerSpellName.Read())
-                                    fullLine = fullLine.Replace("_spellName_", readerSpellName[0].ToString());
+                                    fullLine = fullLine.Replace("_spellNameEventParamOne_", readerSpellName[0].ToString());
                                 else
-                                    fullLine = fullLine.Replace("_spellName_", "Link not found!");
+                                    fullLine = fullLine.Replace("_spellNameEventParamOne_", "Link not found!");
 
                                 readerSpellName.Close();
                             }
+                            if (fullLine.Contains("_actionParamOne_"))
+                                fullLine = fullLine.Replace("_actionParamOne_", row.ItemArray[13].ToString());
+
+                            if (fullLine.Contains("_actionParamTwo_"))
+                                fullLine = fullLine.Replace("_actionParamTwo_", row.ItemArray[14].ToString());
+
+                            if (fullLine.Contains("_actionParamThree_"))
+                                fullLine = fullLine.Replace("_actionParamThree_", row.ItemArray[15].ToString());
+
+                            if (fullLine.Contains("_actionParamFour_"))
+                                fullLine = fullLine.Replace("_actionParamFour_", row.ItemArray[16].ToString());
+
+                            if (fullLine.Contains("_actionParamFive_"))
+                                fullLine = fullLine.Replace("_actionParamFive_", row.ItemArray[17].ToString());
+
+                            if (fullLine.Contains("_actionParamSix_"))
+                                fullLine = fullLine.Replace("_actionParamSix_", row.ItemArray[18].ToString());
 
                             fullLine += " - ";
                             Console.WriteLine(fullLine);
