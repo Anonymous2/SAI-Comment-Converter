@@ -295,7 +295,7 @@ namespace SAI_Comment_Converter
                                 case 1: //! Gammeobject
                                     if (Convert.ToInt32(row.ItemArray[0].ToString()) < 0)
                                     {
-                                        command.CommandText = (String.Format("SELECT id FROM creature WHERE guid={0}", -entryorguid));
+                                        command.CommandText = (String.Format("SELECT id FROM gameobject WHERE guid={0}", -entryorguid));
                                         readerSourceId = command.ExecuteReader(CommandBehavior.Default);
 
                                         if (readerSourceId.Read())
@@ -304,7 +304,7 @@ namespace SAI_Comment_Converter
                                         readerSourceId.Close();
                                     }
 
-                                    command.CommandText = (String.Format("SELECT name FROM creature_template WHERE entry={0}", entry));
+                                    command.CommandText = (String.Format("SELECT name FROM gameobject_template WHERE entry={0}", entry));
                                     readerSourceName = command.ExecuteReader(CommandBehavior.Default);
 
                                     if (readerSourceName.Read())
