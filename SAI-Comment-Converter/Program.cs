@@ -548,6 +548,25 @@ namespace SAI_Comment_Converter
                             //else //? What to do?
                         }
 
+                        if (fullLine.Contains("_sheathActionParamOne_"))
+                        {
+                            switch (row.ItemArray[13].ToString())
+                            {
+                                case "0":
+                                    fullLine = fullLine.Replace("_sheathActionParamOne_", "Unarmed");
+                                    break;
+                                case "1":
+                                    fullLine = fullLine.Replace("_sheathActionParamOne_", "Melee");
+                                    break;
+                                case "2":
+                                    fullLine = fullLine.Replace("_sheathActionParamOne_", "Ranged");
+                                    break;
+                                default:
+                                    fullLine = fullLine.Replace("_sheathActionParamOne_", "<Unknown Sheath>");
+                                    break;
+                            }
+                        }
+
                         string cleanNewComment = fullLine;
                         fullLine = fullLine.Insert(0, "UPDATE `smart_scripts` SET `comment`=" + '"');
 
