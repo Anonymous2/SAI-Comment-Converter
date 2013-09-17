@@ -52,7 +52,7 @@ namespace SAI_Comment_Converter
             smartEventStrings.Add(SmartEvent.SMART_EVENT_DEATH, "On Just Died");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_EVADE, "On Evade");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_RESPAWN, "On Respawn");
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_TARGET_CASTING, "Target Casting");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_TARGET_CASTING, "Target Casting _targetCastingSpellName_");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_FRIENDLY_IS_CC, "Friendly Crowd Controlled");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_SUMMONED_UNIT, "On Summoned Unit");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_ACCEPTED_QUEST, "On Quest Taken");
@@ -326,7 +326,7 @@ namespace SAI_Comment_Converter
                                 if (readerSpellName.Read())
                                     fullLine = fullLine.Replace("_spellNameEventParamOne_", readerSpellName[0].ToString());
                                 else
-                                    fullLine = fullLine.Replace("_spellNameEventParamOne_", "Link not found!");
+                                    fullLine = fullLine.Replace("_spellNameEventParamOne_", "Spell not found!");
 
                                 readerSpellName.Close();
                             }
@@ -357,7 +357,7 @@ namespace SAI_Comment_Converter
                                 if (readerSpellName.Read())
                                     fullLine = fullLine.Replace("_spellNameActionParamOne_", readerSpellName[0].ToString());
                                 else
-                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", "Link not found!");
+                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", "Spell not found!");
 
                                 readerSpellName.Close();
                             }
