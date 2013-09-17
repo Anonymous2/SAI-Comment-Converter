@@ -254,6 +254,8 @@ namespace SAI_Comment_Converter
                     if (dataTable.Rows.Count <= 0)
                         break;
 
+                    File.Delete("output.sql");
+
                     using (var outputFile = new StreamWriter("output.sql", true))
                     {
                         foreach (DataRow row in dataTable.Rows)
