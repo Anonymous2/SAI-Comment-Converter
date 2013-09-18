@@ -1,0 +1,6 @@
+- Actionlists;
+- Areatriggers (?);
+- Phases in comments;
+- DBC data for SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL and SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL;
+- SMART_ACTION_*_NPC_FLAG actions;
+- Two cases using SMART_EVENT_TARGET_CASTING use the parameters incorrectly which results in the application saying the spell did not exist;

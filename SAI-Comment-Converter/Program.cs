@@ -98,7 +98,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_NONE, "Incorrect Action");
             smartActionStrings.Add(SmartAction.SMART_ACTION_TALK, "Say Line _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_FACTION, "Set Faction _actionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "<todo>"); // todo dbc (SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL too)
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL"); // todo dbc (SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL too)
             smartActionStrings.Add(SmartAction.SMART_ACTION_SOUND, "Play Sound _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_EMOTE, "Play Emote _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FAIL_QUEST, "Fail Quest '_questNameActionParamOne_'");
@@ -138,7 +138,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_SHEATH, "Set Sheath _sheathActionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FORCE_DESPAWN, "Despawn _forceDespawnActionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INVINCIBILITY_HP_LEVEL, "Set Invincibility Hp _invincibilityHpActionParamsOneTwo_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL, "<todo>"); // todo dbc (SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL too)
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL, "SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL"); // todo dbc (SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL too)
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_PHASE_MASK, "Set Phase _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DATA, "Set Data _actionParamOne_ _actionParamTwo_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_MOVE_FORWARD, "Move Forward _actionParamOne_ Yards");
@@ -176,9 +176,9 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_SCRIPT_RESET, "Reset All Scriptsfa");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_RANGED_MOVEMENT, "Set Ranged Movement");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_TIMED_ACTIONLIST, "Run Script");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_NPC_FLAG, "<todo>"); // todo
-            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_NPC_FLAG, "<todo>"); // todo
-            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_NPC_FLAG, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_NPC_FLAG, "SMART_ACTION_*_NPC_FLAG"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_NPC_FLAG, "SMART_ACTION_*_NPC_FLAG"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_NPC_FLAG, "SMART_ACTION_*_NPC_FLAG"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_SIMPLE_TALK, "Say Line _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_INVOKER_CAST, "Invoker Cast '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CROSS_CAST, "Cross Cast '_spellNameActionParamOne_'");
@@ -354,7 +354,7 @@ namespace SAI_Comment_Converter
                                     if (readerSelect.Read())
                                         fullLine = fullLine.Replace("_spellNameEventParamOne_", readerSelect[0].ToString());
                                     else
-                                        fullLine = fullLine.Replace("_spellNameEventParamOne_", "Spell not found!");
+                                        fullLine = fullLine.Replace("_spellNameEventParamOne_", "<Spell not found!>");
 
                                     readerSelect.Close();
                                 }
@@ -372,7 +372,7 @@ namespace SAI_Comment_Converter
                                     if (readerSelect.Read())
                                         fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSelect[0] + "'");
                                     else
-                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "Spell not found!");
+                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "<Spell not found!>");
 
                                     readerSelect.Close();
                                 }
@@ -392,7 +392,7 @@ namespace SAI_Comment_Converter
                                     if (readerSelect.Read())
                                         fullLine = fullLine.Replace("_questNameEventParamOne_", readerSelect[0].ToString());
                                     else
-                                        fullLine = fullLine.Replace("_questNameEventParamOne_", " Quest not found!");
+                                        fullLine = fullLine.Replace("_questNameEventParamOne_", "<Quest not found!>");
 
                                     readerSelect.Close();
                                 }
@@ -432,7 +432,7 @@ namespace SAI_Comment_Converter
                                     if (readerSelect.Read())
                                         fullLine = fullLine.Replace("_spellNameActionParamOne_", readerSelect[0].ToString());
                                     else
-                                        fullLine = fullLine.Replace("_spellNameActionParamOne_", "Spell not found!");
+                                        fullLine = fullLine.Replace("_spellNameActionParamOne_", "<Spell not found!>");
 
                                     readerSelect.Close();
                                 }
@@ -450,7 +450,7 @@ namespace SAI_Comment_Converter
                                     if (readerSelect.Read())
                                         fullLine = fullLine.Replace("_spellNameActionParamTwo_", readerSelect[0].ToString());
                                     else
-                                        fullLine = fullLine.Replace("_spellNameActionParamTwo_", "Spell not found!");
+                                        fullLine = fullLine.Replace("_spellNameActionParamTwo_", "<Spell not found!>");
 
                                     readerSelect.Close();
                                 }
@@ -466,7 +466,7 @@ namespace SAI_Comment_Converter
                                 if (readerSelect.Read())
                                     fullLine = fullLine.Replace("_questNameActionParamOne_", readerSelect[0].ToString());
                                 else
-                                    fullLine = fullLine.Replace("_questNameActionParamOne_", "Quest not found!");
+                                    fullLine = fullLine.Replace("_questNameActionParamOne_", "<Quest not found!>");
 
                                 readerSelect.Close();
                             }
@@ -479,7 +479,7 @@ namespace SAI_Comment_Converter
                                 if (readerSelect.Read())
                                     fullLine = fullLine.Replace("_questNameCastCreatureOrGo_", readerSelect[0].ToString());
                                 else
-                                    fullLine = fullLine.Replace("_questNameCastCreatureOrGo_", "Quest not found!");
+                                    fullLine = fullLine.Replace("_questNameCastCreatureOrGo_", "<Quest not found!>");
 
                                 readerSelect.Close();
                             }
