@@ -98,14 +98,14 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_NONE, "Incorrect Action");
             smartActionStrings.Add(SmartAction.SMART_ACTION_TALK, "Say Line _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_FACTION, "Set Faction _actionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "todo dbc"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "<todo>"); // todo dbc
             smartActionStrings.Add(SmartAction.SMART_ACTION_SOUND, "Play Sound _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_EMOTE, "Play Emote _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FAIL_QUEST, "Fail Quest '_questNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_QUEST, "Add Quest '_questNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_REACT_STATE, "Set Reactstate _reactStateParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ACTIVATE_GOBJECT, "Activate Gameobject");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_EMOTE, "Play Random Emote (_actionRandomEmotes_)"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_EMOTE, "Play Random Emote (_actionRandomEmotes_) <todo>"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_CAST, "Cast '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_CREATURE, "Summon Creature '_creatureNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_THREAT_SINGLE_PCT, "Set Single Threat _actionParamOne_-_actionParamTwo_");
@@ -122,10 +122,10 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_EVADE, "Evade");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FLEE_FOR_ASSIST, "Flee For Assist");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_GROUPEVENTHAPPENS, "Quest Credit '_questNameActionParamOne_'");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_CASTEDCREATUREORGO, "todo"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_CASTEDCREATUREORGO, "<todo>"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVEAURASFROMSPELL, "Remove Aura '_spellNameActionParamOne_'");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_FOLLOW, "todo"); // todo
-            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE, "todo"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_FOLLOW, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE, "<todo>"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE_RANGE, "Set Phase Random Between _actionParamOne_-_actionParamTwo_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RESET_GOBJECT, "Reset Gameobject");
             smartActionStrings.Add(SmartAction.SMART_ACTION_KILLED_MONSTER, "Killed Monster Credit _actionParamOne_"); // todo add questname here (?)
@@ -137,7 +137,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_FOR_HELP, "Call For Help");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_SHEATH, "Set Sheath _sheathActionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FORCE_DESPAWN, "Despawn _forceDespawnActionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INVINCIBILITY_HP_LEVEL, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INVINCIBILITY_HP_LEVEL, "Set Invincibility Hp _invincibilityHpActionParamsOneTwo_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_PHASE_MASK, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DATA, "");
@@ -315,7 +315,6 @@ namespace SAI_Comment_Converter
                                 readerSourceName.Close();
                                 break;
                             case 2: //! Areatrigger
-                                continue;
                             case 9: //! Actionlist
                                 continue;
                         }
@@ -503,7 +502,7 @@ namespace SAI_Comment_Converter
                             if (readerSelect.Read())
                                 fullLine = fullLine.Replace("_creatureNameActionParamOne_", readerSelect[0].ToString());
                             else
-                                fullLine = fullLine.Replace("_creatureNameActionParamOne_", "Creature not found!");
+                                fullLine = fullLine.Replace("_creatureNameActionParamOne_", "<_creatureNameActionParamOne_ Creature not found!>");
 
                             readerSelect.Close();
                         }
@@ -588,6 +587,16 @@ namespace SAI_Comment_Converter
                                 fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "In " + smartScript.action_param1.ToString() + " ms");
                             else
                                 fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "Instant");
+                        }
+
+                        if (fullLine.Contains("_invincibilityHpActionParamsOneTwo_"))
+                        {
+                            if (smartScript.action_param1 > 0)
+                                fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartScript.action_param1.ToString());
+                            else if (smartScript.action_param2 > 0)
+                                fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartScript.action_param2.ToString() + "%");
+                            else
+                                fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", "<Unsupported parameters>");
                         }
 
                         string cleanNewComment = fullLine;
