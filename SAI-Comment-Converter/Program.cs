@@ -128,7 +128,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE, "Set Random Phase(_actionRandomParameters_)");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE_RANGE, "Set Phase Random Between _actionParamOne_-_actionParamTwo_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RESET_GOBJECT, "Reset Gameobject");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_KILLED_MONSTER, "Quest Credit '_questNameActionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_KILLED_MONSTER, "Quest Credit '_questNameKillCredit_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INST_DATA, "Set Instance Data _actionParamOne_ to _actionParamTwo_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INST_DATA64, "Set Instance Data _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_UPDATE_TEMPLATE, "Update Template To '_creatureNameActionParamOne_'");
@@ -480,6 +480,19 @@ namespace SAI_Comment_Converter
                                     fullLine = fullLine.Replace("_questNameCastCreatureOrGo_", readerSelect[0].ToString());
                                 else
                                     fullLine = fullLine.Replace("_questNameCastCreatureOrGo_", "<Quest not found!>");
+
+                                readerSelect.Close();
+                            }
+
+                            if (fullLine.Contains("_questNameKillCredit_"))
+                            {
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE RequiredNpcOrGo1 = {0}", smartScript.action_param1), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerSelect.Read())
+                                    fullLine = fullLine.Replace("_questNameKillCredit_", readerSelect[0].ToString());
+                                else
+                                    fullLine = fullLine.Replace("_questNameKillCredit_", "<Quest not found!>");
 
                                 readerSelect.Close();
                             }
