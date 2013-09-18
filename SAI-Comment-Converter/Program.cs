@@ -508,16 +508,16 @@ namespace SAI_Comment_Converter
                                 string randomEmotes = smartScript.action_param1 + ", " + smartScript.action_param2;
 
                                 if (smartScript.action_param3 > 0)
-                                    randomEmotes += ", " + smartScript.action_param3.ToString();
+                                    randomEmotes += ", " + smartScript.action_param3;
 
                                 if (smartScript.action_param4 > 0)
-                                    randomEmotes += ", " + smartScript.action_param4.ToString();
+                                    randomEmotes += ", " + smartScript.action_param4;
 
                                 if (smartScript.action_param5 > 0)
-                                    randomEmotes += ", " + smartScript.action_param5.ToString();
+                                    randomEmotes += ", " + smartScript.action_param5;
 
                                 if (smartScript.action_param6 > 0)
-                                    randomEmotes += ", " + smartScript.action_param6.ToString();
+                                    randomEmotes += ", " + smartScript.action_param6;
 
                                 fullLine = fullLine.Replace("_actionRandomParameters_", randomEmotes);
                             }
@@ -1085,44 +1085,32 @@ namespace SAI_Comment_Converter
                 case SmartTargetType.SMART_TARGET_CREATURE_DISTANCE:
                 case SmartTargetType.SMART_TARGET_CLOSEST_CREATURE:
                     return "Closest Creature '" + GetCreatureNameByEntry(connection, smartScript.target_param1) + "'";
-                    break;
                 case SmartTargetType.SMART_TARGET_CREATURE_GUID:
                     return "Closest Creature '" + GetCreatureNameByGuid(connection, smartScript.target_param1) + "'";
-                    break;
                 case SmartTargetType.SMART_TARGET_GAMEOBJECT_RANGE:
                 case SmartTargetType.SMART_TARGET_GAMEOBJECT_DISTANCE:
                 case SmartTargetType.SMART_TARGET_CLOSEST_GAMEOBJECT:
                     return "Closest Gameobject '" + GetGameobjectNameByEntry(connection, smartScript.target_param1) + "'";
-                    break;
                 case SmartTargetType.SMART_TARGET_GAMEOBJECT_GUID:
                     return "Closest Gameobject '" + GetGameobjectNameByGuid(connection, smartScript.target_param1) + "'";
-                    break;
                 case SmartTargetType.SMART_TARGET_INVOKER_PARTY:
                     return "Invoker's Party";
-                    break;
                 case SmartTargetType.SMART_TARGET_PLAYER_RANGE:
                 case SmartTargetType.SMART_TARGET_PLAYER_DISTANCE:
                 case SmartTargetType.SMART_TARGET_CLOSEST_PLAYER:
                     return "Closest Player";
-                    break;
                 case SmartTargetType.SMART_TARGET_ACTION_INVOKER_VEHICLE:
                     return "Invoker's Vehicle";
-                    break;
                 case SmartTargetType.SMART_TARGET_OWNER_OR_SUMMONER:
                     return "Owner Or Summoner";
-                    break;
                 case SmartTargetType.SMART_TARGET_THREAT_LIST:
                     return "First Unit On Threatlist";
-                    break;
                 case SmartTargetType.SMART_TARGET_CLOSEST_ENEMY:
                     return "Closest Enemy";
-                    break;
                 case SmartTargetType.SMART_TARGET_CLOSEST_FRIENDLY:
                     return "Closest Friendly Unit";
-                    break;
                 default:
                     return "<unsupported target type>";
-                    break;
             }
         }
     }
