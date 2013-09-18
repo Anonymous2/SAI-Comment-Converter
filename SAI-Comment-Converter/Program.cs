@@ -105,7 +105,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_QUEST, "Add Quest '_questNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_REACT_STATE, "Set Reactstate _reactStateParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ACTIVATE_GOBJECT, "Activate Gameobject");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_EMOTE, "Play Random Emote (_actionRandomEmotes_) <todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_EMOTE, "Play Random Emote (_actionRandomEmotes_)");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CAST, "Cast '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_CREATURE, "Summon Creature '_creatureNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_THREAT_SINGLE_PCT, "Set Single Threat _actionParamOne_-_actionParamTwo_");
@@ -382,7 +382,7 @@ namespace SAI_Comment_Converter
 
                             if (fullLine.Contains("_questNameEventParamOne_"))
                             {
-                                if (smartScript.event_param1.ToString() == "0") //! Any quest (SMART_EVENT_ACCEPTED_QUEST / SMART_EVENT_REWARD_QUEST)
+                                if (smartScript.event_param1 == 0) //! Any quest (SMART_EVENT_ACCEPTED_QUEST / SMART_EVENT_REWARD_QUEST)
                                     fullLine = fullLine.Replace(" '_questNameEventParamOne_'", String.Empty);
                                 else
                                 {
@@ -488,6 +488,25 @@ namespace SAI_Comment_Converter
                                         fullLine = fullLine.Replace("_reactStateParamOne_", "<Unknown Reactstate>");
                                         break;
                                 }
+                            }
+
+                            if (fullLine.Contains("_actionRandomEmotes_"))
+                            {
+                                string randomEmotes = smartScript.action_param1 + ", " + smartScript.action_param2;
+
+                                if (smartScript.action_param3 > 0)
+                                    randomEmotes += ", " + smartScript.action_param3.ToString();
+
+                                if (smartScript.action_param4 > 0)
+                                    randomEmotes += ", " + smartScript.action_param4.ToString();
+
+                                if (smartScript.action_param5 > 0)
+                                    randomEmotes += ", " + smartScript.action_param5.ToString();
+
+                                if (smartScript.action_param6 > 0)
+                                    randomEmotes += ", " + smartScript.action_param6.ToString();
+
+                                fullLine = fullLine.Replace("_actionRandomEmotes_", randomEmotes);
                             }
 
                             if (fullLine.Contains("_creatureNameActionParamOne_"))
