@@ -203,9 +203,9 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_GO_FLAG, "Add Gameobject Flag_getGoFlags_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_GO_FLAG, "Remove Gameobject Flag_getGoFlags_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_CREATURE_GROUP, "Summon Creature Group _actionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_POWER, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_POWER, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_POWER, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_POWER, "Set _powerTypeActionParamOne_ To _actionParamTwo_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_POWER, "Add _actionParamTwo_ _powerTypeActionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_POWER, "Remove _actionParamTwo_ _powerTypeActionParamOne_");
 
             string host = "127.0.0.1";
             string user = "root";
@@ -787,6 +787,37 @@ namespace SAI_Comment_Converter
                                     fullLine = fullLine.Replace("_getGoFlags_", "s_getGoFlags_");
 
                                 fullLine = fullLine.Replace("_getGoFlags_", " " + commentGoFlag);
+                            }
+
+                            if (fullLine.Contains("_powerTypeActionParamOne_"))
+                            {
+                                switch (smartScript.action_param1)
+                                {
+                                    case 0:
+                                        fullLine = fullLine.Replace("_powerTypeActionParamOne_", "Mana");
+                                        break;
+                                    case 1:
+                                        fullLine = fullLine.Replace("_powerTypeActionParamOne_", "Rage");
+                                        break;
+                                    case 2:
+                                        fullLine = fullLine.Replace("_powerTypeActionParamOne_", "Focus");
+                                        break;
+                                    case 3:
+                                        fullLine = fullLine.Replace("_powerTypeActionParamOne_", "Energy");
+                                        break;
+                                    case 4:
+                                        fullLine = fullLine.Replace("_powerTypeActionParamOne_", "Happiness");
+                                        break;
+                                    case 5:
+                                        fullLine = fullLine.Replace("_powerTypeActionParamOne_", "Rune");
+                                        break;
+                                    case 6:
+                                        fullLine = fullLine.Replace("_powerTypeActionParamOne_", "Runic Power");
+                                        break;
+                                    default:
+                                        fullLine = fullLine.Replace("_powerTypeActionParamOne_", "<Unknown Powertype>");
+                                        break;
+                                }
                             }
 
                             string cleanNewComment = fullLine;
