@@ -830,7 +830,7 @@ namespace SAI_Comment_Converter
                                 continue;
                             }
 
-                            fullLine += '"' + " WHERE `entryorguid`=" + smartScript.entryorguid + " AND `id`=" + smartScript.id + ';';
+                            fullLine += '"' + " WHERE `source_type`=" + smartScript.source_type + " AND `entryorguid`=" + smartScript.entryorguid + " AND `id`=" + smartScript.id + ';';
                             Console.WriteLine(fullLine);
                             fullLine += " -- Old comment: '" + smartScript.comment + "'"; //! Don't print the old comment in console
                             outputFile.WriteLine(fullLine);
