@@ -601,7 +601,7 @@ namespace SAI_Comment_Converter
 
                         if (fullLine.Contains("_onOffActionParamOne_"))
                         {
-                            if (smartScript.action_param1 == 0)
+                            if (smartScript.action_param1 == 1)
                                 fullLine = fullLine.Replace("_onOffActionParamOne_", "On");
                             else
                                 fullLine = fullLine.Replace("_onOffActionParamOne_", "Off");
