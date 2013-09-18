@@ -473,7 +473,7 @@ namespace SAI_Comment_Converter
 
                             if (fullLine.Contains("_questNameCastCreatureOrGo_"))
                             {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE RequiredNpcOrGo1 = {0} AND RequiredSpellCast1 = {1}", smartScript.action_param1, smartScript.action_param2), connection);
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE (RequiredNpcOrGo1 = {0} OR RequiredNpcOrGo2 = {1} OR RequiredNpcOrGo3 = {2} OR RequiredNpcOrGo4 = {3} AND RequiredSpellCast1 = {4}", smartScript.action_param1, smartScript.action_param1, smartScript.action_param1, smartScript.action_param1, smartScript.action_param2), connection);
                                 MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                                 if (readerSelect.Read())
@@ -486,7 +486,7 @@ namespace SAI_Comment_Converter
 
                             if (fullLine.Contains("_questNameKillCredit_"))
                             {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE RequiredNpcOrGo1 = {0}", smartScript.action_param1), connection);
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE (RequiredNpcOrGo1 = {0} OR RequiredNpcOrGo2 = {1} OR RequiredNpcOrGo3 = {2} OR RequiredNpcOrGo4 = {3})", smartScript.action_param1, smartScript.action_param1, smartScript.action_param1, smartScript.action_param1), connection);
                                 MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
                                 if (readerSelect.Read())
