@@ -154,17 +154,17 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_ITEM, "Add Item _addItemBasedOnActionParams_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_ITEM, "Remove Item _addItemBasedOnActionParams_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_INSTALL_AI_TEMPLATE, "Install _updateAiTemplateActionParamOne_ Template");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_RUN, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_FLY, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_SWIM, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_TELEPORT, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_STORE_VARIABLE_DECIMAL, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_STORE_TARGET_LIST, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_RESUME, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_ORIENTATION, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CREATE_TIMED_EVENT, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_PLAYMOVIE, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_MOVE_TO_POS, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_RUN, "Set Run _onOffActionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_FLY, "Set Fly _onOffActionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_SWIM, "Set Swim _onOffActionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_TELEPORT, "Teleport");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_STORE_VARIABLE_DECIMAL, "Store Variables _actionParamOne_ _actionParamTwo_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_STORE_TARGET_LIST, "Store Targetlist");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_RESUME, "Resume Waypoint");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_ORIENTATION, "Set Orientation _setOrientationTargetType_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CREATE_TIMED_EVENT, "Create Timed Event");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_PLAYMOVIE, "Play Movie _actionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MOVE_TO_POS, "Move To _moveToTargetType_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RESPAWN_TARGET, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_EQUIP, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CLOSE_GOSSIP, "");
@@ -668,6 +668,92 @@ namespace SAI_Comment_Converter
                             }
                         }
 
+                        if (fullLine.Contains("_setOrientationTargetType_"))
+                        {
+                            switch ((SmartTargetType)smartScript.target_type)
+                            {
+                                case SmartTargetType.SMART_TARGET_SELF:
+                                    fullLine = fullLine.Replace("_setOrientationTargetType_", "Home Position");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_POSITION:
+                                    fullLine = fullLine.Replace("_setOrientationTargetType_", smartScript.target_o.ToString());
+                                    break;
+                                default:
+                                    fullLine = fullLine.Replace("_setOrientationTargetType_", "Target");
+                                    break;
+                            }
+                        }
+
+                        if (fullLine.Contains("_moveToTargetType_"))
+                        {
+                            switch ((SmartTargetType)smartScript.target_type)
+                            {
+                                case SmartTargetType.SMART_TARGET_VICTIM:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Victim");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_HOSTILE_SECOND_AGGRO:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Second On Threatlist");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_HOSTILE_LAST_AGGRO:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Last On Threatlist");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_HOSTILE_RANDOM:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Random On Threatlist");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_HOSTILE_RANDOM_NOT_TOP:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Random On Threatlist Not Top");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_ACTION_INVOKER:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Invoker");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_POSITION:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Position");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_CREATURE_RANGE:
+                                case SmartTargetType.SMART_TARGET_CREATURE_DISTANCE:
+                                case SmartTargetType.SMART_TARGET_CLOSEST_CREATURE:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Creature '" + GetCreatureNameByEntry(connection, smartScript.target_param1) + "'");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_CREATURE_GUID:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Creature '" + GetCreatureNameByGuid(connection, smartScript.target_param1) + "'");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_GAMEOBJECT_RANGE:
+                                case SmartTargetType.SMART_TARGET_GAMEOBJECT_DISTANCE:
+                                    case SmartTargetType.SMART_TARGET_CLOSEST_GAMEOBJECT:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Gameobject '" + GetGameobjectNameByEntry(connection, smartScript.target_param1) + "'");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_GAMEOBJECT_GUID:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Gameobject '" + GetGameobjectNameByGuid(connection, smartScript.target_param1) + "'");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_INVOKER_PARTY:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Invoker's Party");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_PLAYER_RANGE:
+                                case SmartTargetType.SMART_TARGET_PLAYER_DISTANCE:
+                                case SmartTargetType.SMART_TARGET_CLOSEST_PLAYER:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Player");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_ACTION_INVOKER_VEHICLE:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Invoker's Vehicle");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_OWNER_OR_SUMMONER:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Owner Or Summoner");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_THREAT_LIST:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "First Unit On Threatlist");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_CLOSEST_ENEMY:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Enemy");
+                                    break;
+                                case SmartTargetType.SMART_TARGET_CLOSEST_FRIENDLY:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Friendly Unit");
+                                    break;
+                                default:
+                                    fullLine = fullLine.Replace("_moveToTargetType_", "<unsupported target type>");
+                                    break;
+                            }
+                        }
+
                         string cleanNewComment = fullLine;
                         fullLine = fullLine.Insert(0, "UPDATE `smart_scripts` SET `comment`=" + '"');
 
@@ -725,6 +811,72 @@ namespace SAI_Comment_Converter
             smartScript.target_o = row["target_o"] != DBNull.Value ? Convert.ToInt32(row["target_o"]) : 0;
             smartScript.comment = row["comment"] != DBNull.Value ? (string)row["comment"] : String.Empty;
             return smartScript;
+        }
+
+        private static string GetCreatureNameByEntry(MySqlConnection connection, int entry)
+        {
+            MySqlCommand command = new MySqlCommand(String.Format("SELECT name FROM creature_template WHERE entry={0}", entry), connection);
+            MySqlDataReader readerSourceName = command.ExecuteReader(CommandBehavior.Default);
+
+            if (readerSourceName.Read())
+                return readerSourceName[0].ToString();
+
+            return String.Empty;
+        }
+
+        private static int GetCreatureIdByGuid(MySqlConnection connection, int guid)
+        {
+            MySqlCommand command = new MySqlCommand(String.Format("SELECT id FROM creature WHERE guid={0}", guid), connection);
+            MySqlDataReader readerSourceEntry = command.ExecuteReader(CommandBehavior.Default);
+
+            if (readerSourceEntry.Read())
+                return Convert.ToInt32(readerSourceEntry[0]);
+
+            return -1;
+        }
+
+        private static string GetCreatureNameByGuid(MySqlConnection connection, int guid)
+        {
+            MySqlCommand command = new MySqlCommand(String.Format("SELECT name FROM creature_template WHERE entry={0}", GetCreatureIdByGuid(connection, guid)), connection);
+            MySqlDataReader readerSourceName = command.ExecuteReader(CommandBehavior.Default);
+
+            if (readerSourceName.Read())
+                return readerSourceName[0].ToString();
+
+            return String.Empty;
+        }
+
+        private static string GetGameobjectNameByEntry(MySqlConnection connection, int entry)
+        {
+            MySqlCommand command = new MySqlCommand(String.Format("SELECT name FROM gameobject_template WHERE entry={0}", entry), connection);
+            MySqlDataReader readerSourceName = command.ExecuteReader(CommandBehavior.Default);
+
+            if (readerSourceName.Read())
+                return readerSourceName[0].ToString();
+
+            return String.Empty;
+        }
+
+        private static int GetGameobjectIdByGuid(MySqlConnection connection, int guid)
+        {
+            MySqlCommand command = new MySqlCommand(String.Format("SELECT id FROM gameobject WHERE guid={0}", guid), connection);
+            MySqlDataReader readerSourceEntry = command.ExecuteReader(CommandBehavior.Default);
+
+            if (readerSourceEntry.Read())
+                return Convert.ToInt32(readerSourceEntry[0]);
+
+            return -1;
+        }
+
+        private static string GetGameobjectNameByGuid(MySqlConnection connection, int guid)
+        {
+            MySqlCommand command = new MySqlCommand(String.Format("SELECT name FROM gameobject_template WHERE entry={0}", GetGameobjectIdByGuid(connection, guid)), connection);
+            MySqlDataReader readerSourceName = command.ExecuteReader(CommandBehavior.Default);
+
+            if (readerSourceName.Read())
+                return readerSourceName[0].ToString();
+
+            return String.Empty;
         }
     }
 }
