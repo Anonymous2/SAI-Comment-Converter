@@ -148,11 +148,11 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_GO, "Summon Gameobject '_gameobjectNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_KILL_UNIT, "Kill Target");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ACTIVATE_TAXI, "Activate Taxi Path _actionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_START, "Start Waypoints");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_PAUSE, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_STOP, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_ITEM, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_ITEM, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_START, "Start Waypoint");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_PAUSE, "Pause Waypoint");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_STOP, "Stop Waypoint");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_ITEM, "Add Item _addItemBasedOnActionParams_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_ITEM, "Remove Item _addItemBasedOnActionParams_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_INSTALL_AI_TEMPLATE, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_RUN, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_FLY, "");
@@ -616,6 +616,26 @@ namespace SAI_Comment_Converter
                                 fullLine = fullLine.Replace("_gameobjectNameActionParamOne_", readerSelect[0].ToString());
                             else
                                 fullLine = fullLine.Replace("_gameobjectNameActionParamOne_", "<_gameobjectNameActionParamOne_ Gameobject not found!>");
+
+                            readerSelect.Close();
+                        }
+
+                        if (fullLine.Contains("_addItemBasedOnActionParams_"))
+                        {
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM item_template WHERE entry = {0}", smartScript.action_param1), connection);
+                            MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                            if (readerSelect.Read())
+                            {
+                                fullLine = fullLine.Replace("_addItemBasedOnActionParams_", "'" + readerSelect[0].ToString() + "' ");
+
+                                if (smartScript.action_param2 > 1)
+                                    fullLine += smartScript.action_param2 + " Times";
+                                else
+                                    fullLine += "1 Time";
+                            }
+                            else
+                                fullLine = fullLine.Replace("_addItemBasedOnActionParams_", "<_addItemBasedOnActionParams_ Item not found!>");
 
                             readerSelect.Close();
                         }
