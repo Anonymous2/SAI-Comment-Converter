@@ -901,6 +901,41 @@ namespace SAI_Comment_Converter
                                 }
                             }
 
+                            if (smartScript.event_flags > 0)
+                            {
+                                if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_NOT_REPEATABLE) != 0))
+                                    fullLine += " (No Repeat)";
+
+                                if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_0) != 0) && (((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_1) != 0) &&
+                                    (((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_2) != 0) && (((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_3) != 0))
+                                    fullLine += " (Dungeon & Raid)";
+                                else
+                                {
+                                    if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_0) != 0) && (((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_1) != 0))
+                                        fullLine += " (Dungeon)";
+                                    else
+                                    {
+                                        if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_0) != 0))
+                                            fullLine += " (Normal Dungeon)";
+                                        else if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_1) != 0))
+                                            fullLine += " (Heroic Dungeon)";
+                                    }
+
+                                    if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_2) != 0) && (((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_3) != 0))
+                                        fullLine += " (Raid)";
+                                    else
+                                    {
+                                        if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_2) != 0))
+                                            fullLine += " (Normal Raid)";
+                                        else if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_3) != 0))
+                                            fullLine += " (Heroic Raid)";
+                                    }
+                                }
+
+                                if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DEBUG_ONLY) != 0))
+                                    fullLine += " (Debug)";
+                            }
+
                             string cleanNewComment = fullLine;
                             fullLine = fullLine.Insert(0, "UPDATE `smart_scripts` SET `comment`=" + '"');
 

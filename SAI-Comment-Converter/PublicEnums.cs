@@ -368,4 +368,14 @@
         UNIT_BYTE1_FLAG_UNK_3           = 0x04,
         UNIT_BYTE1_FLAG_ALL             = 0xFF
     }
+
+    public enum SmartEventFlags : uint
+    {
+        SMART_EVENT_FLAG_NOT_REPEATABLE     = 0x01,
+        SMART_EVENT_FLAG_DIFFICULTY_0       = 0x02,
+        SMART_EVENT_FLAG_DIFFICULTY_1       = 0x04,
+        SMART_EVENT_FLAG_DIFFICULTY_2       = 0x08,
+        SMART_EVENT_FLAG_DIFFICULTY_3       = 0x10,
+        SMART_EVENT_FLAG_DEBUG_ONLY         = 0x80,
+    }
 }
