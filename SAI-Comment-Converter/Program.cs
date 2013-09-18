@@ -176,33 +176,33 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_SCRIPT_RESET, "Reset All Scripts");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_RANGED_MOVEMENT, "Set Ranged Movement");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_TIMED_ACTIONLIST, "<todo>"); // todo
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_NPC_FLAG, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_NPC_FLAG, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_NPC_FLAG, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SIMPLE_TALK, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_NPC_FLAG, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_NPC_FLAG, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_NPC_FLAG, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SIMPLE_TALK, "Say Line _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_INVOKER_CAST, "Invoker Cast '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CROSS_CAST, "Cross Cast '_spellNameActionParamOne_'");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_RANDOM_TIMED_ACTIONLIST, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_RANDOM_RANGE_TIMED_ACTIONLIST, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_MOVE, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_UNIT_FIELD_BYTES_1, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_UNIT_FIELD_BYTES_1, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_RANDOM_TIMED_ACTIONLIST, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_RANDOM_RANGE_TIMED_ACTIONLIST, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_MOVE, "Start Random Movement");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_UNIT_FIELD_BYTES_1, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_UNIT_FIELD_BYTES_1, "<todo>"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_INTERRUPT_SPELL, "Interrupt Spell '_spellNameActionParamTwo_'");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SEND_GO_CUSTOM_ANIM, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DYNAMIC_FLAG, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_DYNAMIC_FLAG, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_DYNAMIC_FLAG, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_JUMP_TO_POS, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SEND_GOSSIP_MENU, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_GO_SET_LOOT_STATE, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SEND_TARGET_TO_TARGET, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_HOME_POS, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_HEALTH_REGEN, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_ROOT, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_GO_FLAG, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_GO_FLAG, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_GO_FLAG, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_CREATURE_GROUP, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SEND_GO_CUSTOM_ANIM, "Send Custom Animation _actionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DYNAMIC_FLAG, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_DYNAMIC_FLAG, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_DYNAMIC_FLAG, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_JUMP_TO_POS, "Jump To Pos");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SEND_GOSSIP_MENU, "Send Gossip");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_GO_SET_LOOT_STATE, "Set Lootstate _goStateActionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SEND_TARGET_TO_TARGET, "Send Target _actionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_HOME_POS, "Set Home Position");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_HEALTH_REGEN, "Set Health Regeneration _onOffActionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_ROOT, "Set Rooted _onOffActionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_GO_FLAG, "Set Gameobject Flag_getGoFlags_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_GO_FLAG, "Add Gameobject Flag_getGoFlags_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_GO_FLAG, "Remove Gameobject Flag_getGoFlags_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_CREATURE_GROUP, "Summon Creature Group _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_POWER, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_POWER, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_POWER, "");
@@ -742,6 +742,51 @@ namespace SAI_Comment_Converter
                                         fullLine = fullLine.Replace("_moveToTargetType_", "<unsupported target type>");
                                         break;
                                 }
+                            }
+
+                            if (fullLine.Contains("_goStateActionParamOne_"))
+                            {
+                                switch (smartScript.action_param1)
+                                {
+                                    case 0:
+                                        fullLine = fullLine.Replace("_goStateActionParamOne_", "Not Ready");
+                                        break;
+                                    case 1:
+                                        fullLine = fullLine.Replace("_goStateActionParamOne_", "Ready");
+                                        break;
+                                    case 2:
+                                        fullLine = fullLine.Replace("_goStateActionParamOne_", "Activated");
+                                        break;
+                                    case 3:
+                                        fullLine = fullLine.Replace("_goStateActionParamOne_", "Deactivated");
+                                        break;
+                                    default:
+                                        fullLine = fullLine.Replace("_goStateActionParamOne_", "<Unknown Gameobject State>");
+                                        break;
+                                }
+                            }
+
+                            if (fullLine.Contains("_getGoFlags_"))
+                            {
+                                string commentGoFlag = "";
+                                int goFlags = smartScript.action_param1;
+
+                                if ((goFlags & (int)GoFlags.GO_FLAG_IN_USE) != 0)           commentGoFlag += "In Use & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_LOCKED) != 0)           commentGoFlag += "Locked & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_INTERACT_COND) != 0)    commentGoFlag += "Interact Condition & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_TRANSPORT) != 0)        commentGoFlag += "Transport & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_NOT_SELECTABLE) != 0)   commentGoFlag += "Not Selectable & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_NODESPAWN) != 0)        commentGoFlag += "No Despawn & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_TRIGGERED) != 0)        commentGoFlag += "Triggered & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_DAMAGED) != 0)          commentGoFlag += "Damaged & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_DESTROYED) != 0)        commentGoFlag += "Destroyed & ";
+
+                                commentGoFlag = commentGoFlag.Trim(new char[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
+
+                                if (commentGoFlag.Contains("&"))
+                                    fullLine = fullLine.Replace("_getGoFlags_", "s_getGoFlags_");
+
+                                fullLine = fullLine.Replace("_getGoFlags_", " " + commentGoFlag);
                             }
 
                             string cleanNewComment = fullLine;

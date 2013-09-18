@@ -302,5 +302,18 @@
         UNIT_FLAG_UNK_29                = 0x20000000,           // used in Feing Death spell
         UNIT_FLAG_SHEATHE               = 0x40000000,
         UNIT_FLAG_UNK_31                = 0x80000000,
-	};
+	}
+
+    public enum GoFlags : uint
+    {
+        GO_FLAG_IN_USE                  = 0x00000001,
+        GO_FLAG_LOCKED                  = 0x00000002,
+        GO_FLAG_INTERACT_COND           = 0x00000004,
+        GO_FLAG_TRANSPORT               = 0x00000008,
+        GO_FLAG_NOT_SELECTABLE          = 0x00000010,
+        GO_FLAG_NODESPAWN               = 0x00000020,
+        GO_FLAG_TRIGGERED               = 0x00000040,
+        GO_FLAG_DAMAGED                 = 0x00000200,
+        GO_FLAG_DESTROYED               = 0x00000400,
+    }
 }
