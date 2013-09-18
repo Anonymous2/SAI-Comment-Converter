@@ -98,7 +98,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_NONE, "Incorrect Action");
             smartActionStrings.Add(SmartAction.SMART_ACTION_TALK, "Say Line _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_FACTION, "Set Faction _actionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "<todo>"); // todo dbc
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "<todo>"); // todo dbc (SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL too)
             smartActionStrings.Add(SmartAction.SMART_ACTION_SOUND, "Play Sound _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_EMOTE, "Play Emote _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FAIL_QUEST, "Fail Quest '_questNameActionParamOne_'");
@@ -138,17 +138,17 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_SHEATH, "Set Sheath _sheathActionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FORCE_DESPAWN, "Despawn _forceDespawnActionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INVINCIBILITY_HP_LEVEL, "Set Invincibility Hp _invincibilityHpActionParamsOneTwo_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_PHASE_MASK, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DATA, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_MOVE_FORWARD, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_VISIBILITY, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_ACTIVE, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_ATTACK_START, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_GO, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_KILL_UNIT, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_ACTIVATE_TAXI, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_START, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL, "<todo>"); // todo dbc (SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL too)
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_PHASE_MASK, "Set Phase _actionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DATA, "Set Data _actionParamOne_ _actionParamTwo_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MOVE_FORWARD, "Move Forward _actionParamOne_ Yards");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_VISIBILITY, "Set Visibility _onOffActionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_ACTIVE, "Set Active _onOffActionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ATTACK_START, "Start Attacking");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_GO, "Summon Gameobject '_gameobjectNameActionParamOne_'");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_KILL_UNIT, "Kill Target");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ACTIVATE_TAXI, "Activate Taxi Path _actionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_WP_START, "Start Waypoints");
             smartActionStrings.Add(SmartAction.SMART_ACTION_WP_PAUSE, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_WP_STOP, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_ITEM, "");
@@ -597,6 +597,27 @@ namespace SAI_Comment_Converter
                                 fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartScript.action_param2.ToString() + "%");
                             else
                                 fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", "<Unsupported parameters>");
+                        }
+
+                        if (fullLine.Contains("_onOffActionParamOne_"))
+                        {
+                            if (smartScript.action_param1 == 0)
+                                fullLine = fullLine.Replace("_onOffActionParamOne_", "On");
+                            else
+                                fullLine = fullLine.Replace("_onOffActionParamOne_", "Off");
+                        }
+
+                        if (fullLine.Contains("_gameobjectNameActionParamOne_"))
+                        {
+                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM gameobject_template WHERE entry = {0}", smartScript.action_param1), connection);
+                            MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                            if (readerSelect.Read())
+                                fullLine = fullLine.Replace("_gameobjectNameActionParamOne_", readerSelect[0].ToString());
+                            else
+                                fullLine = fullLine.Replace("_gameobjectNameActionParamOne_", "<_gameobjectNameActionParamOne_ Gameobject not found!>");
+
+                            readerSelect.Close();
                         }
 
                         string cleanNewComment = fullLine;
