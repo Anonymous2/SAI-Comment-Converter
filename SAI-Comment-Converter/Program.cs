@@ -122,7 +122,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_EVADE, "Evade");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FLEE_FOR_ASSIST, "Flee For Assist");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_GROUPEVENTHAPPENS, "Quest Credit '_questNameActionParamOne_'");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_CASTEDCREATUREORGO, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_CASTEDCREATUREORGO, "Quest Credit '_questNameCastCreatureOrGo_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVEAURASFROMSPELL, "Remove Aura '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FOLLOW, "<todo>"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE, "<todo>"); // todo
@@ -467,6 +467,19 @@ namespace SAI_Comment_Converter
                                     fullLine = fullLine.Replace("_questNameActionParamOne_", readerSelect[0].ToString());
                                 else
                                     fullLine = fullLine.Replace("_questNameActionParamOne_", "Quest not found!");
+
+                                readerSelect.Close();
+                            }
+
+                            if (fullLine.Contains("_questNameCastCreatureOrGo_"))
+                            {
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE RequiredNpcOrGo1 = {0} AND RequiredSpellCast1 = {1}", smartScript.action_param1, smartScript.action_param2), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerSelect.Read())
+                                    fullLine = fullLine.Replace("_questNameCastCreatureOrGo_", readerSelect[0].ToString());
+                                else
+                                    fullLine = fullLine.Replace("_questNameCastCreatureOrGo_", "Quest not found!");
 
                                 readerSelect.Close();
                             }
