@@ -9,9 +9,9 @@ namespace SAI_Comment_Converter
 {
     class Program
     {
-        private static Dictionary<SmartEvent, string> smartEventStrings = new Dictionary<SmartEvent, string>();
-        private static Dictionary<SmartAction, string> smartActionStrings = new Dictionary<SmartAction, string>();
-        private static int totalSkippedScripts = 0, totalLoadedScripts = 0;
+        private static readonly Dictionary<SmartEvent, string> smartEventStrings = new Dictionary<SmartEvent, string>();
+        private static readonly Dictionary<SmartAction, string> smartActionStrings = new Dictionary<SmartAction, string>();
+        private static int totalSkippedScripts, totalLoadedScripts;
 
         static void Main(string[] args)
         {
@@ -317,7 +317,7 @@ namespace SAI_Comment_Converter
                             // SELECT * FROM smart_scripts ORDER BY entryorguid ASC, id DESC
                             if (fullLine.Contains("_previousLineComment_"))
                             {
-                                MySqlCommand commandPreviousComment = new MySqlCommand(String.Format("SELECT event_type FROM smart_scripts WHERE entryorguid={0} AND id={1}", smartScript.entryorguid, (Convert.ToInt32(row.ItemArray[2]) - 1).ToString()), connection);
+                                MySqlCommand commandPreviousComment = new MySqlCommand(String.Format("SELECT event_type FROM smart_scripts WHERE entryorguid={0} AND id={1}", smartScript.entryorguid, (Convert.ToInt32(row.ItemArray[2]) - 1)), connection);
                                 MySqlDataReader readerPreviousLineComment = commandPreviousComment.ExecuteReader(CommandBehavior.Default);
 
                                 if (readerPreviousLineComment.Read())
@@ -527,7 +527,7 @@ namespace SAI_Comment_Converter
                                 if ((unitFlags & (int)UnitFlags.UNIT_FLAG_MOUNT) != 0)              commentUnitFlag += "Mounted & ";
                                 if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SHEATHE) != 0)            commentUnitFlag += "Sheathed & ";
 
-                                commentUnitFlag = commentUnitFlag.Trim(new char[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
+                                commentUnitFlag = commentUnitFlag.Trim(new[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
 
                                 if (commentUnitFlag.Contains("&"))
                                     fullLine = fullLine.Replace("_getUnitFlags_", "s_getUnitFlags_");
@@ -574,7 +574,7 @@ namespace SAI_Comment_Converter
                             if (fullLine.Contains("_forceDespawnActionParamOne_"))
                             {
                                 if (smartScript.action_param1 > 0)
-                                    fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "In " + smartScript.action_param1.ToString() + " ms");
+                                    fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "In " + smartScript.action_param1 + " ms");
                                 else
                                     fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "Instant");
                             }
@@ -584,7 +584,7 @@ namespace SAI_Comment_Converter
                                 if (smartScript.action_param1 > 0)
                                     fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartScript.action_param1.ToString());
                                 else if (smartScript.action_param2 > 0)
-                                    fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartScript.action_param2.ToString() + "%");
+                                    fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartScript.action_param2 + "%");
                                 else
                                     fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", "<Unsupported parameters>");
                             }
@@ -617,7 +617,7 @@ namespace SAI_Comment_Converter
 
                                 if (readerSelect.Read())
                                 {
-                                    fullLine = fullLine.Replace("_addItemBasedOnActionParams_", "'" + readerSelect[0].ToString() + "' ");
+                                    fullLine = fullLine.Replace("_addItemBasedOnActionParams_", "'" + readerSelect[0] + "' ");
 
                                     if (smartScript.action_param2 > 1)
                                         fullLine += smartScript.action_param2 + " Times";
@@ -781,7 +781,7 @@ namespace SAI_Comment_Converter
                                 if ((goFlags & (int)GoFlags.GO_FLAG_DAMAGED) != 0)          commentGoFlag += "Damaged & ";
                                 if ((goFlags & (int)GoFlags.GO_FLAG_DESTROYED) != 0)        commentGoFlag += "Destroyed & ";
 
-                                commentGoFlag = commentGoFlag.Trim(new char[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
+                                commentGoFlag = commentGoFlag.Trim(new[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
 
                                 if (commentGoFlag.Contains("&"))
                                     fullLine = fullLine.Replace("_getGoFlags_", "s_getGoFlags_");
