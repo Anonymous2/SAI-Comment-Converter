@@ -124,11 +124,11 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_GROUPEVENTHAPPENS, "Quest Credit '_questNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_CASTEDCREATUREORGO, "Quest Credit '_questNameCastCreatureOrGo_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVEAURASFROMSPELL, "Remove Aura '_spellNameActionParamOne_'");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_FOLLOW, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_FOLLOW, "Follow _getTargetType_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE, "<todo>"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE_RANGE, "Set Phase Random Between _actionParamOne_-_actionParamTwo_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RESET_GOBJECT, "Reset Gameobject");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_KILLED_MONSTER, "Killed Monster Credit _actionParamOne_"); // todo add questname here (?)
+            smartActionStrings.Add(SmartAction.SMART_ACTION_KILLED_MONSTER, "Quest Credit '_questNameActionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INST_DATA, "Set Instance Data _actionParamOne_ to _actionParamTwo_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INST_DATA64, "Set Instance Data _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_UPDATE_TEMPLATE, "Update Template To '_creatureNameActionParamOne_'");
@@ -164,7 +164,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_ORIENTATION, "Set Orientation _setOrientationTargetType_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CREATE_TIMED_EVENT, "Create Timed Event");
             smartActionStrings.Add(SmartAction.SMART_ACTION_PLAYMOVIE, "Play Movie _actionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_MOVE_TO_POS, "Move To _moveToTargetType_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MOVE_TO_POS, "Move To _getTargetType_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RESPAWN_TARGET, "Respawn Gameobject");
             smartActionStrings.Add(SmartAction.SMART_ACTION_EQUIP, "<todo>"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_CLOSE_GOSSIP, "Close Gossip");
@@ -712,75 +712,8 @@ namespace SAI_Comment_Converter
                                 }
                             }
 
-                            if (fullLine.Contains("_moveToTargetType_"))
-                            {
-                                switch ((SmartTargetType)smartScript.target_type)
-                                {
-                                    case SmartTargetType.SMART_TARGET_VICTIM:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Victim");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_HOSTILE_SECOND_AGGRO:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Second On Threatlist");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_HOSTILE_LAST_AGGRO:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Last On Threatlist");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_HOSTILE_RANDOM:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Random On Threatlist");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_HOSTILE_RANDOM_NOT_TOP:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Random On Threatlist Not Top");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_ACTION_INVOKER:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Invoker");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_POSITION:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Position");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_CREATURE_RANGE:
-                                    case SmartTargetType.SMART_TARGET_CREATURE_DISTANCE:
-                                    case SmartTargetType.SMART_TARGET_CLOSEST_CREATURE:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Creature '" + GetCreatureNameByEntry(connection, smartScript.target_param1) + "'");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_CREATURE_GUID:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Creature '" + GetCreatureNameByGuid(connection, smartScript.target_param1) + "'");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_GAMEOBJECT_RANGE:
-                                    case SmartTargetType.SMART_TARGET_GAMEOBJECT_DISTANCE:
-                                        case SmartTargetType.SMART_TARGET_CLOSEST_GAMEOBJECT:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Gameobject '" + GetGameobjectNameByEntry(connection, smartScript.target_param1) + "'");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_GAMEOBJECT_GUID:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Gameobject '" + GetGameobjectNameByGuid(connection, smartScript.target_param1) + "'");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_INVOKER_PARTY:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Invoker's Party");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_PLAYER_RANGE:
-                                    case SmartTargetType.SMART_TARGET_PLAYER_DISTANCE:
-                                    case SmartTargetType.SMART_TARGET_CLOSEST_PLAYER:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Player");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_ACTION_INVOKER_VEHICLE:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Invoker's Vehicle");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_OWNER_OR_SUMMONER:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Owner Or Summoner");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_THREAT_LIST:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "First Unit On Threatlist");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_CLOSEST_ENEMY:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Enemy");
-                                        break;
-                                    case SmartTargetType.SMART_TARGET_CLOSEST_FRIENDLY:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Friendly Unit");
-                                        break;
-                                    default:
-                                        fullLine = fullLine.Replace("_moveToTargetType_", "<unsupported target type>");
-                                        break;
-                                }
-                            }
+                            if (fullLine.Contains("_getTargetType_"))
+                                fullLine = fullLine.Replace("_getTargetType_", GetStringByTargetType(smartScript, connection));
 
                             if (fullLine.Contains("_goStateActionParamOne_"))
                             {
@@ -1018,6 +951,69 @@ namespace SAI_Comment_Converter
 
             readerSourceName.Close();
             return String.Empty;
+        }
+
+        private static string GetStringByTargetType(SmartScript smartScript, MySqlConnection connection)
+        {
+            switch ((SmartTargetType)smartScript.target_type)
+            {
+                case SmartTargetType.SMART_TARGET_VICTIM:
+                    return "Victim";
+                case SmartTargetType.SMART_TARGET_HOSTILE_SECOND_AGGRO:
+                    return "Second On Threatlist";
+                case SmartTargetType.SMART_TARGET_HOSTILE_LAST_AGGRO:
+                    return "Last On Threatlist";
+                case SmartTargetType.SMART_TARGET_HOSTILE_RANDOM:
+                    return "Random On Threatlist";
+                case SmartTargetType.SMART_TARGET_HOSTILE_RANDOM_NOT_TOP:
+                    return "Random On Threatlist Not Top";
+                case SmartTargetType.SMART_TARGET_ACTION_INVOKER:
+                    return "Invoker";
+                case SmartTargetType.SMART_TARGET_POSITION:
+                    return "Position";
+                case SmartTargetType.SMART_TARGET_CREATURE_RANGE:
+                case SmartTargetType.SMART_TARGET_CREATURE_DISTANCE:
+                case SmartTargetType.SMART_TARGET_CLOSEST_CREATURE:
+                    return "Closest Creature '" + GetCreatureNameByEntry(connection, smartScript.target_param1) + "'";
+                    break;
+                case SmartTargetType.SMART_TARGET_CREATURE_GUID:
+                    return "Closest Creature '" + GetCreatureNameByGuid(connection, smartScript.target_param1) + "'";
+                    break;
+                case SmartTargetType.SMART_TARGET_GAMEOBJECT_RANGE:
+                case SmartTargetType.SMART_TARGET_GAMEOBJECT_DISTANCE:
+                case SmartTargetType.SMART_TARGET_CLOSEST_GAMEOBJECT:
+                    return "Closest Gameobject '" + GetGameobjectNameByEntry(connection, smartScript.target_param1) + "'";
+                    break;
+                case SmartTargetType.SMART_TARGET_GAMEOBJECT_GUID:
+                    return "Closest Gameobject '" + GetGameobjectNameByGuid(connection, smartScript.target_param1) + "'";
+                    break;
+                case SmartTargetType.SMART_TARGET_INVOKER_PARTY:
+                    return "Invoker's Party";
+                    break;
+                case SmartTargetType.SMART_TARGET_PLAYER_RANGE:
+                case SmartTargetType.SMART_TARGET_PLAYER_DISTANCE:
+                case SmartTargetType.SMART_TARGET_CLOSEST_PLAYER:
+                    return "Closest Player";
+                    break;
+                case SmartTargetType.SMART_TARGET_ACTION_INVOKER_VEHICLE:
+                    return "Invoker's Vehicle";
+                    break;
+                case SmartTargetType.SMART_TARGET_OWNER_OR_SUMMONER:
+                    return "Owner Or Summoner";
+                    break;
+                case SmartTargetType.SMART_TARGET_THREAT_LIST:
+                    return "First Unit On Threatlist";
+                    break;
+                case SmartTargetType.SMART_TARGET_CLOSEST_ENEMY:
+                    return "Closest Enemy";
+                    break;
+                case SmartTargetType.SMART_TARGET_CLOSEST_FRIENDLY:
+                    return "Closest Friendly Unit";
+                    break;
+                default:
+                    return "<unsupported target type>";
+                    break;
+            }
         }
     }
 }
