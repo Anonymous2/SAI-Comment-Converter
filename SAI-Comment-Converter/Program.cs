@@ -248,6 +248,8 @@ namespace SAI_Comment_Converter
 
                     using (var outputFile = new StreamWriter("output.sql", true))
                     {
+                        SmartScript smartScriptLink = null;
+
                         foreach (DataRow row in dataTable.Rows)
                         {
                             SmartScript smartScript = BuildSmartScript(row);
@@ -312,21 +314,22 @@ namespace SAI_Comment_Converter
                             //! Event type
                             fullLine += smartEventStrings[(SmartEvent)smartScript.event_type];
 
-                            //! TODO: Figure out how to make this work with linking several lines TO each other. Perhaps read from last to first line?
-                            //! TODO: Consider linkto/linkfrom
-                            // SELECT * FROM smart_scripts ORDER BY entryorguid ASC, id DESC
                             if (fullLine.Contains("_previousLineComment_"))
                             {
-                                MySqlCommand commandPreviousComment = new MySqlCommand(String.Format("SELECT event_type FROM smart_scripts WHERE entryorguid={0} AND id={1}", smartScript.entryorguid, (Convert.ToInt32(row.ItemArray[2]) - 1)), connection);
-                                MySqlDataReader readerPreviousLineComment = commandPreviousComment.ExecuteReader(CommandBehavior.Default);
+                                if (smartScriptLink != null)
+                                {
+                                    fullLine = fullLine.Replace("_previousLineComment_", smartEventStrings[(SmartEvent)smartScriptLink.event_type]);
+                                    smartScript.event_param1 = Convert.ToInt32(smartScriptLink.event_param1);
+                                    smartScript.event_param2 = Convert.ToInt32(smartScriptLink.event_param2);
+                                    smartScript.event_param3 = Convert.ToInt32(smartScriptLink.event_param3);
+                                    smartScript.event_param4 = Convert.ToInt32(smartScriptLink.event_param4);
 
-                                if (readerPreviousLineComment.Read())
-                                    fullLine = fullLine.Replace("_previousLineComment_", smartEventStrings[(SmartEvent)Convert.ToInt32(readerPreviousLineComment[0].ToString())]);
-                                else
-                                    fullLine = fullLine.Replace("_previousLineComment_", "Link not found!");
-
-                                readerPreviousLineComment.Close();
+                                    if (smartScriptLink.link == 0)
+                                        smartScriptLink = null;
+                                }
                             }
+                            else if (smartScript.link > 0)
+                                smartScriptLink = smartScript;
 
                             //! This must be called AFTER we check for _previousLineComment_ so that copied event types don't need special handling
                             if (fullLine.Contains("_eventParamOne_"))
@@ -841,6 +844,7 @@ namespace SAI_Comment_Converter
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                Console.WriteLine("Press any key to exit.");
                 Console.ReadKey();
             }
 
