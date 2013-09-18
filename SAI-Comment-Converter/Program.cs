@@ -891,8 +891,13 @@ namespace SAI_Comment_Converter
             MySqlDataReader readerSourceName = command.ExecuteReader(CommandBehavior.Default);
 
             if (readerSourceName.Read())
-                return readerSourceName[0].ToString();
+            {
+                string str = readerSourceName[0].ToString();
+                readerSourceName.Close();
+                return str;
+            }
 
+            readerSourceName.Close();
             return String.Empty;
         }
 
@@ -902,8 +907,13 @@ namespace SAI_Comment_Converter
             MySqlDataReader readerSourceEntry = command.ExecuteReader(CommandBehavior.Default);
 
             if (readerSourceEntry.Read())
-                return Convert.ToInt32(readerSourceEntry[0]);
+            {
+                int entry = Convert.ToInt32(readerSourceEntry[0]);
+                readerSourceEntry.Close();
+                return entry;
+            }
 
+            readerSourceEntry.Close();
             return -1;
         }
 
@@ -913,8 +923,13 @@ namespace SAI_Comment_Converter
             MySqlDataReader readerSourceName = command.ExecuteReader(CommandBehavior.Default);
 
             if (readerSourceName.Read())
-                return readerSourceName[0].ToString();
+            {
+                string str = readerSourceName[0].ToString();
+                readerSourceName.Close();
+                return str;
+            }
 
+            readerSourceName.Close();
             return String.Empty;
         }
 
@@ -924,8 +939,13 @@ namespace SAI_Comment_Converter
             MySqlDataReader readerSourceName = command.ExecuteReader(CommandBehavior.Default);
 
             if (readerSourceName.Read())
-                return readerSourceName[0].ToString();
+            {
+                string str = readerSourceName[0].ToString();
+                readerSourceName.Close();
+                return str;
+            }
 
+            readerSourceName.Close();
             return String.Empty;
         }
 
@@ -935,8 +955,13 @@ namespace SAI_Comment_Converter
             MySqlDataReader readerSourceEntry = command.ExecuteReader(CommandBehavior.Default);
 
             if (readerSourceEntry.Read())
-                return Convert.ToInt32(readerSourceEntry[0]);
+            {
+                int entry = Convert.ToInt32(readerSourceEntry[0]);
+                readerSourceEntry.Close();
+                return entry;
+            }
 
+            readerSourceEntry.Close();
             return -1;
         }
 
@@ -946,8 +971,13 @@ namespace SAI_Comment_Converter
             MySqlDataReader readerSourceName = command.ExecuteReader(CommandBehavior.Default);
 
             if (readerSourceName.Read())
-                return readerSourceName[0].ToString();
+            {
+                string str = readerSourceName[0].ToString();
+                readerSourceName.Close();
+                return str;
+            }
 
+            readerSourceName.Close();
             return String.Empty;
         }
     }
