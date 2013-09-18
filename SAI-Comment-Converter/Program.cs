@@ -165,17 +165,17 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_CREATE_TIMED_EVENT, "Create Timed Event");
             smartActionStrings.Add(SmartAction.SMART_ACTION_PLAYMOVIE, "Play Movie _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_MOVE_TO_POS, "Move To _moveToTargetType_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_RESPAWN_TARGET, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_EQUIP, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CLOSE_GOSSIP, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_TRIGGER_TIMED_EVENT, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_TIMED_EVENT, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RESPAWN_TARGET, "Respawn Gameobject");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_EQUIP, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CLOSE_GOSSIP, "Close Gossip");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_TRIGGER_TIMED_EVENT, "Trigger Timed Event _actionParamOne_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_TIMED_EVENT, "Remove Timed Event _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_AURA, "Add Aura '_spellNameActionParamOne_'");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_OVERRIDE_SCRIPT_BASE_OBJECT, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_RESET_SCRIPT_BASE_OBJECT, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_SCRIPT_RESET, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_RANGED_MOVEMENT, "");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_TIMED_ACTIONLIST, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_OVERRIDE_SCRIPT_BASE_OBJECT, "Override Base Object Script");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RESET_SCRIPT_BASE_OBJECT, "Reset  Base Object Script");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_SCRIPT_RESET, "Reset All Scripts");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_RANGED_MOVEMENT, "Set Ranged Movement");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_TIMED_ACTIONLIST, "<todo>"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_NPC_FLAG, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_NPC_FLAG, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_NPC_FLAG, "");
@@ -224,552 +224,548 @@ namespace SAI_Comment_Converter
             //string worldDB = Console.ReadLine();
             //Console.Write("Port: ");
             //string port = Console.ReadLine();
-
-            //string host = "127.0.0.1";
-            //string user = "root";
-            //string pass = "1234";
-            //string worldDB = "trinitycore_world";
-            //string port = "3306";
-
-            //Console.WriteLine(host);
-            //Console.WriteLine(user);
-            //Console.WriteLine(pass);
-            //Console.WriteLine(worldDB);
-            //Console.WriteLine(port);
-
-            MySqlConnectionStringBuilder connectionString = new MySqlConnectionStringBuilder();
-            connectionString.UserID = user;
-            connectionString.Password = pass;
-            connectionString.Server = host;
-            connectionString.Database = worldDB;
-            connectionString.Port = Convert.ToUInt32(port);
-
-            using (var connection = new MySqlConnection(connectionString.ToString()))
+            
+            try
             {
-                connection.Open();
-                var returnVal = new MySqlDataAdapter(String.Format("SELECT * FROM smart_scripts ORDER BY entryorguid"), connection);
-                var dataTable = new DataTable();
-                returnVal.Fill(dataTable);
+                MySqlConnectionStringBuilder connectionString = new MySqlConnectionStringBuilder();
+                connectionString.UserID = user;
+                connectionString.Password = pass;
+                connectionString.Server = host;
+                connectionString.Database = worldDB;
+                connectionString.Port = Convert.ToUInt32(port);
 
-                if (dataTable.Rows.Count <= 0)
-                    return;
-
-                File.Delete("output.sql");
-
-                using (var outputFile = new StreamWriter("output.sql", true))
+                using (var connection = new MySqlConnection(connectionString.ToString()))
                 {
-                    foreach (DataRow row in dataTable.Rows)
+                    connection.Open();
+                    var returnVal = new MySqlDataAdapter(String.Format("SELECT * FROM smart_scripts ORDER BY entryorguid"), connection);
+                    var dataTable = new DataTable();
+                    returnVal.Fill(dataTable);
+
+                    if (dataTable.Rows.Count <= 0)
+                        return;
+
+                    File.Delete("output.sql");
+
+                    using (var outputFile = new StreamWriter("output.sql", true))
                     {
-                        SmartScript smartScript = BuildSmartScript(row);
-
-                        totalLoadedScripts++;
-
-                        MySqlCommand command = new MySqlCommand();
-                        command.Connection = connection;
-
-                        string fullLine = String.Empty;
-                        int entry = smartScript.entryorguid;
-                        MySqlDataReader readerSourceName = null;
-                        MySqlDataReader readerSourceId = null;
-
-                        switch (smartScript.source_type)
+                        foreach (DataRow row in dataTable.Rows)
                         {
-                            case 0: //! Creature
-                                if (smartScript.entryorguid < 0)
+                            SmartScript smartScript = BuildSmartScript(row);
+
+                            totalLoadedScripts++;
+
+                            MySqlCommand command = new MySqlCommand();
+                            command.Connection = connection;
+
+                            string fullLine = String.Empty;
+                            int entry = smartScript.entryorguid;
+                            MySqlDataReader readerSourceName = null;
+                            MySqlDataReader readerSourceId = null;
+
+                            switch (smartScript.source_type)
+                            {
+                                case 0: //! Creature
+                                    if (smartScript.entryorguid < 0)
+                                    {
+                                        command.CommandText = (String.Format("SELECT id FROM creature WHERE guid={0}", -smartScript.entryorguid));
+                                        readerSourceId = command.ExecuteReader(CommandBehavior.Default);
+
+                                        if (readerSourceId.Read())
+                                            entry = Convert.ToInt32(readerSourceId[0].ToString());
+
+                                        readerSourceId.Close();
+                                    }
+
+                                    command.CommandText = (String.Format("SELECT name FROM creature_template WHERE entry={0}", entry));
+                                    readerSourceName = command.ExecuteReader(CommandBehavior.Default);
+
+                                    if (readerSourceName.Read())
+                                        fullLine += readerSourceName[0] + " - ";
+
+                                    readerSourceName.Close();
+                                    break;
+                                case 1: //! Gammeobject
+                                    if (smartScript.entryorguid < 0)
+                                    {
+                                        command.CommandText = (String.Format("SELECT id FROM gameobject WHERE guid={0}", -smartScript.entryorguid));
+                                        readerSourceId = command.ExecuteReader(CommandBehavior.Default);
+
+                                        if (readerSourceId.Read())
+                                            entry = Convert.ToInt32(readerSourceId[0].ToString());
+
+                                        readerSourceId.Close();
+                                    }
+
+                                    command.CommandText = (String.Format("SELECT name FROM gameobject_template WHERE entry={0}", entry));
+                                    readerSourceName = command.ExecuteReader(CommandBehavior.Default);
+
+                                    if (readerSourceName.Read())
+                                        fullLine += readerSourceName[0] + " - ";
+
+                                    readerSourceName.Close();
+                                    break;
+                                case 2: //! Areatrigger
+                                case 9: //! Actionlist
+                                    continue;
+                            }
+
+                            //! Event type
+                            fullLine += smartEventStrings[(SmartEvent)smartScript.event_type];
+
+                            //! TODO: Figure out how to make this work with linking several lines TO each other. Perhaps read from last to first line?
+                            //! TODO: Consider linkto/linkfrom
+                            // SELECT * FROM smart_scripts ORDER BY entryorguid ASC, id DESC
+                            if (fullLine.Contains("_previousLineComment_"))
+                            {
+                                MySqlCommand commandPreviousComment = new MySqlCommand(String.Format("SELECT event_type FROM smart_scripts WHERE entryorguid={0} AND id={1}", smartScript.entryorguid, (Convert.ToInt32(row.ItemArray[2]) - 1).ToString()), connection);
+                                MySqlDataReader readerPreviousLineComment = commandPreviousComment.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerPreviousLineComment.Read())
+                                    fullLine = fullLine.Replace("_previousLineComment_", smartEventStrings[(SmartEvent)Convert.ToInt32(readerPreviousLineComment[0].ToString())]);
+                                else
+                                    fullLine = fullLine.Replace("_previousLineComment_", "Link not found!");
+
+                                readerPreviousLineComment.Close();
+                            }
+
+                            //! This must be called AFTER we check for _previousLineComment_ so that copied event types don't need special handling
+                            if (fullLine.Contains("_eventParamOne_"))
+                                fullLine = fullLine.Replace("_eventParamOne_", smartScript.event_param1.ToString());
+
+                            if (fullLine.Contains("_eventParamTwo_"))
+                                fullLine = fullLine.Replace("_eventParamTwo_", smartScript.event_param2.ToString());
+
+                            if (fullLine.Contains("_eventParamThree_"))
+                                fullLine = fullLine.Replace("_eventParamThree_", smartScript.event_param3.ToString());
+
+                            if (fullLine.Contains("_eventParamFour_"))
+                                fullLine = fullLine.Replace("_eventParamFour_", smartScript.event_param4.ToString());
+
+                            if (fullLine.Contains("_spellNameEventParamOne_"))
+                            {
+                                if (smartScript.event_param1 > 0)
                                 {
-                                    command.CommandText = (String.Format("SELECT id FROM creature WHERE guid={0}", -smartScript.entryorguid));
-                                    readerSourceId = command.ExecuteReader(CommandBehavior.Default);
+                                    MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param1), connection);
+                                    MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
-                                    if (readerSourceId.Read())
-                                        entry = Convert.ToInt32(readerSourceId[0].ToString());
+                                    if (readerSelect.Read())
+                                        fullLine = fullLine.Replace("_spellNameEventParamOne_", readerSelect[0].ToString());
+                                    else
+                                        fullLine = fullLine.Replace("_spellNameEventParamOne_", "Spell not found!");
 
-                                    readerSourceId.Close();
+                                    readerSelect.Close();
                                 }
+                                else
+                                    fullLine = fullLine.Replace(" '_spellNameEventParamOne_'", String.Empty);
+                            }
 
-                                command.CommandText = (String.Format("SELECT name FROM creature_template WHERE entry={0}", entry));
-                                readerSourceName = command.ExecuteReader(CommandBehavior.Default);
-
-                                if (readerSourceName.Read())
-                                    fullLine += readerSourceName[0] + " - ";
-
-                                readerSourceName.Close();
-                                break;
-                            case 1: //! Gammeobject
-                                if (smartScript.entryorguid < 0)
+                            if (fullLine.Contains("_targetCastingSpellName_"))
+                            {
+                                if (smartScript.event_param3.ToString() != "0")
                                 {
-                                    command.CommandText = (String.Format("SELECT id FROM gameobject WHERE guid={0}", -smartScript.entryorguid));
-                                    readerSourceId = command.ExecuteReader(CommandBehavior.Default);
+                                    MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param3), connection);
+                                    MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
-                                    if (readerSourceId.Read())
-                                        entry = Convert.ToInt32(readerSourceId[0].ToString());
+                                    if (readerSelect.Read())
+                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSelect[0] + "'");
+                                    else
+                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "Spell not found!");
 
-                                    readerSourceId.Close();
+                                    readerSelect.Close();
                                 }
+                                else
+                                    fullLine = fullLine.Replace(" '_targetCastingSpellName_'", String.Empty);
+                            }
 
-                                command.CommandText = (String.Format("SELECT name FROM gameobject_template WHERE entry={0}", entry));
-                                readerSourceName = command.ExecuteReader(CommandBehavior.Default);
+                            if (fullLine.Contains("_questNameEventParamOne_"))
+                            {
+                                if (smartScript.event_param1.ToString() == "0") //! Any quest (SMART_EVENT_ACCEPTED_QUEST / SMART_EVENT_REWARD_QUEST)
+                                    fullLine = fullLine.Replace(" '_questNameEventParamOne_'", String.Empty);
+                                else
+                                {
+                                    MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", smartScript.event_param1), connection);
+                                    MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
 
-                                if (readerSourceName.Read())
-                                    fullLine += readerSourceName[0] + " - ";
+                                    if (readerSelect.Read())
+                                        fullLine = fullLine.Replace("_questNameEventParamOne_", readerSelect[0].ToString());
+                                    else
+                                        fullLine = fullLine.Replace("_questNameEventParamOne_", " Quest not found!");
 
-                                readerSourceName.Close();
-                                break;
-                            case 2: //! Areatrigger
-                            case 9: //! Actionlist
+                                    readerSelect.Close();
+                                }
+                            }
+
+                            //! Action type
+                            fullLine += " - " + smartActionStrings[(SmartAction)smartScript.action_type];
+
+                            if (fullLine.Contains("_actionParamOne_"))
+                                fullLine = fullLine.Replace("_actionParamOne_", smartScript.action_param1.ToString());
+
+                            if (fullLine.Contains("_actionParamTwo_"))
+                                fullLine = fullLine.Replace("_actionParamTwo_", smartScript.action_param2.ToString());
+
+                            if (fullLine.Contains("_actionParamThree_"))
+                                fullLine = fullLine.Replace("_actionParamThree_", smartScript.action_param3.ToString());
+
+                            if (fullLine.Contains("_actionParamFour_"))
+                                fullLine = fullLine.Replace("_actionParamFour_", smartScript.action_param4.ToString());
+
+                            if (fullLine.Contains("_actionParamFive_"))
+                                fullLine = fullLine.Replace("_actionParamFive_", smartScript.action_param5.ToString());
+
+                            if (fullLine.Contains("_actionParamSix_"))
+                                fullLine = fullLine.Replace("_actionParamSix_", smartScript.action_param6.ToString());
+
+                            if (fullLine.Contains("_spellNameActionParamOne_"))
+                            {
+                                if (smartScript.action_param1.ToString() != "0")
+                                {
+                                    MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.action_param1), connection);
+                                    MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                                    if (readerSelect.Read())
+                                        fullLine = fullLine.Replace("_spellNameActionParamOne_", readerSelect[0].ToString());
+                                    else
+                                        fullLine = fullLine.Replace("_spellNameActionParamOne_", "Spell not found!");
+
+                                    readerSelect.Close();
+                                }
+                                else
+                                    fullLine = fullLine.Replace(" '_spellNameActionParamOne_", String.Empty);
+                            }
+
+                            if (fullLine.Contains("_spellNameActionParamTwo_"))
+                            {
+                                if (smartScript.event_param2.ToString() != "0")
+                                {
+                                    MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.action_param2), connection);
+                                    MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                                    if (readerSelect.Read())
+                                        fullLine = fullLine.Replace("_spellNameActionParamTwo_", readerSelect[0].ToString());
+                                    else
+                                        fullLine = fullLine.Replace("_spellNameActionParamTwo_", "Spell not found!");
+
+                                    readerSelect.Close();
+                                }
+                                else
+                                    fullLine = fullLine.Replace(" '_spellNameActionParamTwo_", String.Empty);
+                            }
+
+                            if (fullLine.Contains("_questNameActionParamOne_"))
+                            {
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", smartScript.action_param1), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerSelect.Read())
+                                    fullLine = fullLine.Replace("_questNameActionParamOne_", readerSelect[0].ToString());
+                                else
+                                    fullLine = fullLine.Replace("_questNameActionParamOne_", "Quest not found!");
+
+                                readerSelect.Close();
+                            }
+
+                            if (fullLine.Contains("_reactStateParamOne_"))
+                            {
+                                switch (smartScript.action_param1)
+                                {
+                                    case 0:
+                                        fullLine = fullLine.Replace("_reactStateParamOne_", "Passive");
+                                        break;
+                                    case 1:
+                                        fullLine = fullLine.Replace("_reactStateParamOne_", "Defensive");
+                                        break;
+                                    case 2:
+                                        fullLine = fullLine.Replace("_reactStateParamOne_", "Aggressive");
+                                        break;
+                                    default:
+                                        fullLine = fullLine.Replace("_reactStateParamOne_", "<Unknown Reactstate>");
+                                        break;
+                                }
+                            }
+
+                            if (fullLine.Contains("_creatureNameActionParamOne_"))
+                            {
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM creature_template WHERE entry = {0}", smartScript.action_param1), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerSelect.Read())
+                                    fullLine = fullLine.Replace("_creatureNameActionParamOne_", readerSelect[0].ToString());
+                                else
+                                    fullLine = fullLine.Replace("_creatureNameActionParamOne_", "<_creatureNameActionParamOne_ Creature not found!>");
+
+                                readerSelect.Close();
+                            }
+
+                            if (fullLine.Contains("_getUnitFlags_"))
+                            {
+                                string commentUnitFlag = "";
+                                int unitFlags = smartScript.action_param1;
+
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SERVER_CONTROLLED) != 0)  commentUnitFlag += "Server Controlled & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NON_ATTACKABLE) != 0)     commentUnitFlag += "Not Attackable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISABLE_MOVE) != 0)       commentUnitFlag += "Disable Movement & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP_ATTACKABLE) != 0)     commentUnitFlag += "Pvp Attackable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_RENAME) != 0)             commentUnitFlag += "Rename & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PREPARATION) != 0)        commentUnitFlag += "Preparation & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_ATTACKABLE_1) != 0)   commentUnitFlag += "Not Attackable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_PC) != 0)       commentUnitFlag += "Immune To Players & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC) != 0)      commentUnitFlag += "Immune To NPC's & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_LOOTING) != 0)            commentUnitFlag += "Looting & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PET_IN_COMBAT) != 0)      commentUnitFlag += "Pet In Combat & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP) != 0)                commentUnitFlag += "PvP & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SILENCED) != 0)           commentUnitFlag += "Silenced & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PACIFIED) != 0)           commentUnitFlag += "Pacified & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_STUNNED) != 0)            commentUnitFlag += "Stunned & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)          commentUnitFlag += "In Combat & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISARMED) != 0)           commentUnitFlag += "Disarmed & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_CONFUSED) != 0)           commentUnitFlag += "Confused & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_FLEEING) != 0)            commentUnitFlag += "Fleeing & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PLAYER_CONTROLLED) != 0)  commentUnitFlag += "Player Controlled & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_SELECTABLE) != 0)     commentUnitFlag += "Not Selectable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SKINNABLE) != 0)          commentUnitFlag += "Skinnable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_MOUNT) != 0)              commentUnitFlag += "Mounted & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SHEATHE) != 0)            commentUnitFlag += "Sheathed & ";
+
+                                commentUnitFlag = commentUnitFlag.Trim(new char[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
+
+                                if (commentUnitFlag.Contains("&"))
+                                    fullLine = fullLine.Replace("_getUnitFlags_", "s_getUnitFlags_");
+
+                                fullLine = fullLine.Replace("_getUnitFlags_", " " + commentUnitFlag);
+                            }
+
+                            if (fullLine.Contains("_startOrStopActionParamOne_"))
+                            {
+                                if (smartScript.action_param1.ToString() == "0")
+                                    fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Stop");
+                                else //! Even if above 1 or below 0 we start attacking/allow-combat-movement
+                                    fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Start");
+                            }
+
+                            if (fullLine.Contains("_incrementOrDecrementActionParamOne_"))
+                            {
+                                if (smartScript.action_param1.ToString() == "1")
+                                    fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Increment");
+                                else if (smartScript.action_param2.ToString() == "1")
+                                    fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Decrement");
+                                //else //? What to do?
+                            }
+
+                            if (fullLine.Contains("_sheathActionParamOne_"))
+                            {
+                                switch (smartScript.action_param1)
+                                {
+                                    case 0:
+                                        fullLine = fullLine.Replace("_sheathActionParamOne_", "Unarmed");
+                                        break;
+                                    case 1:
+                                        fullLine = fullLine.Replace("_sheathActionParamOne_", "Melee");
+                                        break;
+                                    case 2:
+                                        fullLine = fullLine.Replace("_sheathActionParamOne_", "Ranged");
+                                        break;
+                                    default:
+                                        fullLine = fullLine.Replace("_sheathActionParamOne_", "<Unknown Sheath>");
+                                        break;
+                                }
+                            }
+
+                            if (fullLine.Contains("_forceDespawnActionParamOne_"))
+                            {
+                                if (smartScript.action_param1 == 0)
+                                    fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "In " + smartScript.action_param1.ToString() + " ms");
+                                else
+                                    fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "Instant");
+                            }
+
+                            if (fullLine.Contains("_invincibilityHpActionParamsOneTwo_"))
+                            {
+                                if (smartScript.action_param1 > 0)
+                                    fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartScript.action_param1.ToString());
+                                else if (smartScript.action_param2 > 0)
+                                    fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartScript.action_param2.ToString() + "%");
+                                else
+                                    fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", "<Unsupported parameters>");
+                            }
+
+                            if (fullLine.Contains("_onOffActionParamOne_"))
+                            {
+                                if (smartScript.action_param1 == 1)
+                                    fullLine = fullLine.Replace("_onOffActionParamOne_", "On");
+                                else
+                                    fullLine = fullLine.Replace("_onOffActionParamOne_", "Off");
+                            }
+
+                            if (fullLine.Contains("_gameobjectNameActionParamOne_"))
+                            {
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM gameobject_template WHERE entry = {0}", smartScript.action_param1), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerSelect.Read())
+                                    fullLine = fullLine.Replace("_gameobjectNameActionParamOne_", readerSelect[0].ToString());
+                                else
+                                    fullLine = fullLine.Replace("_gameobjectNameActionParamOne_", "<_gameobjectNameActionParamOne_ Gameobject not found!>");
+
+                                readerSelect.Close();
+                            }
+
+                            if (fullLine.Contains("_addItemBasedOnActionParams_"))
+                            {
+                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM item_template WHERE entry = {0}", smartScript.action_param1), connection);
+                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+                                if (readerSelect.Read())
+                                {
+                                    fullLine = fullLine.Replace("_addItemBasedOnActionParams_", "'" + readerSelect[0].ToString() + "' ");
+
+                                    if (smartScript.action_param2 > 1)
+                                        fullLine += smartScript.action_param2 + " Times";
+                                    else
+                                        fullLine += "1 Time";
+                                }
+                                else
+                                    fullLine = fullLine.Replace("_addItemBasedOnActionParams_", "<_addItemBasedOnActionParams_ Item not found!>");
+
+                                readerSelect.Close();
+                            }
+
+                            if (fullLine.Contains("_updateAiTemplateActionParamOne_"))
+                            {
+                                switch ((SmartAiTemplates)smartScript.action_param1)
+                                {
+                                    case SmartAiTemplates.SMARTAI_TEMPLATE_BASIC:
+                                        fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Basic");
+                                        break;
+                                    case SmartAiTemplates.SMARTAI_TEMPLATE_CASTER:
+                                        fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Caster");
+                                        break;
+                                    case SmartAiTemplates.SMARTAI_TEMPLATE_TURRET:
+                                        fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Turret");
+                                        break;
+                                    case SmartAiTemplates.SMARTAI_TEMPLATE_PASSIVE:
+                                        fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Passive");
+                                        break;
+                                    case SmartAiTemplates.SMARTAI_TEMPLATE_CAGED_GO_PART:
+                                        fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Caged Gameobject Part");
+                                        break;
+                                    case SmartAiTemplates.SMARTAI_TEMPLATE_CAGED_NPC_PART:
+                                        fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Caged Creature Part");
+                                        break;
+                                    default:
+                                        fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "<_updateAiTemplateActionParamOne_ Unknown ai template>");
+                                        break;
+                                }
+                            }
+
+                            if (fullLine.Contains("_setOrientationTargetType_"))
+                            {
+                                switch ((SmartTargetType)smartScript.target_type)
+                                {
+                                    case SmartTargetType.SMART_TARGET_SELF:
+                                        fullLine = fullLine.Replace("_setOrientationTargetType_", "Home Position");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_POSITION:
+                                        fullLine = fullLine.Replace("_setOrientationTargetType_", smartScript.target_o.ToString());
+                                        break;
+                                    default:
+                                        fullLine = fullLine.Replace("_setOrientationTargetType_", "Target");
+                                        break;
+                                }
+                            }
+
+                            if (fullLine.Contains("_moveToTargetType_"))
+                            {
+                                switch ((SmartTargetType)smartScript.target_type)
+                                {
+                                    case SmartTargetType.SMART_TARGET_VICTIM:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Victim");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_HOSTILE_SECOND_AGGRO:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Second On Threatlist");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_HOSTILE_LAST_AGGRO:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Last On Threatlist");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_HOSTILE_RANDOM:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Random On Threatlist");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_HOSTILE_RANDOM_NOT_TOP:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Random On Threatlist Not Top");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_ACTION_INVOKER:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Invoker");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_POSITION:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Position");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_CREATURE_RANGE:
+                                    case SmartTargetType.SMART_TARGET_CREATURE_DISTANCE:
+                                    case SmartTargetType.SMART_TARGET_CLOSEST_CREATURE:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Creature '" + GetCreatureNameByEntry(connection, smartScript.target_param1) + "'");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_CREATURE_GUID:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Creature '" + GetCreatureNameByGuid(connection, smartScript.target_param1) + "'");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_GAMEOBJECT_RANGE:
+                                    case SmartTargetType.SMART_TARGET_GAMEOBJECT_DISTANCE:
+                                        case SmartTargetType.SMART_TARGET_CLOSEST_GAMEOBJECT:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Gameobject '" + GetGameobjectNameByEntry(connection, smartScript.target_param1) + "'");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_GAMEOBJECT_GUID:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Gameobject '" + GetGameobjectNameByGuid(connection, smartScript.target_param1) + "'");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_INVOKER_PARTY:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Invoker's Party");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_PLAYER_RANGE:
+                                    case SmartTargetType.SMART_TARGET_PLAYER_DISTANCE:
+                                    case SmartTargetType.SMART_TARGET_CLOSEST_PLAYER:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Player");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_ACTION_INVOKER_VEHICLE:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Invoker's Vehicle");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_OWNER_OR_SUMMONER:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Owner Or Summoner");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_THREAT_LIST:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "First Unit On Threatlist");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_CLOSEST_ENEMY:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Enemy");
+                                        break;
+                                    case SmartTargetType.SMART_TARGET_CLOSEST_FRIENDLY:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "Closest Friendly Unit");
+                                        break;
+                                    default:
+                                        fullLine = fullLine.Replace("_moveToTargetType_", "<unsupported target type>");
+                                        break;
+                                }
+                            }
+
+                            string cleanNewComment = fullLine;
+                            fullLine = fullLine.Insert(0, "UPDATE `smart_scripts` SET `comment`=" + '"');
+
+                            //! Don't update the script if the comment is already correct
+                            if (cleanNewComment == smartScript.comment)
+                            {
+                                totalSkippedScripts++;
                                 continue;
-                        }
-
-                        //! Event type
-                        fullLine += smartEventStrings[(SmartEvent)smartScript.event_type];
-
-                        //! TODO: Figure out how to make this work with linking several lines TO each other. Perhaps read from last to first line?
-                        //! TODO: Consider linkto/linkfrom
-                        // SELECT * FROM smart_scripts ORDER BY entryorguid ASC, id DESC
-                        if (fullLine.Contains("_previousLineComment_"))
-                        {
-                            MySqlCommand commandPreviousComment = new MySqlCommand(String.Format("SELECT event_type FROM smart_scripts WHERE entryorguid={0} AND id={1}", smartScript.entryorguid, (Convert.ToInt32(row.ItemArray[2]) - 1).ToString()), connection);
-                            MySqlDataReader readerPreviousLineComment = commandPreviousComment.ExecuteReader(CommandBehavior.Default);
-
-                            if (readerPreviousLineComment.Read())
-                                fullLine = fullLine.Replace("_previousLineComment_", smartEventStrings[(SmartEvent)Convert.ToInt32(readerPreviousLineComment[0].ToString())]);
-                            else
-                                fullLine = fullLine.Replace("_previousLineComment_", "Link not found!");
-
-                            readerPreviousLineComment.Close();
-                        }
-
-                        //! This must be called AFTER we check for _previousLineComment_ so that copied event types don't need special handling
-                        if (fullLine.Contains("_eventParamOne_"))
-                            fullLine = fullLine.Replace("_eventParamOne_", smartScript.event_param1.ToString());
-
-                        if (fullLine.Contains("_eventParamTwo_"))
-                            fullLine = fullLine.Replace("_eventParamTwo_", smartScript.event_param2.ToString());
-
-                        if (fullLine.Contains("_eventParamThree_"))
-                            fullLine = fullLine.Replace("_eventParamThree_", smartScript.event_param3.ToString());
-
-                        if (fullLine.Contains("_eventParamFour_"))
-                            fullLine = fullLine.Replace("_eventParamFour_", smartScript.event_param4.ToString());
-
-                        if (fullLine.Contains("_spellNameEventParamOne_"))
-                        {
-                            if (smartScript.event_param1 > 0)
-                            {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param1), connection);
-                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                if (readerSelect.Read())
-                                    fullLine = fullLine.Replace("_spellNameEventParamOne_", readerSelect[0].ToString());
-                                else
-                                    fullLine = fullLine.Replace("_spellNameEventParamOne_", "Spell not found!");
-
-                                readerSelect.Close();
                             }
-                            else
-                                fullLine = fullLine.Replace(" '_spellNameEventParamOne_'", String.Empty);
+
+                            fullLine += '"' + " WHERE `entryorguid`=" + smartScript.entryorguid + " AND `id`=" + smartScript.id + ';';
+                            Console.WriteLine(fullLine);
+                            fullLine += " -- Old comment: '" + smartScript.comment + "'"; //! Don't print the old comment in console
+                            outputFile.WriteLine(fullLine);
                         }
-
-                        if (fullLine.Contains("_targetCastingSpellName_"))
-                        {
-                            if (smartScript.event_param3.ToString() != "0")
-                            {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param3), connection);
-                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                if (readerSelect.Read())
-                                    fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSelect[0] + "'");
-                                else
-                                    fullLine = fullLine.Replace("_targetCastingSpellName_", "Spell not found!");
-
-                                readerSelect.Close();
-                            }
-                            else
-                                fullLine = fullLine.Replace(" '_targetCastingSpellName_'", String.Empty);
-                        }
-
-                        if (fullLine.Contains("_questNameEventParamOne_"))
-                        {
-                            if (smartScript.event_param1.ToString() == "0") //! Any quest (SMART_EVENT_ACCEPTED_QUEST / SMART_EVENT_REWARD_QUEST)
-                                fullLine = fullLine.Replace(" '_questNameEventParamOne_'", String.Empty);
-                            else
-                            {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", smartScript.event_param1), connection);
-                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                if (readerSelect.Read())
-                                    fullLine = fullLine.Replace("_questNameEventParamOne_", readerSelect[0].ToString());
-                                else
-                                    fullLine = fullLine.Replace("_questNameEventParamOne_", " Quest not found!");
-
-                                readerSelect.Close();
-                            }
-                        }
-
-                        //! Action type
-                        fullLine += " - " + smartActionStrings[(SmartAction)smartScript.action_type];
-
-                        if (fullLine.Contains("_actionParamOne_"))
-                            fullLine = fullLine.Replace("_actionParamOne_", smartScript.action_param1.ToString());
-
-                        if (fullLine.Contains("_actionParamTwo_"))
-                            fullLine = fullLine.Replace("_actionParamTwo_", smartScript.action_param2.ToString());
-
-                        if (fullLine.Contains("_actionParamThree_"))
-                            fullLine = fullLine.Replace("_actionParamThree_", smartScript.action_param3.ToString());
-
-                        if (fullLine.Contains("_actionParamFour_"))
-                            fullLine = fullLine.Replace("_actionParamFour_", smartScript.action_param4.ToString());
-
-                        if (fullLine.Contains("_actionParamFive_"))
-                            fullLine = fullLine.Replace("_actionParamFive_", smartScript.action_param5.ToString());
-
-                        if (fullLine.Contains("_actionParamSix_"))
-                            fullLine = fullLine.Replace("_actionParamSix_", smartScript.action_param6.ToString());
-
-                        if (fullLine.Contains("_spellNameActionParamOne_"))
-                        {
-                            if (smartScript.action_param1.ToString() != "0")
-                            {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.action_param1), connection);
-                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                if (readerSelect.Read())
-                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", readerSelect[0].ToString());
-                                else
-                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", "Spell not found!");
-
-                                readerSelect.Close();
-                            }
-                            else
-                                fullLine = fullLine.Replace(" '_spellNameActionParamOne_", String.Empty);
-                        }
-
-                        if (fullLine.Contains("_spellNameActionParamTwo_"))
-                        {
-                            if (smartScript.event_param2.ToString() != "0")
-                            {
-                                MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.action_param2), connection);
-                                MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                if (readerSelect.Read())
-                                    fullLine = fullLine.Replace("_spellNameActionParamTwo_", readerSelect[0].ToString());
-                                else
-                                    fullLine = fullLine.Replace("_spellNameActionParamTwo_", "Spell not found!");
-
-                                readerSelect.Close();
-                            }
-                            else
-                                fullLine = fullLine.Replace(" '_spellNameActionParamTwo_", String.Empty);
-                        }
-
-                        if (fullLine.Contains("_questNameActionParamOne_"))
-                        {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT title FROM quest_template WHERE id = {0}", smartScript.action_param1), connection);
-                            MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                            if (readerSelect.Read())
-                                fullLine = fullLine.Replace("_questNameActionParamOne_", readerSelect[0].ToString());
-                            else
-                                fullLine = fullLine.Replace("_questNameActionParamOne_", "Quest not found!");
-
-                            readerSelect.Close();
-                        }
-
-                        if (fullLine.Contains("_reactStateParamOne_"))
-                        {
-                            switch (smartScript.action_param1)
-                            {
-                                case 0:
-                                    fullLine = fullLine.Replace("_reactStateParamOne_", "Passive");
-                                    break;
-                                case 1:
-                                    fullLine = fullLine.Replace("_reactStateParamOne_", "Defensive");
-                                    break;
-                                case 2:
-                                    fullLine = fullLine.Replace("_reactStateParamOne_", "Aggressive");
-                                    break;
-                                default:
-                                    fullLine = fullLine.Replace("_reactStateParamOne_", "<Unknown Reactstate>");
-                                    break;
-                            }
-                        }
-
-                        if (fullLine.Contains("_creatureNameActionParamOne_"))
-                        {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM creature_template WHERE entry = {0}", smartScript.action_param1), connection);
-                            MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                            if (readerSelect.Read())
-                                fullLine = fullLine.Replace("_creatureNameActionParamOne_", readerSelect[0].ToString());
-                            else
-                                fullLine = fullLine.Replace("_creatureNameActionParamOne_", "<_creatureNameActionParamOne_ Creature not found!>");
-
-                            readerSelect.Close();
-                        }
-
-                        if (fullLine.Contains("_getUnitFlags_"))
-                        {
-                            string commentUnitFlag = "";
-                            int unitFlags = smartScript.action_param1;
-
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SERVER_CONTROLLED) != 0)  commentUnitFlag += "Server Controlled & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NON_ATTACKABLE) != 0)     commentUnitFlag += "Not Attackable & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISABLE_MOVE) != 0)       commentUnitFlag += "Disable Movement & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP_ATTACKABLE) != 0)     commentUnitFlag += "Pvp Attackable & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_RENAME) != 0)             commentUnitFlag += "Rename & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PREPARATION) != 0)        commentUnitFlag += "Preparation & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_ATTACKABLE_1) != 0)   commentUnitFlag += "Not Attackable & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_PC) != 0)       commentUnitFlag += "Immune To Players & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC) != 0)      commentUnitFlag += "Immune To NPC's & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_LOOTING) != 0)            commentUnitFlag += "Looting & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PET_IN_COMBAT) != 0)      commentUnitFlag += "Pet In Combat & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP) != 0)                commentUnitFlag += "PvP & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SILENCED) != 0)           commentUnitFlag += "Silenced & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PACIFIED) != 0)           commentUnitFlag += "Pacified & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_STUNNED) != 0)            commentUnitFlag += "Stunned & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)          commentUnitFlag += "In Combat & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISARMED) != 0)           commentUnitFlag += "Disarmed & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_CONFUSED) != 0)           commentUnitFlag += "Confused & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_FLEEING) != 0)            commentUnitFlag += "Fleeing & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PLAYER_CONTROLLED) != 0)  commentUnitFlag += "Player Controlled & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_SELECTABLE) != 0)     commentUnitFlag += "Not Selectable & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SKINNABLE) != 0)          commentUnitFlag += "Skinnable & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_MOUNT) != 0)              commentUnitFlag += "Mounted & ";
-                            if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SHEATHE) != 0)            commentUnitFlag += "Sheathed & ";
-
-                            commentUnitFlag = commentUnitFlag.Trim(new char[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
-
-                            if (commentUnitFlag.Contains("&"))
-                                fullLine = fullLine.Replace("_getUnitFlags_", "s_getUnitFlags_");
-
-                            fullLine = fullLine.Replace("_getUnitFlags_", " " + commentUnitFlag);
-                        }
-
-                        if (fullLine.Contains("_startOrStopActionParamOne_"))
-                        {
-                            if (smartScript.action_param1.ToString() == "0")
-                                fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Stop");
-                            else //! Even if above 1 or below 0 we start attacking/allow-combat-movement
-                                fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Start");
-                        }
-
-                        if (fullLine.Contains("_incrementOrDecrementActionParamOne_"))
-                        {
-                            if (smartScript.action_param1.ToString() == "1")
-                                fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Increment");
-                            else if (smartScript.action_param2.ToString() == "1")
-                                fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Decrement");
-                            //else //? What to do?
-                        }
-
-                        if (fullLine.Contains("_sheathActionParamOne_"))
-                        {
-                            switch (smartScript.action_param1)
-                            {
-                                case 0:
-                                    fullLine = fullLine.Replace("_sheathActionParamOne_", "Unarmed");
-                                    break;
-                                case 1:
-                                    fullLine = fullLine.Replace("_sheathActionParamOne_", "Melee");
-                                    break;
-                                case 2:
-                                    fullLine = fullLine.Replace("_sheathActionParamOne_", "Ranged");
-                                    break;
-                                default:
-                                    fullLine = fullLine.Replace("_sheathActionParamOne_", "<Unknown Sheath>");
-                                    break;
-                            }
-                        }
-
-                        if (fullLine.Contains("_forceDespawnActionParamOne_"))
-                        {
-                            if (smartScript.action_param1 == 0)
-                                fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "In " + smartScript.action_param1.ToString() + " ms");
-                            else
-                                fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "Instant");
-                        }
-
-                        if (fullLine.Contains("_invincibilityHpActionParamsOneTwo_"))
-                        {
-                            if (smartScript.action_param1 > 0)
-                                fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartScript.action_param1.ToString());
-                            else if (smartScript.action_param2 > 0)
-                                fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartScript.action_param2.ToString() + "%");
-                            else
-                                fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", "<Unsupported parameters>");
-                        }
-
-                        if (fullLine.Contains("_onOffActionParamOne_"))
-                        {
-                            if (smartScript.action_param1 == 1)
-                                fullLine = fullLine.Replace("_onOffActionParamOne_", "On");
-                            else
-                                fullLine = fullLine.Replace("_onOffActionParamOne_", "Off");
-                        }
-
-                        if (fullLine.Contains("_gameobjectNameActionParamOne_"))
-                        {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM gameobject_template WHERE entry = {0}", smartScript.action_param1), connection);
-                            MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                            if (readerSelect.Read())
-                                fullLine = fullLine.Replace("_gameobjectNameActionParamOne_", readerSelect[0].ToString());
-                            else
-                                fullLine = fullLine.Replace("_gameobjectNameActionParamOne_", "<_gameobjectNameActionParamOne_ Gameobject not found!>");
-
-                            readerSelect.Close();
-                        }
-
-                        if (fullLine.Contains("_addItemBasedOnActionParams_"))
-                        {
-                            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT name FROM item_template WHERE entry = {0}", smartScript.action_param1), connection);
-                            MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                            if (readerSelect.Read())
-                            {
-                                fullLine = fullLine.Replace("_addItemBasedOnActionParams_", "'" + readerSelect[0].ToString() + "' ");
-
-                                if (smartScript.action_param2 > 1)
-                                    fullLine += smartScript.action_param2 + " Times";
-                                else
-                                    fullLine += "1 Time";
-                            }
-                            else
-                                fullLine = fullLine.Replace("_addItemBasedOnActionParams_", "<_addItemBasedOnActionParams_ Item not found!>");
-
-                            readerSelect.Close();
-                        }
-
-                        if (fullLine.Contains("_updateAiTemplateActionParamOne_"))
-                        {
-                            switch ((SmartAiTemplates)smartScript.action_param1)
-                            {
-                                case SmartAiTemplates.SMARTAI_TEMPLATE_BASIC:
-                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Basic");
-                                    break;
-                                case SmartAiTemplates.SMARTAI_TEMPLATE_CASTER:
-                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Caster");
-                                    break;
-                                case SmartAiTemplates.SMARTAI_TEMPLATE_TURRET:
-                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Turret");
-                                    break;
-                                case SmartAiTemplates.SMARTAI_TEMPLATE_PASSIVE:
-                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Passive");
-                                    break;
-                                case SmartAiTemplates.SMARTAI_TEMPLATE_CAGED_GO_PART:
-                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Caged Gameobject Part");
-                                    break;
-                                case SmartAiTemplates.SMARTAI_TEMPLATE_CAGED_NPC_PART:
-                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Caged Creature Part");
-                                    break;
-                                default:
-                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "<_updateAiTemplateActionParamOne_ Unknown ai template>");
-                                    break;
-                            }
-                        }
-
-                        if (fullLine.Contains("_setOrientationTargetType_"))
-                        {
-                            switch ((SmartTargetType)smartScript.target_type)
-                            {
-                                case SmartTargetType.SMART_TARGET_SELF:
-                                    fullLine = fullLine.Replace("_setOrientationTargetType_", "Home Position");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_POSITION:
-                                    fullLine = fullLine.Replace("_setOrientationTargetType_", smartScript.target_o.ToString());
-                                    break;
-                                default:
-                                    fullLine = fullLine.Replace("_setOrientationTargetType_", "Target");
-                                    break;
-                            }
-                        }
-
-                        if (fullLine.Contains("_moveToTargetType_"))
-                        {
-                            switch ((SmartTargetType)smartScript.target_type)
-                            {
-                                case SmartTargetType.SMART_TARGET_VICTIM:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Victim");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_HOSTILE_SECOND_AGGRO:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Second On Threatlist");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_HOSTILE_LAST_AGGRO:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Last On Threatlist");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_HOSTILE_RANDOM:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Random On Threatlist");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_HOSTILE_RANDOM_NOT_TOP:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Random On Threatlist Not Top");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_ACTION_INVOKER:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Invoker");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_POSITION:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Position");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_CREATURE_RANGE:
-                                case SmartTargetType.SMART_TARGET_CREATURE_DISTANCE:
-                                case SmartTargetType.SMART_TARGET_CLOSEST_CREATURE:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Creature '" + GetCreatureNameByEntry(connection, smartScript.target_param1) + "'");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_CREATURE_GUID:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Creature '" + GetCreatureNameByGuid(connection, smartScript.target_param1) + "'");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_GAMEOBJECT_RANGE:
-                                case SmartTargetType.SMART_TARGET_GAMEOBJECT_DISTANCE:
-                                    case SmartTargetType.SMART_TARGET_CLOSEST_GAMEOBJECT:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Gameobject '" + GetGameobjectNameByEntry(connection, smartScript.target_param1) + "'");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_GAMEOBJECT_GUID:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Gameobject '" + GetGameobjectNameByGuid(connection, smartScript.target_param1) + "'");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_INVOKER_PARTY:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Invoker's Party");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_PLAYER_RANGE:
-                                case SmartTargetType.SMART_TARGET_PLAYER_DISTANCE:
-                                case SmartTargetType.SMART_TARGET_CLOSEST_PLAYER:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Player");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_ACTION_INVOKER_VEHICLE:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Invoker's Vehicle");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_OWNER_OR_SUMMONER:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Owner Or Summoner");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_THREAT_LIST:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "First Unit On Threatlist");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_CLOSEST_ENEMY:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Enemy");
-                                    break;
-                                case SmartTargetType.SMART_TARGET_CLOSEST_FRIENDLY:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "Closest Friendly Unit");
-                                    break;
-                                default:
-                                    fullLine = fullLine.Replace("_moveToTargetType_", "<unsupported target type>");
-                                    break;
-                            }
-                        }
-
-                        string cleanNewComment = fullLine;
-                        fullLine = fullLine.Insert(0, "UPDATE `smart_scripts` SET `comment`=" + '"');
-
-                        //! Don't update the script if the comment is already correct
-                        if (cleanNewComment == smartScript.comment)
-                        {
-                            totalSkippedScripts++;
-                            continue;
-                        }
-
-                        fullLine += '"' + " WHERE `entryorguid`=" + smartScript.entryorguid + " AND `id`=" + smartScript.id + ';';
-                        Console.WriteLine(fullLine);
-                        fullLine += " -- Old comment: '" + smartScript.comment + "'"; //! Don't print the old comment in console
-                        outputFile.WriteLine(fullLine);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.ReadKey();
             }
 
             Console.WriteLine("\n\n\nThe converting has finished. A total of {0} scripts were loaded of which {1} were skipped because their comments already fit the correct codestyle.", totalLoadedScripts, totalSkippedScripts);
