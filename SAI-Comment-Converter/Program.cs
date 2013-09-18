@@ -153,7 +153,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_WP_STOP, "Stop Waypoint");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_ITEM, "Add Item _addItemBasedOnActionParams_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_ITEM, "Remove Item _addItemBasedOnActionParams_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_INSTALL_AI_TEMPLATE, "");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_INSTALL_AI_TEMPLATE, "Install _updateAiTemplateActionParamOne_ Template");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_RUN, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_FLY, "");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_SWIM, "");
@@ -638,6 +638,34 @@ namespace SAI_Comment_Converter
                                 fullLine = fullLine.Replace("_addItemBasedOnActionParams_", "<_addItemBasedOnActionParams_ Item not found!>");
 
                             readerSelect.Close();
+                        }
+
+                        if (fullLine.Contains("_updateAiTemplateActionParamOne_"))
+                        {
+                            switch ((SmartAiTemplates)smartScript.action_param1)
+                            {
+                                case SmartAiTemplates.SMARTAI_TEMPLATE_BASIC:
+                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Basic");
+                                    break;
+                                case SmartAiTemplates.SMARTAI_TEMPLATE_CASTER:
+                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Caster");
+                                    break;
+                                case SmartAiTemplates.SMARTAI_TEMPLATE_TURRET:
+                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Turret");
+                                    break;
+                                case SmartAiTemplates.SMARTAI_TEMPLATE_PASSIVE:
+                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Passive");
+                                    break;
+                                case SmartAiTemplates.SMARTAI_TEMPLATE_CAGED_GO_PART:
+                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Caged Gameobject Part");
+                                    break;
+                                case SmartAiTemplates.SMARTAI_TEMPLATE_CAGED_NPC_PART:
+                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Caged Creature Part");
+                                    break;
+                                default:
+                                    fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "<_updateAiTemplateActionParamOne_ Unknown ai template>");
+                                    break;
+                            }
                         }
 
                         string cleanNewComment = fullLine;

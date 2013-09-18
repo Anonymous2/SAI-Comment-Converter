@@ -258,6 +258,16 @@
         TEMPSUMMON_MANUAL_DESPAWN = 8
     }
 
+    public enum SmartAiTemplates
+    {
+        SMARTAI_TEMPLATE_BASIC,
+        SMARTAI_TEMPLATE_CASTER,
+        SMARTAI_TEMPLATE_TURRET,
+        SMARTAI_TEMPLATE_PASSIVE,
+        SMARTAI_TEMPLATE_CAGED_GO_PART,
+        SMARTAI_TEMPLATE_CAGED_NPC_PART,
+    }
+
 	public enum UnitFlags : uint
 	{
         UNIT_FLAG_SERVER_CONTROLLED     = 0x00000001,           // set only when unit movement is controlled by server - by SPLINE/MONSTER_MOVE packets, together with UNIT_FLAG_STUNNED; only set to units controlled by client; client function CGUnit_C::IsClientControlled returns false when set for owner
