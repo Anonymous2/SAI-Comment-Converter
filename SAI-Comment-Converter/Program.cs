@@ -16,7 +16,7 @@ namespace SAI_Comment_Converter
         static void Main(string[] args)
         {
             smartEventStrings.Add(SmartEvent.SMART_EVENT_SPELLHIT, "On Spellhit '_spellNameEventParamOne_'");
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_HAS_AURA, "On Has Aura '_spellNameEventParamOne_'");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_HAS_AURA, "On _hasAuraEventParamOne_ '_spellNameEventParamOne_'");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_TARGET_BUFFED, "On Target Buffed With '_spellNameEventParamOne_'");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_SPELLHIT_TARGET, "On Target Spellhit '_spellNameEventParamOne_'");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_FRIENDLY_MISSING_BUFF, "On Friendly Unit Missing Buff '_spellNameEventParamOne_'");
@@ -397,6 +397,9 @@ namespace SAI_Comment_Converter
                                     readerSelect.Close();
                                 }
                             }
+
+                            if (fullLine.Contains("_hasAuraEventParamOne_"))
+                                fullLine = fullLine.Replace("_hasAuraEventParamOne_", smartScript.event_param1 > 0 ? "Has Aura" : "Aura Not Present");
 
                             //! Action type
                             fullLine += " - " + smartActionStrings[(SmartAction)smartScript.action_type];
