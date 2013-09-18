@@ -166,32 +166,32 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_PLAYMOVIE, "Play Movie _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_MOVE_TO_POS, "Move To _getTargetType_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RESPAWN_TARGET, "Respawn Gameobject");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_EQUIP, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_EQUIP, "Change Equipment");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CLOSE_GOSSIP, "Close Gossip");
             smartActionStrings.Add(SmartAction.SMART_ACTION_TRIGGER_TIMED_EVENT, "Trigger Timed Event _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_TIMED_EVENT, "Remove Timed Event _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_AURA, "Add Aura '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_OVERRIDE_SCRIPT_BASE_OBJECT, "Override Base Object Script");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RESET_SCRIPT_BASE_OBJECT, "Reset  Base Object Script");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_SCRIPT_RESET, "Reset All Scripts");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_SCRIPT_RESET, "Reset All Scriptsfa");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_RANGED_MOVEMENT, "Set Ranged Movement");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_TIMED_ACTIONLIST, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_TIMED_ACTIONLIST, "Run Script");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_NPC_FLAG, "<todo>"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_NPC_FLAG, "<todo>"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_NPC_FLAG, "<todo>"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_SIMPLE_TALK, "Say Line _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_INVOKER_CAST, "Invoker Cast '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CROSS_CAST, "Cross Cast '_spellNameActionParamOne_'");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_RANDOM_TIMED_ACTIONLIST, "<todo>"); // todo
-            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_RANDOM_RANGE_TIMED_ACTIONLIST, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_RANDOM_TIMED_ACTIONLIST, "Run Random Script");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_RANDOM_RANGE_TIMED_ACTIONLIST, "Run Random Script");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_MOVE, "Start Random Movement");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_UNIT_FIELD_BYTES_1, "<todo>"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_UNIT_FIELD_BYTES_1, "<todo>"); // todo
             smartActionStrings.Add(SmartAction.SMART_ACTION_INTERRUPT_SPELL, "Interrupt Spell '_spellNameActionParamTwo_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SEND_GO_CUSTOM_ANIM, "Send Custom Animation _actionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DYNAMIC_FLAG, "<todo>"); // todo
-            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_DYNAMIC_FLAG, "<todo>"); // todo
-            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_DYNAMIC_FLAG, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DYNAMIC_FLAG, "Set Dynamic Flag_getDynamicFlags_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_DYNAMIC_FLAG, "Add Dynamic Flag_getDynamicFlags_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_DYNAMIC_FLAG, "Remove Dynamic Flag_getDynamicFlags_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_JUMP_TO_POS, "Jump To Pos");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SEND_GOSSIP_MENU, "Send Gossip");
             smartActionStrings.Add(SmartAction.SMART_ACTION_GO_SET_LOOT_STATE, "Set Lootstate _goStateActionParamOne_");
@@ -758,6 +758,29 @@ namespace SAI_Comment_Converter
                                     fullLine = fullLine.Replace("_getGoFlags_", "s_getGoFlags_");
 
                                 fullLine = fullLine.Replace("_getGoFlags_", " " + commentGoFlag);
+                            }
+
+                            if (fullLine.Contains("_getDynamicFlags_"))
+                            {
+                                string commentDynamicFlag = "";
+                                int dynamicFlags = smartScript.action_param1;
+
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_NONE) != 0)       commentDynamicFlag += "None & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_LOOTABLE) != 0) commentDynamicFlag += "Lootable & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_TRACK_UNIT) != 0) commentDynamicFlag += "Track Units & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_TAPPED) != 0) commentDynamicFlag += "Tapped & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_TAPPED_BY_PLAYER) != 0) commentDynamicFlag += "Tapped By Player & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_SPECIALINFO) != 0) commentDynamicFlag += "Special Info & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_DEAD) != 0) commentDynamicFlag += "Dead & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_REFER_A_FRIEND) != 0) commentDynamicFlag += "Refer A Friend & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_TAPPED_BY_ALL_THREAT_LIST) != 0) commentDynamicFlag += "Tapped By Threatlist & ";
+
+                                commentDynamicFlag = commentDynamicFlag.Trim(new[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
+
+                                if (commentDynamicFlag.Contains("&"))
+                                    fullLine = fullLine.Replace("_getDynamicFlags_", "s_getDynamicFlags_");
+
+                                fullLine = fullLine.Replace("_getDynamicFlags_", " " + commentDynamicFlag);
                             }
 
                             if (fullLine.Contains("_powerTypeActionParamOne_"))
