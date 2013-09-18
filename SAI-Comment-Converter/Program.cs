@@ -105,7 +105,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_QUEST, "Add Quest '_questNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_REACT_STATE, "Set Reactstate _reactStateParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_ACTIVATE_GOBJECT, "Activate Gameobject");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_EMOTE, "Play Random Emote (_actionRandomEmotes_)");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_EMOTE, "Play Random Emote (_actionRandomParameters_)");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CAST, "Cast '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SUMMON_CREATURE, "Summon Creature '_creatureNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_THREAT_SINGLE_PCT, "Set Single Threat _actionParamOne_-_actionParamTwo_");
@@ -125,7 +125,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_CASTEDCREATUREORGO, "Quest Credit '_questNameCastCreatureOrGo_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVEAURASFROMSPELL, "Remove Aura '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FOLLOW, "Follow _getTargetType_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE, "<todo>"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE, "Set Random Phase(_actionRandomParameters_)");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE_RANGE, "Set Phase Random Between _actionParamOne_-_actionParamTwo_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RESET_GOBJECT, "Reset Gameobject");
             smartActionStrings.Add(SmartAction.SMART_ACTION_KILLED_MONSTER, "Quest Credit '_questNameActionParamOne_");
@@ -503,7 +503,7 @@ namespace SAI_Comment_Converter
                                 }
                             }
 
-                            if (fullLine.Contains("_actionRandomEmotes_"))
+                            if (fullLine.Contains("_actionRandomParameters_"))
                             {
                                 string randomEmotes = smartScript.action_param1 + ", " + smartScript.action_param2;
 
@@ -519,7 +519,7 @@ namespace SAI_Comment_Converter
                                 if (smartScript.action_param6 > 0)
                                     randomEmotes += ", " + smartScript.action_param6.ToString();
 
-                                fullLine = fullLine.Replace("_actionRandomEmotes_", randomEmotes);
+                                fullLine = fullLine.Replace("_actionRandomParameters_", randomEmotes);
                             }
 
                             if (fullLine.Contains("_creatureNameActionParamOne_"))
