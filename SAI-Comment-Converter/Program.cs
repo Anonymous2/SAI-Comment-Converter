@@ -117,7 +117,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_UNIT_FLAG, "Set Flag_getUnitFlags_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_UNIT_FLAG, "Remove Flag_getUnitFlags_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_AUTO_ATTACK, "_startOrStopActionParamOne_ Attacking");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_COMBAT_MOVEMENT, "_startOrStopActionParamOne_ Combat Movement");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_COMBAT_MOVEMENT, "_enableDisableActionParamOne_ Combat Movement");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_EVENT_PHASE, "Set Event Phase _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_INC_EVENT_PHASE, "_incrementOrDecrementActionParamOne_ Phase");
             smartActionStrings.Add(SmartAction.SMART_ACTION_EVADE, "Evade");
@@ -595,6 +595,14 @@ namespace SAI_Comment_Converter
                                     fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Start");
                             }
 
+                            if (fullLine.Contains("_enableDisableActionParamOne_"))
+                            {
+                                if (smartScript.action_param1.ToString() == "0")
+                                    fullLine = fullLine.Replace("_enableDisableActionParamOne_", "Disable");
+                                else //! Even if above 1 or below 0 we start attacking/allow-combat-movement
+                                    fullLine = fullLine.Replace("_enableDisableActionParamOne_", "Enable");
+                            }
+
                             if (fullLine.Contains("_incrementOrDecrementActionParamOne_"))
                             {
                                 if (smartScript.action_param1.ToString() == "1")
@@ -976,7 +984,7 @@ namespace SAI_Comment_Converter
                                 }
 
                                 int[] arrayOfSplitPhases = listOfSplitPhases.ToArray();
-                                Array.Reverse(arrayOfSplitPhases);
+                                Array.Reverse(arrayOfSplitPhases); //! Reverse them so they are ascending
                                 fullLine += " (Phase";
 
                                 if (listOfSplitPhases.Count > 1)
