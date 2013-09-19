@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using MySql.Data.MySqlClient;
 
 namespace SAI_Comment_Converter
@@ -947,6 +948,41 @@ namespace SAI_Comment_Converter
 
                                 if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DEBUG_ONLY) != 0))
                                     fullLine += " (Debug)";
+                            }
+
+                            if (smartScript.event_phase_mask > 0)
+                            {
+                                List<int> listOfSplitPhases = new List<int>();
+
+                                int event_phase_mask = smartScript.event_phase_mask;
+                                int event_phase_mask2 = event_phase_mask;
+                                int log2 = 0;
+
+                                while (event_phase_mask2 >= 2)
+                                {
+                                    event_phase_mask2 /= 2;
+                                    log2++;
+                                }
+
+                                for (int l2 = log2; l2 >= 0; l2--)
+                                {
+                                    int power = (int)Math.Pow(2, l2);
+
+                                    if (event_phase_mask >= power)
+                                    {
+                                        event_phase_mask -= power;
+                                        listOfSplitPhases.Add(power);
+                                    }
+                                }
+
+                                int[] arrayOfSplitPhases = listOfSplitPhases.ToArray();
+                                Array.Reverse(arrayOfSplitPhases);
+                                fullLine += " (Phase";
+
+                                if (listOfSplitPhases.Count > 1)
+                                    fullLine += "s";
+
+                                fullLine += " " + String.Join(" & ", arrayOfSplitPhases) + ")";
                             }
 
                             string cleanNewComment = fullLine;
