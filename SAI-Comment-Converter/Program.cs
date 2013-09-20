@@ -263,7 +263,6 @@ namespace SAI_Comment_Converter
                             string fullLine = String.Empty;
                             int entry = smartScript.entryorguid;
                             MySqlDataReader readerSource = null;
-                            MySqlDataReader readerSourceId = null;
 
                             switch (smartScript.source_type)
                             {
@@ -987,16 +986,18 @@ namespace SAI_Comment_Converter
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("Press any key to exit.");
+                Console.WriteLine("\n\n\n" + ex.Message);
+                Console.WriteLine("\nPress any key to exit.");
                 Console.ReadKey();
             }
+            finally
+            {
+                Console.WriteLine("\n\n\nThe converting has finished. A total of {0} scripts were loaded of which {1} were skipped because their comments already fit the correct codestyle.", totalLoadedScripts, totalSkippedScripts);
+                Console.WriteLine("If you wish to open the output file with your selected .sql file editor, press Enter.");
 
-            Console.WriteLine("\n\n\nThe converting has finished. A total of {0} scripts were loaded of which {1} were skipped because their comments already fit the correct codestyle.", totalLoadedScripts, totalSkippedScripts);
-            Console.WriteLine("If you wish to open the output file with your selected .sql file editor, press Enter.");
-
-            if (Console.ReadKey().Key == ConsoleKey.Enter)
-                Process.Start("output.sql");
+                if (Console.ReadKey().Key == ConsoleKey.Enter)
+                    Process.Start("output.sql");
+            }
         }
 
         private static SmartScript BuildSmartScript(DataRow row)
