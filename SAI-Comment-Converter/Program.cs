@@ -38,7 +38,7 @@ namespace SAI_Comment_Converter
             smartEventStrings.Add(SmartEvent.SMART_EVENT_SUMMON_DESPAWNED, "On Summon _npcNameFirstParam_ Despawned");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_DATA_SET, "On Data Set _eventParamOne_ _eventParamTwo_");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_WAYPOINT_REACHED, "On Waypoint _eventParamOne_ Reached");
-            smartEventStrings.Add(SmartEvent.SMART_EVENT_TEXT_OVER, "On Text _eventParamOne_ Finished");
+            smartEventStrings.Add(SmartEvent.SMART_EVENT_TEXT_OVER, "On Text _eventParamOne_ Over");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_RECEIVE_HEAL, "On Received Heal Between _eventParamOne_-_eventParamTwo_");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_TIMED_EVENT_TRIGGERED, "On Timed Event _eventParamOne_ Triggered");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_GOSSIP_SELECT, "On Gossip Option _eventParamTwo_ Selected");
@@ -262,58 +262,32 @@ namespace SAI_Comment_Converter
 
                             string fullLine = String.Empty;
                             int entry = smartScript.entryorguid;
-                            MySqlDataReader readerSourceName = null;
+                            MySqlDataReader readerSource = null;
                             MySqlDataReader readerSourceId = null;
 
                             switch (smartScript.source_type)
                             {
                                 case 0: //! Creature
                                     if (smartScript.entryorguid < 0)
-                                    {
-                                        command.CommandText = (String.Format("SELECT id FROM creature WHERE guid={0}", -smartScript.entryorguid));
-                                        readerSourceId = command.ExecuteReader(CommandBehavior.Default);
+                                        entry = GetCreatureIdByGuid(connection, -smartScript.entryorguid);
 
-                                        if (readerSourceId.Read())
-                                            entry = Convert.ToInt32(readerSourceId[0].ToString());
-
-                                        readerSourceId.Close();
-                                    }
-
-                                    command.CommandText = (String.Format("SELECT name FROM creature_template WHERE entry={0}", entry));
-                                    readerSourceName = command.ExecuteReader(CommandBehavior.Default);
-
-                                    if (readerSourceName.Read())
-                                        fullLine += readerSourceName[0] + " - ";
-
-                                    readerSourceName.Close();
+                                    //! Event type
+                                    fullLine += GetCreatureNameByEntry(connection, entry) + " - ";
+                                    fullLine += smartEventStrings[(SmartEvent)smartScript.event_type];
                                     break;
-                                case 1: //! Gammeobject
+                                case 1: //! Gameobject
                                     if (smartScript.entryorguid < 0)
-                                    {
-                                        command.CommandText = (String.Format("SELECT id FROM gameobject WHERE guid={0}", -smartScript.entryorguid));
-                                        readerSourceId = command.ExecuteReader(CommandBehavior.Default);
+                                        entry = GetGameobjectIdByGuid(connection, -smartScript.entryorguid);
 
-                                        if (readerSourceId.Read())
-                                            entry = Convert.ToInt32(readerSourceId[0].ToString());
-
-                                        readerSourceId.Close();
-                                    }
-
-                                    command.CommandText = (String.Format("SELECT name FROM gameobject_template WHERE entry={0}", entry));
-                                    readerSourceName = command.ExecuteReader(CommandBehavior.Default);
-
-                                    if (readerSourceName.Read())
-                                        fullLine += readerSourceName[0] + " - ";
-
-                                    readerSourceName.Close();
+                                    //! Event type
+                                    fullLine += GetGameobjectNameByEntry(connection, entry) + " - ";
+                                    fullLine += smartEventStrings[(SmartEvent)smartScript.event_type];
+                                    break;
+                                case 9: //! Actionlist
                                     break;
                                 case 2: //! Areatrigger
-                                case 9: //! Actionlist
                                     continue;
                             }
-
-                            //! Event type
-                            fullLine += smartEventStrings[(SmartEvent)smartScript.event_type];
 
                             if (fullLine.Contains("_previousLineComment_"))
                             {
