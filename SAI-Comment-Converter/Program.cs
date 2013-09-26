@@ -99,7 +99,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_NONE, "Incorrect Action");
             smartActionStrings.Add(SmartAction.SMART_ACTION_TALK, "Say Line _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_FACTION, "Set Faction _actionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL"); // todo dbc (SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL too)
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "_morphToEntryOrModelActionParams_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SOUND, "Play Sound _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_EMOTE, "Play Emote _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FAIL_QUEST, "Fail Quest '_questNameActionParamOne_'");
@@ -974,6 +974,16 @@ namespace SAI_Comment_Converter
                                     fullLine = fullLine.Replace("_getUnitFlags_", "s_getUnitFlags_");
 
                                 fullLine = fullLine.Replace("_getUnitFlags_", " " + commentUnitFlag);
+                            }
+
+                            if (fullLine.Contains("_morphToEntryOrModelActionParams_"))
+                            {
+                                if (smartScript.action_param1 > 0)
+                                    fullLine = fullLine.Replace("_morphToEntryOrModelActionParams_", "Morph To Creature " + GetCreatureNameByEntry(connection, smartScript.action_param1));
+                                else if (smartScript.action_param2 > 0)
+                                    fullLine = fullLine.Replace("_morphToEntryOrModelActionParams_", "Morph To Model " + smartScript.action_param2);
+                                else
+                                    fullLine = fullLine.Replace("_morphToEntryOrModelActionParams_", "Demorph");
                             }
 
                             if (smartScript.event_flags > 0)
