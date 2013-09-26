@@ -139,7 +139,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_SHEATH, "Set Sheath _sheathActionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FORCE_DESPAWN, "Despawn _forceDespawnActionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INVINCIBILITY_HP_LEVEL, "Set Invincibility Hp _invincibilityHpActionParamsOneTwo_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL, "SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL"); // todo dbc (SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL too)
+            smartActionStrings.Add(SmartAction.SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL, "_mountToEntryOrModelActionParams_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_PHASE_MASK, "Set Phase _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DATA, "Set Data _actionParamOne_ _actionParamTwo_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_MOVE_FORWARD, "Move Forward _actionParamOne_ Yards");
@@ -984,6 +984,16 @@ namespace SAI_Comment_Converter
                                     fullLine = fullLine.Replace("_morphToEntryOrModelActionParams_", "Morph To Model " + smartScript.action_param2);
                                 else
                                     fullLine = fullLine.Replace("_morphToEntryOrModelActionParams_", "Demorph");
+                            }
+
+                            if (fullLine.Contains("_mountToEntryOrModelActionParams_"))
+                            {
+                                if (smartScript.action_param1 > 0)
+                                    fullLine = fullLine.Replace("_mountToEntryOrModelActionParams_", "Mount To Creature " + GetCreatureNameByEntry(connection, smartScript.action_param1));
+                                else if (smartScript.action_param2 > 0)
+                                    fullLine = fullLine.Replace("_mountToEntryOrModelActionParams_", "Mount To Model " + smartScript.action_param2);
+                                else
+                                    fullLine = fullLine.Replace("_mountToEntryOrModelActionParams_", "Dismount");
                             }
 
                             if (smartScript.event_flags > 0)
