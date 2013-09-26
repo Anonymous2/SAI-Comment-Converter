@@ -177,9 +177,9 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_SCRIPT_RESET, "Reset All Scriptsfa");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_RANGED_MOVEMENT, "Set Ranged Movement");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_TIMED_ACTIONLIST, "Run Script");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_NPC_FLAG, "SMART_ACTION_*_NPC_FLAG"); // todo
-            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_NPC_FLAG, "SMART_ACTION_*_NPC_FLAG"); // todo
-            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_NPC_FLAG, "SMART_ACTION_*_NPC_FLAG"); // todo
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_NPC_FLAG, "Set Unit Flag_getUnitFlags_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_NPC_FLAG, "Add Unit Flag_getUnitFlags_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_NPC_FLAG, "Remove Unit Flag_getUnitFlags_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SIMPLE_TALK, "Say Line _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_INVOKER_CAST, "Invoker Cast '_spellNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CROSS_CAST, "Cross Cast '_spellNameActionParamOne_'");
@@ -283,6 +283,47 @@ namespace SAI_Comment_Converter
                                     fullLine += smartEventStrings[(SmartEvent)smartScript.event_type];
                                     break;
                                 case 9: //! Actionlist
+                                    command.CommandText = (String.Format("SELECT entryorguid, source_type FROM smart_scripts WHERE action_type=80 AND action_param1={0}", smartScript.entryorguid));
+                                    readerSource = command.ExecuteReader(CommandBehavior.Default);
+
+                                    if (readerSource.Read())
+                                        entry = Convert.ToInt32(readerSource[0]);
+                                    else
+                                    {
+                                        command.CommandText = (String.Format("SELECT entryorguid, source_type FROM smart_scripts WHERE action_type=87 AND (action_param1={0} OR action_param1={1} OR action_param1={2} OR action_param1={3} OR action_param1={4} OR action_param1={5})", smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid));
+                                        readerSource = command.ExecuteReader(CommandBehavior.Default);
+
+                                        if (readerSource.Read())
+                                            entry = Convert.ToInt32(readerSource[0]);
+                                        else
+                                        {
+                                            command.CommandText = ("SELECT action_param1, action_param2 FROM smart_scripts WHERE action_type = 88");
+                                            readerSource = command.ExecuteReader(CommandBehavior.Default);
+
+                                            while (readerSource.Read())
+                                            {
+                                                for (int i = 0; i < readerSource.FieldCount; ++i)
+                                                {
+                                                    if (Convert.ToInt32(readerSource.GetValue(0)) <= smartScript.entryorguid && Convert.ToInt32(readerSource.GetValue(1)) >= smartScript.entryorguid)
+                                                    {
+                                                        Console.WriteLine(Convert.ToInt32(readerSource.GetValue(0)));
+                                                        Console.WriteLine(Convert.ToInt32(readerSource.GetValue(1)));
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    int source_type = Convert.ToInt32(readerSource[1]);
+                                    readerSource.Close();
+
+                                    if (source_type == 0)
+                                        fullLine += GetCreatureNameByEntry(connection, entry) + " - On Script";
+                                    else if (source_type == 1)
+                                        fullLine += GetGameobjectNameByEntry(connection, entry) + " - On Script";
+                                    else
+                                        fullLine += "<Unknown source_type for actionlist source> - On Script";
+
                                     break;
                                 case 2: //! Areatrigger
                                     continue;
@@ -894,6 +935,45 @@ namespace SAI_Comment_Converter
                                         fullLine = fullLine.Replace("_powerTypeActionParamOne_", "<Unknown Powertype>");
                                         break;
                                 }
+                            }
+
+                            if (fullLine.Contains("_getUnitFlags_"))
+                            {
+                                string commentUnitFlag = "";
+                                int unitFlags = smartScript.action_param1;
+
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SERVER_CONTROLLED) != 0) commentUnitFlag += "Server Controlled & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NON_ATTACKABLE) != 0) commentUnitFlag += "Not Attackable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISABLE_MOVE) != 0) commentUnitFlag += "Disable Move & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP_ATTACKABLE) != 0) commentUnitFlag += "PvP Attackable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_RENAME) != 0) commentUnitFlag += "Rename & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PREPARATION) != 0) commentUnitFlag += "Preparation & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_ATTACKABLE_1) != 0) commentUnitFlag += "Not Attackable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_PC) != 0) commentUnitFlag += "Immune To Players & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC) != 0) commentUnitFlag += "Immune To Creatures & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_LOOTING) != 0) commentUnitFlag += "Looting & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PET_IN_COMBAT) != 0) commentUnitFlag += "Pet In Combat & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP) != 0) commentUnitFlag += "PvP & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SILENCED) != 0) commentUnitFlag += "Silenced & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PACIFIED) != 0) commentUnitFlag += "Pacified & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_STUNNED) != 0) commentUnitFlag += "Stunned & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IN_COMBAT) != 0) commentUnitFlag += "In Combat & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_TAXI_FLIGHT) != 0) commentUnitFlag += "Taxi Flight & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISARMED) != 0) commentUnitFlag += "Disarmed & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_CONFUSED) != 0) commentUnitFlag += "Confused & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_FLEEING) != 0) commentUnitFlag += "Fleeing & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PLAYER_CONTROLLED) != 0) commentUnitFlag += "Player Controlled & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_SELECTABLE) != 0) commentUnitFlag += "Not Selectable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SKINNABLE) != 0) commentUnitFlag += "Skinnable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_MOUNT) != 0) commentUnitFlag += "Mounted & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SHEATHE) != 0) commentUnitFlag += "Sheathed & ";
+
+                                commentUnitFlag = commentUnitFlag.Trim(new[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
+
+                                if (commentUnitFlag.Contains("&"))
+                                    fullLine = fullLine.Replace("_getUnitFlags_", "s_getUnitFlags_");
+
+                                fullLine = fullLine.Replace("_getUnitFlags_", " " + commentUnitFlag);
                             }
 
                             if (smartScript.event_flags > 0)
