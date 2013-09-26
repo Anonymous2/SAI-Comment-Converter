@@ -381,17 +381,7 @@ namespace SAI_Comment_Converter
                             if (fullLine.Contains("_spellNameEventParamOne_"))
                             {
                                 if (smartScript.event_param1 > 0)
-                                {
-                                    MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param1), connection);
-                                    MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                    if (readerSelect.Read())
-                                        fullLine = fullLine.Replace("_spellNameEventParamOne_", readerSelect[0].ToString());
-                                    else
-                                        fullLine = fullLine.Replace("'_spellNameEventParamOne_'", "<Spell not found!>");
-
-                                    readerSelect.Close();
-                                }
+                                    fullLine = fullLine.Replace("_spellNameEventParamOne_", GetSpellNameById(connection, smartScript.event_param1));
                                 else
                                     fullLine = fullLine.Replace(" '_spellNameEventParamOne_'", String.Empty);
                             }
@@ -399,17 +389,7 @@ namespace SAI_Comment_Converter
                             if (fullLine.Contains("_targetCastingSpellName_"))
                             {
                                 if (smartScript.event_param3.ToString() != "0")
-                                {
-                                    MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.event_param3), connection);
-                                    MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                    if (readerSelect.Read())
-                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSelect[0] + "'");
-                                    else
-                                        fullLine = fullLine.Replace("'_targetCastingSpellName_'", "<Spell not found!>");
-
-                                    readerSelect.Close();
-                                }
+                                    fullLine = fullLine.Replace("_targetCastingSpellName_", GetSpellNameById(connection, smartScript.event_param3));
                                 else
                                     fullLine = fullLine.Replace(" '_targetCastingSpellName_'", String.Empty);
                             }
@@ -459,17 +439,7 @@ namespace SAI_Comment_Converter
                             if (fullLine.Contains("_spellNameActionParamOne_"))
                             {
                                 if (smartScript.action_param1.ToString() != "0")
-                                {
-                                    MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.action_param1), connection);
-                                    MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                    if (readerSelect.Read())
-                                        fullLine = fullLine.Replace("_spellNameActionParamOne_", readerSelect[0].ToString());
-                                    else
-                                        fullLine = fullLine.Replace("'_spellNameActionParamOne_'", "<Spell not found!>");
-
-                                    readerSelect.Close();
-                                }
+                                    fullLine = fullLine.Replace("_spellNameActionParamOne_", GetSpellNameById(connection, smartScript.action_param1));
                                 else
                                     fullLine = fullLine.Replace(" '_spellNameActionParamOne_'", String.Empty);
                             }
@@ -477,17 +447,7 @@ namespace SAI_Comment_Converter
                             if (fullLine.Contains("_spellNameActionParamTwo_"))
                             {
                                 if (smartScript.action_param2.ToString() != "0")
-                                {
-                                    MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.action_param2), connection);
-                                    MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
-
-                                    if (readerSelect.Read())
-                                        fullLine = fullLine.Replace("_spellNameActionParamTwo_", readerSelect[0].ToString());
-                                    else
-                                        fullLine = fullLine.Replace("'_spellNameActionParamTwo_'", "<Spell not found!>");
-
-                                    readerSelect.Close();
-                                }
+                                    fullLine = fullLine.Replace("_spellNameActionParamTwo_", GetSpellNameById(connection, smartScript.action_param2));
                                 else
                                     fullLine = fullLine.Replace(" '_spellNameActionParamTwo_'", String.Empty);
                             }
@@ -1247,6 +1207,37 @@ namespace SAI_Comment_Converter
 
             readerSourceName.Close();
             return String.Empty;
+        }
+
+        private static string GetSpellNameById(MySqlConnection connection, int id)
+        {
+            MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", id), connection);
+            MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+            if (readerSelect.Read())
+            {
+                string str = readerSelect[0].ToString();
+                readerSelect.Close();
+                return str;
+            }
+
+            readerSelect.Close();
+
+            //! If no spell was found in the table holding Spell.dbc data, check world database's table 'spell_dbc' for custom spells.
+            commandSelect = new MySqlCommand();
+            commandSelect.Connection = connection;
+            commandSelect.CommandText = String.Format("SELECT Id FROM spell_dbc WHERE Id = {0}", id);
+            readerSelect.Close();
+            readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
+
+            if (readerSelect.Read())
+            {
+                readerSelect.Close();
+                return "<spell_dbc spell>";
+            }
+
+            readerSelect.Close();
+            return "<Spell not found!>";
         }
 
         private static string GetStringByTargetType(SmartScript smartScript, MySqlConnection connection)
