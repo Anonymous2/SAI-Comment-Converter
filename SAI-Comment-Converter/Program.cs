@@ -476,7 +476,7 @@ namespace SAI_Comment_Converter
 
                             if (fullLine.Contains("_spellNameActionParamTwo_"))
                             {
-                                if (smartScript.event_param2.ToString() != "0")
+                                if (smartScript.action_param2.ToString() != "0")
                                 {
                                     MySqlCommand commandSelect = new MySqlCommand(String.Format("SELECT spellName FROM spells_dbc WHERE id = {0}", smartScript.action_param2), connection);
                                     MySqlDataReader readerSelect = commandSelect.ExecuteReader(CommandBehavior.Default);
