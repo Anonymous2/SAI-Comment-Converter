@@ -388,7 +388,7 @@ namespace SAI_Comment_Converter
                                     if (readerSelect.Read())
                                         fullLine = fullLine.Replace("_spellNameEventParamOne_", readerSelect[0].ToString());
                                     else
-                                        fullLine = fullLine.Replace("_spellNameEventParamOne_", "<Spell not found!>");
+                                        fullLine = fullLine.Replace("'_spellNameEventParamOne_'", "<Spell not found!>");
 
                                     readerSelect.Close();
                                 }
@@ -406,7 +406,7 @@ namespace SAI_Comment_Converter
                                     if (readerSelect.Read())
                                         fullLine = fullLine.Replace("_targetCastingSpellName_", "'" + readerSelect[0] + "'");
                                     else
-                                        fullLine = fullLine.Replace("_targetCastingSpellName_", "<Spell not found!>");
+                                        fullLine = fullLine.Replace("'_targetCastingSpellName_'", "<Spell not found!>");
 
                                     readerSelect.Close();
                                 }
