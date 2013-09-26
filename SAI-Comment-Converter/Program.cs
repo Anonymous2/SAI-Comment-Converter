@@ -283,47 +283,6 @@ namespace SAI_Comment_Converter
                                     fullLine += smartEventStrings[(SmartEvent)smartScript.event_type];
                                     break;
                                 case 9: //! Actionlist
-                                    command.CommandText = (String.Format("SELECT entryorguid, source_type FROM smart_scripts WHERE action_type=80 AND action_param1={0}", smartScript.entryorguid));
-                                    readerSource = command.ExecuteReader(CommandBehavior.Default);
-
-                                    if (readerSource.Read())
-                                        entry = Convert.ToInt32(readerSource[0]);
-                                    else
-                                    {
-                                        command.CommandText = (String.Format("SELECT entryorguid, source_type FROM smart_scripts WHERE action_type=87 AND (action_param1={0} OR action_param1={1} OR action_param1={2} OR action_param1={3} OR action_param1={4} OR action_param1={5})", smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid));
-                                        readerSource = command.ExecuteReader(CommandBehavior.Default);
-
-                                        if (readerSource.Read())
-                                            entry = Convert.ToInt32(readerSource[0]);
-                                        else
-                                        {
-                                            command.CommandText = ("SELECT action_param1, action_param2 FROM smart_scripts WHERE action_type = 88");
-                                            readerSource = command.ExecuteReader(CommandBehavior.Default);
-
-                                            while (readerSource.Read())
-                                            {
-                                                for (int i = 0; i < readerSource.FieldCount; ++i)
-                                                {
-                                                    if (Convert.ToInt32(readerSource.GetValue(0)) <= smartScript.entryorguid && Convert.ToInt32(readerSource.GetValue(1)) >= smartScript.entryorguid)
-                                                    {
-                                                        Console.WriteLine(Convert.ToInt32(readerSource.GetValue(0)));
-                                                        Console.WriteLine(Convert.ToInt32(readerSource.GetValue(1)));
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    int source_type = Convert.ToInt32(readerSource[1]);
-                                    readerSource.Close();
-
-                                    if (source_type == 0)
-                                        fullLine += GetCreatureNameByEntry(connection, entry) + " - On Script";
-                                    else if (source_type == 1)
-                                        fullLine += GetGameobjectNameByEntry(connection, entry) + " - On Script";
-                                    else
-                                        fullLine += "<Unknown source_type for actionlist source> - On Script";
-
                                     break;
                                 case 2: //! Areatrigger
                                     continue;
