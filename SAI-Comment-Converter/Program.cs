@@ -466,12 +466,12 @@ namespace SAI_Comment_Converter
                                     if (readerSelect.Read())
                                         fullLine = fullLine.Replace("_spellNameActionParamOne_", readerSelect[0].ToString());
                                     else
-                                        fullLine = fullLine.Replace("_spellNameActionParamOne_", "<Spell not found!>");
+                                        fullLine = fullLine.Replace("'_spellNameActionParamOne_'", "<Spell not found!>");
 
                                     readerSelect.Close();
                                 }
                                 else
-                                    fullLine = fullLine.Replace(" '_spellNameActionParamOne_", String.Empty);
+                                    fullLine = fullLine.Replace(" '_spellNameActionParamOne_'", String.Empty);
                             }
 
                             if (fullLine.Contains("_spellNameActionParamTwo_"))
@@ -484,12 +484,12 @@ namespace SAI_Comment_Converter
                                     if (readerSelect.Read())
                                         fullLine = fullLine.Replace("_spellNameActionParamTwo_", readerSelect[0].ToString());
                                     else
-                                        fullLine = fullLine.Replace("_spellNameActionParamTwo_", "<Spell not found!>");
+                                        fullLine = fullLine.Replace("'_spellNameActionParamTwo_'", "<Spell not found!>");
 
                                     readerSelect.Close();
                                 }
                                 else
-                                    fullLine = fullLine.Replace(" '_spellNameActionParamTwo_", String.Empty);
+                                    fullLine = fullLine.Replace(" '_spellNameActionParamTwo_'", String.Empty);
                             }
 
                             if (fullLine.Contains("_questNameActionParamOne_"))
