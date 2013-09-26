@@ -626,7 +626,7 @@ namespace SAI_Comment_Converter
 
                             if (fullLine.Contains("_forceDespawnActionParamOne_"))
                             {
-                                if (smartScript.action_param1 < 2)
+                                if (smartScript.action_param1 > 2)
                                     fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "In " + smartScript.action_param1 + " ms");
                                 else
                                     fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "Instant");
