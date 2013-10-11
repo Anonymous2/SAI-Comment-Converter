@@ -1244,6 +1244,8 @@ namespace SAI_Comment_Converter
         {
             switch ((SmartTargetType)smartScript.target_type)
             {
+                case SmartTargetType.SMART_TARGET_SELF:
+                    return "Self";
                 case SmartTargetType.SMART_TARGET_VICTIM:
                     return "Victim";
                 case SmartTargetType.SMART_TARGET_HOSTILE_SECOND_AGGRO:
