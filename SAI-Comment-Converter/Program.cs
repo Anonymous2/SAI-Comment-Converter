@@ -722,7 +722,7 @@ namespace SAI_Comment_Converter
                                         fullLine = fullLine.Replace("_setOrientationTargetType_", smartScript.target_o.ToString());
                                         break;
                                     default:
-                                        fullLine = fullLine.Replace("_setOrientationTargetType_", GetStringByTargetType(smartScript, worldDatabase));
+                                        fullLine = fullLine.Replace("_setOrientationTargetType_", GetStringByTargetType(smartScript, connection));
                                         break;
                                 }
                             }
