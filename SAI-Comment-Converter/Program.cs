@@ -96,7 +96,7 @@ namespace SAI_Comment_Converter
             smartEventStrings.Add(SmartEvent.SMART_EVENT_ON_SPELLCLICK, "On Spellclick");
 
             //! Filling up actions
-            smartActionStrings.Add(SmartAction.SMART_ACTION_NONE, "Incorrect Action");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_NONE, "No Action Type");
             smartActionStrings.Add(SmartAction.SMART_ACTION_TALK, "Say Line _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_FACTION, "Set Faction _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_MORPH_TO_ENTRY_OR_MODEL, "_morphToEntryOrModelActionParams_");
