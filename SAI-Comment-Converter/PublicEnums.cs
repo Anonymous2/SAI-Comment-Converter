@@ -297,7 +297,7 @@
     public enum UnitFieldBytes1Type
     {
         UnitStandStateType = 0,
-        // 1 is left alone on purpose
+        // 1 is left empty on purpose
         UnitStandFlags = 2,
         UnitBytes1_Flags = 3,
     }
