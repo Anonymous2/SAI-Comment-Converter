@@ -208,23 +208,23 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_POWER, "Add _actionParamTwo_ _powerTypeActionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_POWER, "Remove _actionParamTwo_ _powerTypeActionParamOne_");
 
-            string host = "127.0.0.1";
-            string user = "root";
-            string pass = "1234";
-            string worldDB = "trinitycore_world";
-            string port = "3306";
+            //string host = "127.0.0.1";
+            //string user = "root";
+            //string pass = "123";
+            //string worldDB = "trinitycore_world";
+            //string port = "3306";
 
             Console.WriteLine("SQL Information:");
-            //Console.Write("Host: ");
-            //string host = Console.ReadLine();
-            //Console.Write("User: ");
-            //string user = Console.ReadLine();
-            //Console.Write("Pass: ");
-            //string pass = Console.ReadLine();
-            //Console.Write("World DB: ");
-            //string worldDB = Console.ReadLine();
-            //Console.Write("Port: ");
-            //string port = Console.ReadLine();
+            Console.Write("Host: ");
+            string host = Console.ReadLine();
+            Console.Write("User: ");
+            string user = Console.ReadLine();
+            Console.Write("Pass: ");
+            string pass = Console.ReadLine();
+            Console.Write("World DB: ");
+            string worldDB = Console.ReadLine();
+            Console.Write("Port: ");
+            string port = Console.ReadLine();
             
             try
             {
@@ -1109,15 +1109,15 @@ namespace SAI_Comment_Converter
                 Console.WriteLine("\n\n\n" + ex.Message);
                 Console.WriteLine("\nPress any key to exit.");
                 Console.ReadKey();
+                Environment.Exit(0);
+                return;
             }
-            finally
-            {
-                Console.WriteLine("\n\n\nThe converting has finished. A total of {0} scripts were loaded of which {1} were skipped because their comments already fit the correct codestyle.", totalLoadedScripts, totalSkippedScripts);
-                Console.WriteLine("If you wish to open the output file with your selected .sql file editor, press Enter.");
 
-                if (Console.ReadKey().Key == ConsoleKey.Enter)
-                    Process.Start("output.sql");
-            }
+            Console.WriteLine("\n\n\nThe converting has finished. A total of {0} scripts were loaded of which {1} were skipped because their comments already fit the correct codestyle.", totalLoadedScripts, totalSkippedScripts);
+            Console.WriteLine("If you wish to open the output file with your selected .sql file editor, press Enter.");
+
+            if (Console.ReadKey().Key == ConsoleKey.Enter)
+                Process.Start("output.sql");
         }
 
         private static SmartScript BuildSmartScript(DataRow row)
