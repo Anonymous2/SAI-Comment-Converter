@@ -208,12 +208,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_ADD_POWER, "Add _actionParamTwo_ _powerTypeActionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVE_POWER, "Remove _actionParamTwo_ _powerTypeActionParamOne_");
 
-            //string host = "127.0.0.1";
-            //string user = "root";
-            //string pass = "123";
-            //string worldDB = "trinitycore_world";
-            //string port = "3306";
-
+        WriteSqlInformation:
             Console.WriteLine("SQL Information:");
             Console.Write("Host: ");
             string host = Console.ReadLine();
@@ -225,7 +220,7 @@ namespace SAI_Comment_Converter
             string worldDB = Console.ReadLine();
             Console.Write("Port: ");
             string port = Console.ReadLine();
-            
+
             try
             {
                 MySqlConnectionStringBuilder connectionString = new MySqlConnectionStringBuilder();
@@ -547,30 +542,30 @@ namespace SAI_Comment_Converter
                                 string commentUnitFlag = "";
                                 int unitFlags = smartScript.action_param1;
 
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SERVER_CONTROLLED) != 0)  commentUnitFlag += "Server Controlled & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NON_ATTACKABLE) != 0)     commentUnitFlag += "Not Attackable & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISABLE_MOVE) != 0)       commentUnitFlag += "Disable Movement & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP_ATTACKABLE) != 0)     commentUnitFlag += "Pvp Attackable & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_RENAME) != 0)             commentUnitFlag += "Rename & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PREPARATION) != 0)        commentUnitFlag += "Preparation & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_ATTACKABLE_1) != 0)   commentUnitFlag += "Not Attackable & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_PC) != 0)       commentUnitFlag += "Immune To Players & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC) != 0)      commentUnitFlag += "Immune To NPC's & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_LOOTING) != 0)            commentUnitFlag += "Looting & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PET_IN_COMBAT) != 0)      commentUnitFlag += "Pet In Combat & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP) != 0)                commentUnitFlag += "PvP & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SILENCED) != 0)           commentUnitFlag += "Silenced & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PACIFIED) != 0)           commentUnitFlag += "Pacified & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_STUNNED) != 0)            commentUnitFlag += "Stunned & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IN_COMBAT) != 0)          commentUnitFlag += "In Combat & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISARMED) != 0)           commentUnitFlag += "Disarmed & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_CONFUSED) != 0)           commentUnitFlag += "Confused & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_FLEEING) != 0)            commentUnitFlag += "Fleeing & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PLAYER_CONTROLLED) != 0)  commentUnitFlag += "Player Controlled & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_SELECTABLE) != 0)     commentUnitFlag += "Not Selectable & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SKINNABLE) != 0)          commentUnitFlag += "Skinnable & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_MOUNT) != 0)              commentUnitFlag += "Mounted & ";
-                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SHEATHE) != 0)            commentUnitFlag += "Sheathed & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SERVER_CONTROLLED) != 0) commentUnitFlag += "Server Controlled & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NON_ATTACKABLE) != 0) commentUnitFlag += "Not Attackable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISABLE_MOVE) != 0) commentUnitFlag += "Disable Movement & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP_ATTACKABLE) != 0) commentUnitFlag += "Pvp Attackable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_RENAME) != 0) commentUnitFlag += "Rename & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PREPARATION) != 0) commentUnitFlag += "Preparation & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_ATTACKABLE_1) != 0) commentUnitFlag += "Not Attackable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_PC) != 0) commentUnitFlag += "Immune To Players & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC) != 0) commentUnitFlag += "Immune To NPC's & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_LOOTING) != 0) commentUnitFlag += "Looting & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PET_IN_COMBAT) != 0) commentUnitFlag += "Pet In Combat & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PVP) != 0) commentUnitFlag += "PvP & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SILENCED) != 0) commentUnitFlag += "Silenced & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PACIFIED) != 0) commentUnitFlag += "Pacified & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_STUNNED) != 0) commentUnitFlag += "Stunned & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_IN_COMBAT) != 0) commentUnitFlag += "In Combat & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_DISARMED) != 0) commentUnitFlag += "Disarmed & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_CONFUSED) != 0) commentUnitFlag += "Confused & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_FLEEING) != 0) commentUnitFlag += "Fleeing & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_PLAYER_CONTROLLED) != 0) commentUnitFlag += "Player Controlled & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NOT_SELECTABLE) != 0) commentUnitFlag += "Not Selectable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SKINNABLE) != 0) commentUnitFlag += "Skinnable & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_MOUNT) != 0) commentUnitFlag += "Mounted & ";
+                                if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SHEATHE) != 0) commentUnitFlag += "Sheathed & ";
 
                                 commentUnitFlag = commentUnitFlag.Trim(new[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
 
@@ -798,15 +793,15 @@ namespace SAI_Comment_Converter
                                 string commentGoFlag = "";
                                 int goFlags = smartScript.action_param1;
 
-                                if ((goFlags & (int)GoFlags.GO_FLAG_IN_USE) != 0)           commentGoFlag += "In Use & ";
-                                if ((goFlags & (int)GoFlags.GO_FLAG_LOCKED) != 0)           commentGoFlag += "Locked & ";
-                                if ((goFlags & (int)GoFlags.GO_FLAG_INTERACT_COND) != 0)    commentGoFlag += "Interact Condition & ";
-                                if ((goFlags & (int)GoFlags.GO_FLAG_TRANSPORT) != 0)        commentGoFlag += "Transport & ";
-                                if ((goFlags & (int)GoFlags.GO_FLAG_NOT_SELECTABLE) != 0)   commentGoFlag += "Not Selectable & ";
-                                if ((goFlags & (int)GoFlags.GO_FLAG_NODESPAWN) != 0)        commentGoFlag += "No Despawn & ";
-                                if ((goFlags & (int)GoFlags.GO_FLAG_TRIGGERED) != 0)        commentGoFlag += "Triggered & ";
-                                if ((goFlags & (int)GoFlags.GO_FLAG_DAMAGED) != 0)          commentGoFlag += "Damaged & ";
-                                if ((goFlags & (int)GoFlags.GO_FLAG_DESTROYED) != 0)        commentGoFlag += "Destroyed & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_IN_USE) != 0) commentGoFlag += "In Use & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_LOCKED) != 0) commentGoFlag += "Locked & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_INTERACT_COND) != 0) commentGoFlag += "Interact Condition & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_TRANSPORT) != 0) commentGoFlag += "Transport & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_NOT_SELECTABLE) != 0) commentGoFlag += "Not Selectable & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_NODESPAWN) != 0) commentGoFlag += "No Despawn & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_TRIGGERED) != 0) commentGoFlag += "Triggered & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_DAMAGED) != 0) commentGoFlag += "Damaged & ";
+                                if ((goFlags & (int)GoFlags.GO_FLAG_DESTROYED) != 0) commentGoFlag += "Destroyed & ";
 
                                 commentGoFlag = commentGoFlag.Trim(new[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
 
@@ -821,14 +816,14 @@ namespace SAI_Comment_Converter
                                 string commentDynamicFlag = "";
                                 int dynamicFlags = smartScript.action_param1;
 
-                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_NONE) != 0)                      commentDynamicFlag += "None & ";
-                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_LOOTABLE) != 0)                  commentDynamicFlag += "Lootable & ";
-                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_TRACK_UNIT) != 0)                commentDynamicFlag += "Track Units & ";
-                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_TAPPED) != 0)                    commentDynamicFlag += "Tapped & ";
-                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_TAPPED_BY_PLAYER) != 0)          commentDynamicFlag += "Tapped By Player & ";
-                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_SPECIALINFO) != 0)               commentDynamicFlag += "Special Info & ";
-                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_DEAD) != 0)                      commentDynamicFlag += "Dead & ";
-                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_REFER_A_FRIEND) != 0)            commentDynamicFlag += "Refer A Friend & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_NONE) != 0) commentDynamicFlag += "None & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_LOOTABLE) != 0) commentDynamicFlag += "Lootable & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_TRACK_UNIT) != 0) commentDynamicFlag += "Track Units & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_TAPPED) != 0) commentDynamicFlag += "Tapped & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_TAPPED_BY_PLAYER) != 0) commentDynamicFlag += "Tapped By Player & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_SPECIALINFO) != 0) commentDynamicFlag += "Special Info & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_DEAD) != 0) commentDynamicFlag += "Dead & ";
+                                if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_REFER_A_FRIEND) != 0) commentDynamicFlag += "Refer A Friend & ";
                                 if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_TAPPED_BY_ALL_THREAT_LIST) != 0) commentDynamicFlag += "Tapped By Threatlist & ";
 
                                 commentDynamicFlag = commentDynamicFlag.Trim(new[] { ' ', '&', ' ' }); //! Trim last ' & ' from the comment..
@@ -844,85 +839,85 @@ namespace SAI_Comment_Converter
                                 switch ((UnitFieldBytes1Type)smartScript.action_param2)
                                 {
                                     case UnitFieldBytes1Type.UnitStandStateType:
-                                    {
-                                        switch ((UnitStandStateType)smartScript.action_param1)
                                         {
-                                            case UnitStandStateType.UNIT_STAND_STATE_STAND:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Stand Up");
-                                                break;
-                                            case UnitStandStateType.UNIT_STAND_STATE_SIT:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Sit Down");
-                                                break;
-                                            case UnitStandStateType.UNIT_STAND_STATE_SIT_CHAIR:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Sit Down Chair");
-                                                break;
-                                            case UnitStandStateType.UNIT_STAND_STATE_SLEEP:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Sleep");
-                                                break;
-                                            case UnitStandStateType.UNIT_STAND_STATE_SIT_LOW_CHAIR:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Sit Low Chair");
-                                                break;
-                                            case UnitStandStateType.UNIT_STAND_STATE_SIT_MEDIUM_CHAIR:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Sit Medium Chair");
-                                                break;
-                                            case UnitStandStateType.UNIT_STAND_STATE_SIT_HIGH_CHAIR:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Sit High Chair");
-                                                break;
-                                            case UnitStandStateType.UNIT_STAND_STATE_DEAD:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Dead");
-                                                break;
-                                            case UnitStandStateType.UNIT_STAND_STATE_KNEEL:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Kneel");
-                                                break;
-                                            case UnitStandStateType.UNIT_STAND_STATE_SUBMERGED:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Submerged");
-                                                break;
-                                            default:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown bytes1 (UnitStandStateType)>");
-                                                break;
+                                            switch ((UnitStandStateType)smartScript.action_param1)
+                                            {
+                                                case UnitStandStateType.UNIT_STAND_STATE_STAND:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Stand Up");
+                                                    break;
+                                                case UnitStandStateType.UNIT_STAND_STATE_SIT:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Sit Down");
+                                                    break;
+                                                case UnitStandStateType.UNIT_STAND_STATE_SIT_CHAIR:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Sit Down Chair");
+                                                    break;
+                                                case UnitStandStateType.UNIT_STAND_STATE_SLEEP:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Sleep");
+                                                    break;
+                                                case UnitStandStateType.UNIT_STAND_STATE_SIT_LOW_CHAIR:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Sit Low Chair");
+                                                    break;
+                                                case UnitStandStateType.UNIT_STAND_STATE_SIT_MEDIUM_CHAIR:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Sit Medium Chair");
+                                                    break;
+                                                case UnitStandStateType.UNIT_STAND_STATE_SIT_HIGH_CHAIR:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Sit High Chair");
+                                                    break;
+                                                case UnitStandStateType.UNIT_STAND_STATE_DEAD:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Dead");
+                                                    break;
+                                                case UnitStandStateType.UNIT_STAND_STATE_KNEEL:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Kneel");
+                                                    break;
+                                                case UnitStandStateType.UNIT_STAND_STATE_SUBMERGED:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Submerged");
+                                                    break;
+                                                default:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown bytes1 (UnitStandStateType)>");
+                                                    break;
+                                            }
+                                            break;
                                         }
-                                        break;
-                                    }
                                     case UnitFieldBytes1Type.UnitStandFlags:
-                                    {
-                                        switch ((UnitStandFlags)smartScript.action_param1)
                                         {
-                                            case UnitStandFlags.UNIT_STAND_FLAGS_UNK1:
-                                            case UnitStandFlags.UNIT_STAND_FLAGS_UNK4:
-                                            case UnitStandFlags.UNIT_STAND_FLAGS_UNK5:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown>");
-                                                break;
-                                            case UnitStandFlags.UNIT_STAND_FLAGS_CREEP:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Creep");
-                                                break;
-                                            case UnitStandFlags.UNIT_STAND_FLAGS_UNTRACKABLE:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Untrackable");
-                                                break;
-                                            default:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown bytes1 (UnitStandFlags)>");
-                                                break;
+                                            switch ((UnitStandFlags)smartScript.action_param1)
+                                            {
+                                                case UnitStandFlags.UNIT_STAND_FLAGS_UNK1:
+                                                case UnitStandFlags.UNIT_STAND_FLAGS_UNK4:
+                                                case UnitStandFlags.UNIT_STAND_FLAGS_UNK5:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown>");
+                                                    break;
+                                                case UnitStandFlags.UNIT_STAND_FLAGS_CREEP:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Creep");
+                                                    break;
+                                                case UnitStandFlags.UNIT_STAND_FLAGS_UNTRACKABLE:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Untrackable");
+                                                    break;
+                                                default:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown bytes1 (UnitStandFlags)>");
+                                                    break;
+                                            }
+                                            break;
                                         }
-                                        break;
-                                    }
                                     case UnitFieldBytes1Type.UnitBytes1_Flags:
-                                    {
-                                        switch ((UnitBytes1_Flags)smartScript.action_param1)
                                         {
-                                            case UnitBytes1_Flags.UNIT_BYTE1_FLAG_UNK_3:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown>");
-                                                break;
-                                            case UnitBytes1_Flags.UNIT_BYTE1_FLAG_HOVER:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Hover");
-                                                break;
-                                            case UnitBytes1_Flags.UNIT_BYTE1_FLAG_ALWAYS_STAND:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "Always Stand");
-                                                break;
-                                            default:
-                                                fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown bytes1 (UnitBytes1_Flags)>");
-                                                break;
+                                            switch ((UnitBytes1_Flags)smartScript.action_param1)
+                                            {
+                                                case UnitBytes1_Flags.UNIT_BYTE1_FLAG_UNK_3:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown>");
+                                                    break;
+                                                case UnitBytes1_Flags.UNIT_BYTE1_FLAG_HOVER:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Hover");
+                                                    break;
+                                                case UnitBytes1_Flags.UNIT_BYTE1_FLAG_ALWAYS_STAND:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "Always Stand");
+                                                    break;
+                                                default:
+                                                    fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown bytes1 (UnitBytes1_Flags)>");
+                                                    break;
+                                            }
+                                            break;
                                         }
-                                        break;
-                                    }
                                 }
                             }
 
@@ -1103,6 +1098,17 @@ namespace SAI_Comment_Converter
                         }
                     }
                 }
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine("\n\n\n" + ex.Message);
+                Console.WriteLine("\nPress 'Enter' to write new database information. Any other key exits the application.\n\n");
+                Console.ReadKey();
+
+                if (Console.ReadKey().Key == ConsoleKey.Enter)
+                    goto WriteSqlInformation;
+                else
+                    Environment.Exit(0);
             }
             catch (Exception ex)
             {
