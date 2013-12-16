@@ -39,7 +39,7 @@ namespace SAI_Comment_Converter
             string pass = Console.ReadLine();
             Console.Write("World DB: ");
             string worldDB = Console.ReadLine();
-            Console.WriteLine("Print old comment (0/1): ");
+            Console.Write("Print old comment (0/1): ");
             string printOldCommentStr = Console.ReadLine();
             bool printOldComment = printOldCommentStr == "1";
 
