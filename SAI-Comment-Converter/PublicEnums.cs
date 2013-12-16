@@ -232,18 +232,13 @@
         REACT_AGGRESSIVE = 2
     }
 
-    public enum SmartSourceType
+    public enum SourceTypes
     {
-        SMART_SCRIPT_TYPE_CREATURE = 0,
-        SMART_SCRIPT_TYPE_GAMEOBJECT = 1,
-        SMART_SCRIPT_TYPE_AREATRIGGER = 2,
-        SMART_SCRIPT_TYPE_EVENT_NYI = 3,
-        SMART_SCRIPT_TYPE_GOSSIP_NYI = 4,
-        SMART_SCRIPT_TYPE_QUEST_NYI = 5,
-        SMART_SCRIPT_TYPE_SPELL_NYI = 6,
-        SMART_SCRIPT_TYPE_TRANSPORT_NYI = 7,
-        SMART_SCRIPT_TYPE_INSTANCE_NYI = 8,
-        SMART_SCRIPT_TYPE_TIMED_ACTIONLIST = 9
+        SourceTypeNone = -1,
+        SourceTypeCreature = 0,
+        SourceTypeGameobject = 1,
+        SourceTypeAreaTrigger = 2,
+        SourceTypeScriptedActionlist = 9,
     }
 
     public enum SmartSummonType
