@@ -821,7 +821,6 @@ namespace SAI_Comment_Converter
             {
                 Console.WriteLine("\n\n\n" + ex.Message);
                 Console.WriteLine("\nPress 'Enter' to write new database information. Any other key exits the application.\n\n");
-                Console.ReadKey();
 
                 if (Console.ReadKey().Key == ConsoleKey.Enter)
                     goto WriteSqlInformation;
