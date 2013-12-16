@@ -829,7 +829,7 @@ namespace SAI_Comment_Converter
                 //! Don't update the script if the comment is already correct
                 if (cleanNewComment == smartScript.comment)
                 {
-                    totalSkippedScripts--;
+                    totalSkippedScripts++;
                     continue;
                 }
 
