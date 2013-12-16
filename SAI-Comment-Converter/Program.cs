@@ -257,7 +257,7 @@ namespace SAI_Comment_Converter
                     fullLine = fullLine.Replace("_questNameCastCreatureOrGo_", await worldDatabase.GetQuestNameForCastedByCreatureOrGo(smartscript.action_param1, smartscript.action_param1, smartscript.action_param1, smartscript.action_param1, smartscript.action_param2));
 
                 if (fullLine.Contains("_questNameKillCredit_"))
-                    fullLine = fullLine.Replace("_questNameCastCreatureOrGo_", await worldDatabase.GetQuestNameForKilledMonster(smartscript.action_param1, smartscript.action_param1, smartscript.action_param1, smartscript.action_param1));
+                    fullLine = fullLine.Replace("_questNameKillCredit_", await worldDatabase.GetQuestNameForKilledMonster(smartscript.action_param1, smartscript.action_param1, smartscript.action_param1, smartscript.action_param1));
 
                 if (fullLine.Contains("_reactStateParamOne_"))
                 {
