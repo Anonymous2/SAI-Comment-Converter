@@ -53,7 +53,7 @@ namespace SAI_Comment_Converter
 
                 if (!worldDatabase.CanConnectToDatabase(worldDatabase.connectionString))
                 {
-                    Console.WriteLine("\nA database connection could not be established with the given database information. Press any key to try again with new information.");
+                    Console.WriteLine("\nA database connection could not be established with the given database information. Press any key to try again with new information.\n");
                     Console.ReadKey();
                     goto WriteSqlInformation;
                 }
@@ -62,12 +62,12 @@ namespace SAI_Comment_Converter
 
                 if (smartScripts.Count <= 0)
                 {
-                    Console.WriteLine("\nNo smart scripts were found in the database. Press any key to try again with new database information.");
+                    Console.WriteLine("\nNo smart scripts were found in the database. Press any key to try again with new database information.\n");
                     Console.ReadKey();
                     goto WriteSqlInformation;
                 }
 
-                Console.WriteLine("\nA database connection has been successfully established with the given database information. A total of " + smartScripts.Count + " scripts were found to be converted to proper commenting.\nPress any key to start the process!");
+                Console.WriteLine("\nA database connection has been successfully established with the given database information. A total of " + smartScripts.Count + " scripts were found to be converted to proper commenting.\nPress any key to start the process!\n\n");
                 Console.ReadKey();
 
                 File.Delete("output.sql");
