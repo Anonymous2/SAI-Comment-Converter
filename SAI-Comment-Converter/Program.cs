@@ -137,18 +137,16 @@ namespace SAI_Comment_Converter
                             }
                         }
 
-                        int source_type = smartScriptsCallingActionLists[0].source_type;
-
                         switch ((SourceTypes)smartScriptsCallingActionLists[0].source_type)
                         {
                             case SourceTypes.SourceTypeCreature:
-                                if (smartscript.entryorguid < 0)
+                                if (entry < 0)
                                     entry = await worldDatabase.GetCreatureIdByGuid(-smartscript.entryorguid);
 
                                 fullLine += await worldDatabase.GetCreatureNameById(entry) + " - On Script";
                                 break;
                             case SourceTypes.SourceTypeGameobject:
-                                if (smartscript.entryorguid < 0)
+                                if (entry < 0)
                                     entry = await worldDatabase.GetGameobjectIdByGuid(-smartscript.entryorguid);
 
                                 fullLine += await worldDatabase.GetGameobjectNameById(entry) + " - On Script";
