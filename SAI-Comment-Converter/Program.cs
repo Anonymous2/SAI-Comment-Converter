@@ -213,14 +213,17 @@ namespace SAI_Comment_Converter
             Console.WriteLine("SQL Information:");
             Console.Write("Host: ");
             string host = Console.ReadLine();
+            Console.Write("Port: ");
+            string port = Console.ReadLine();
             Console.Write("User: ");
             string user = Console.ReadLine();
             Console.Write("Pass: ");
             string pass = Console.ReadLine();
             Console.Write("World DB: ");
             string worldDB = Console.ReadLine();
-            Console.Write("Port: ");
-            string port = Console.ReadLine();
+            Console.WriteLine("Print old comment (0/1): ");
+            string printOldCommentStr = Console.ReadLine();
+            bool printOldComment = printOldCommentStr == "1";
 
             try
             {
@@ -1094,7 +1097,10 @@ namespace SAI_Comment_Converter
 
                             fullLine += '"' + " WHERE `source_type`=" + smartScript.source_type + " AND `entryorguid`=" + smartScript.entryorguid + " AND `id`=" + smartScript.id + ';';
                             Console.WriteLine(fullLine);
-                            fullLine += " -- Old comment: '" + smartScript.comment + "'"; //! Don't print the old comment in console
+
+                            if (printOldComment)
+                                fullLine += " -- Old comment: '" + smartScript.comment + "'"; //! Don't print the old comment in console
+
                             outputFile.WriteLine(fullLine);
                         }
                     }
@@ -1122,7 +1128,7 @@ namespace SAI_Comment_Converter
             }
 
             Console.WriteLine("\n\n\nThe converting has finished. A total of {0} scripts were loaded of which {1} were skipped because their comments already fit the correct codestyle.", totalLoadedScripts, totalSkippedScripts);
-            Console.WriteLine("If you wish to open the output file with your selected .sql file editor, press Enter.");
+            Console.WriteLine("If you wish to open the output file with your selected .sql file editor, press the Enter key.");
 
             if (Console.ReadKey().Key == ConsoleKey.Enter)
                 Process.Start("output.sql");
