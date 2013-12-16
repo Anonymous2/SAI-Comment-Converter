@@ -65,7 +65,7 @@ namespace SAI_Comment_Converter
 
         public async Task<string> GetCreatureNameByGuid(int guid)
         {
-            DataTable dt = await ExecuteQuery("SELECT `name` FROM creature_template WHERE entry = '" + await GetCreatureIdByGuid(guid) + "'");
+            DataTable dt = await ExecuteQuery("SELECT name FROM creature_template WHERE entry = '" + await GetCreatureIdByGuid(guid) + "'");
 
             if (dt.Rows.Count == 0)
                 return String.Empty;
@@ -206,6 +206,31 @@ namespace SAI_Comment_Converter
         public async Task<List<SmartScript>> GetSmartScripts(int entryorguid, int source_type)
         {
             DataTable dt = await ExecuteQuery("SELECT * FROM smart_scripts WHERE entryorguid = '" + entryorguid + "' AND source_type = '" + source_type + "'");
+
+            if (dt.Rows.Count == 0)
+                return null;
+
+            List<SmartScript> smartScripts = new List<SmartScript>();
+
+            foreach (DataRow row in dt.Rows)
+                smartScripts.Add(BuildSmartScript(row));
+
+            return smartScripts;
+        }
+
+        public async Task<SmartScript> GetSmartScriptWithCondition(string condition)
+        {
+            DataTable dt = await ExecuteQuery("SELECT * FROM smart_scripts " + condition + ";");
+
+            if (dt.Rows.Count == 0)
+                return null;
+
+            return BuildSmartScript(dt.Rows[0]);
+        }
+
+        public async Task<List<SmartScript>> GetSmartScriptsWithCondition(string condition)
+        {
+            DataTable dt = await ExecuteQuery("SELECT * FROM smart_scripts " + condition + ";");
 
             if (dt.Rows.Count == 0)
                 return null;

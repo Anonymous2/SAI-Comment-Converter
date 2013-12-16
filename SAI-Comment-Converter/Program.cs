@@ -64,7 +64,6 @@ namespace SAI_Comment_Converter
 
                         string fullLine = String.Empty;
                         int entry = smartScript.entryorguid;
-                        MySqlDataReader readerSource = null;
 
                         switch (smartScript.source_type)
                         {
@@ -85,65 +84,45 @@ namespace SAI_Comment_Converter
                                 fullLine += smartEventStrings[(SmartEvent)smartScript.event_type];
                                 break;
                             case 9: //! Actionlist
-                                //command = new MySqlCommand();
-                                //command.Connection = connection;
-                                //command.CommandText = (String.Format("SELECT entryorguid, source_type FROM smart_scripts WHERE action_type=80 AND action_param1={0}", smartScript.entryorguid));
-                                //readerSource = command.ExecuteReader(CommandBehavior.Default);
+                                string condition = "WHERE action_type=80 AND action_param1=" + smartScript.entryorguid;
+                                List<SmartScript> smartScriptsCallingActionLists = await worldDatabase.GetSmartScriptsWithCondition(condition);
 
-                                //if (readerSource.Read())
-                                //    entry = Convert.ToInt32(readerSource[0]);
-                                //else
-                                //{
-                                //    command = new MySqlCommand();
-                                //    command.Connection = connection;
-                                //    command.CommandText = (String.Format("SELECT entryorguid, source_type FROM smart_scripts WHERE action_type=87 AND (action_param1={0} OR action_param2={1} OR action_param3={2} OR action_param4={3} OR action_param5={4} OR action_param6={5})", smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid));
+                                if (smartScriptsCallingActionLists != null && smartScriptsCallingActionLists.Count > 0)
+                                    entry = Convert.ToInt32(smartScriptsCallingActionLists[0].entryorguid);
+                                else
+                                {
+                                    condition = String.Format("SELECT entryorguid, source_type FROM smart_scripts WHERE action_type=87 AND (action_param1={0} OR action_param2={1} OR action_param3={2} OR action_param4={3} OR action_param5={4} OR action_param6={5})", smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid);
+                                    smartScriptsCallingActionLists = await worldDatabase.GetSmartScriptsWithCondition(condition);
 
-                                //    if (readerSource != null)
-                                //        readerSource.Close();
+                                    if (smartScriptsCallingActionLists != null && smartScriptsCallingActionLists.Count > 0)
+                                        entry = Convert.ToInt32(smartScriptsCallingActionLists[0].entryorguid);
+                                    else
+                                    {
+                                        condition = "SELECT entryorguid, source_type, action_param1, action_param2 FROM smart_scripts WHERE action_type = 88";
+                                        smartScriptsCallingActionLists = await worldDatabase.GetSmartScriptsWithCondition(condition);
 
-                                //    readerSource = command.ExecuteReader(CommandBehavior.Default);
+                                        if (smartScriptsCallingActionLists != null && smartScriptsCallingActionLists.Count > 0)
+                                        {
+                                            foreach (SmartScript smartScriptCallingActionLists in smartScriptsCallingActionLists)
+                                            {
+                                                if (smartScriptCallingActionLists.action_param1 <= smartScript.entryorguid && smartScriptCallingActionLists.action_param2 >= smartScript.entryorguid)
+                                                {
+                                                    entry = Convert.ToInt32(smartScriptCallingActionLists.entryorguid);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
 
-                                //    if (readerSource.Read())
-                                //        entry = Convert.ToInt32(readerSource[0]);
-                                //    else
-                                //    {
-                                //        command = new MySqlCommand();
-                                //        command.Connection = connection;
-                                //        command.CommandText = ("SELECT entryorguid, source_type, action_param1, action_param2 FROM smart_scripts WHERE action_type = 88");
+                                int source_type = Convert.ToInt32(smartScriptsCallingActionLists[0].source_type);
 
-                                //        if (readerSource != null)
-                                //            readerSource.Close();
-
-                                //        readerSource = command.ExecuteReader(CommandBehavior.Default);
-                                //        bool _break = false;
-
-                                //        while (readerSource.Read())
-                                //        {
-                                //            for (int i = 0; i < readerSource.FieldCount; ++i)
-                                //            {
-                                //                if (Convert.ToInt32(readerSource.GetValue(2)) <= smartScript.entryorguid && Convert.ToInt32(readerSource.GetValue(3)) >= smartScript.entryorguid)
-                                //                {
-                                //                    entry = Convert.ToInt32(readerSource.GetValue(0));
-                                //                    _break = true;
-                                //                    break;
-                                //                }
-                                //            }
-
-                                //            if (_break)
-                                //                break;
-                                //        }
-                                //    }
-                                //}
-
-                                //int source_type = Convert.ToInt32(readerSource[1]);
-                                //readerSource.Close();
-
-                                //if (source_type == 0)
-                                //    fullLine += await worldDatabase.GetCreatureNameById(entry) + " - On Script";
-                                //else if (source_type == 1)
-                                //    fullLine += await worldDatabase.GetGameobjectNameById(entry) + " - On Script";
-                                //else
-                                //    fullLine += "<Unknown source_type for actionlist source> - On Script";
+                                if (source_type == 0)
+                                    fullLine += await worldDatabase.GetCreatureNameById(entry) + " - On Script";
+                                else if (source_type == 1)
+                                    fullLine += await worldDatabase.GetGameobjectNameById(entry) + " - On Script";
+                                else
+                                    fullLine += "<Unknown source_type for actionlist source> - On Script";
 
                                 break;
                             case 2: //! Areatrigger
