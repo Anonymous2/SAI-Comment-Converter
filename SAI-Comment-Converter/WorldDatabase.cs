@@ -45,7 +45,7 @@ namespace SAI_Comment_Converter
             DataTable dt = await ExecuteQuery("SELECT name FROM creature_template WHERE entry = '" + id + "'");
 
             if (dt.Rows.Count == 0)
-                return String.Empty;
+                return "_replaceBecauseOfError_ GetCreatureNameById not found";
 
             return dt.Rows[0]["name"].ToString();
         }
@@ -55,7 +55,7 @@ namespace SAI_Comment_Converter
             DataTable dt = await ExecuteQuery("SELECT name FROM creature_template WHERE entry = '" + await GetCreatureIdByGuid(guid) + "'");
 
             if (dt.Rows.Count == 0)
-                return String.Empty;
+                return "_replaceBecauseOfError_ GetCreatureNameByGuid not found";
 
             return dt.Rows[0]["name"].ToString();
         }
@@ -65,7 +65,7 @@ namespace SAI_Comment_Converter
             DataTable dt = await ExecuteQuery("SELECT name FROM gameobject_template WHERE entry = '" + id + "'");
 
             if (dt.Rows.Count == 0)
-                return String.Empty;
+                return "_replaceBecauseOfError_ GetGameobjectNameById not found";
 
             return dt.Rows[0]["name"].ToString();
         }
@@ -75,7 +75,7 @@ namespace SAI_Comment_Converter
             DataTable dt = await ExecuteQuery("SELECT name FROM gameobject_template WHERE entry = '" + await GetGameobjectIdByGuid(guid) + "'");
 
             if (dt.Rows.Count == 0)
-                return String.Empty;
+                return "_replaceBecauseOfError_ GetGameobjectNameByGuid not found";
 
             return dt.Rows[0]["name"].ToString();
         }
@@ -130,7 +130,7 @@ namespace SAI_Comment_Converter
             DataTable dt = await ExecuteQuery("SELECT spellName FROM spells_dbc WHERE id = " + id);
 
             if (dt.Rows.Count == 0)
-                return "<Spell '" + id + "' not found!>";
+                return "_replaceBecauseOfError_<Spell '" + id + "' not found!>";
 
             return dt.Rows[0]["spellName"].ToString();
         }
@@ -140,7 +140,7 @@ namespace SAI_Comment_Converter
             DataTable dt = await ExecuteQuery("SELECT title FROM quest_template WHERE id = " + id);
 
             if (dt.Rows.Count == 0)
-                return "<Quest '" + id + "' not found!>";
+                return "_replaceBecauseOfError_<Quest '" + id + "' not found!>";
 
             return dt.Rows[0]["title"].ToString();
         }
@@ -150,7 +150,7 @@ namespace SAI_Comment_Converter
             DataTable dt = await ExecuteQuery(String.Format("SELECT title FROM quest_template WHERE (RequiredNpcOrGo1 = {0} OR RequiredNpcOrGo2 = {1} OR RequiredNpcOrGo3 = {2} OR RequiredNpcOrGo4 = {3}) AND RequiredSpellCast1 = {4}", requiredNpcOrGo1, requiredNpcOrGo2, requiredNpcOrGo3, requiredNpcOrGo4, requiredSpellCast1));
 
             if (dt.Rows.Count == 0)
-                return "<Quest not found (GetQuestNameForCastedByCreatureOrGo)!>";
+                return "_replaceBecauseOfError_<Quest not found (GetQuestNameForCastedByCreatureOrGo)!>";
 
             return dt.Rows[0]["title"].ToString();
         }
@@ -160,7 +160,7 @@ namespace SAI_Comment_Converter
             DataTable dt = await ExecuteQuery(String.Format("SELECT title FROM quest_template WHERE (RequiredNpcOrGo1 = {0} OR RequiredNpcOrGo2 = {1} OR RequiredNpcOrGo3 = {2} OR RequiredNpcOrGo4 = {3})", requiredNpcOrGo1, requiredNpcOrGo2, requiredNpcOrGo3, requiredNpcOrGo4));
 
             if (dt.Rows.Count == 0)
-                return "<Quest not found (GetQuestNameForKilledMonster)!>";
+                return "_replaceBecauseOfError_<Quest not found (GetQuestNameForKilledMonster)!>";
 
             return dt.Rows[0]["title"].ToString();
         }
@@ -170,7 +170,7 @@ namespace SAI_Comment_Converter
             DataTable dt = await ExecuteQuery("SELECT name FROM item_template WHERE entry = " + id);
 
             if (dt.Rows.Count == 0)
-                return "<Item '" + id + "' not found!>";
+                return "_replaceBecauseOfError_<Item '" + id + "' not found!>";
 
             return dt.Rows[0]["name"].ToString();
         }

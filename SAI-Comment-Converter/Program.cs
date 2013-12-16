@@ -45,7 +45,7 @@ namespace SAI_Comment_Converter
 
             Console.WriteLine("\nConnecting...\n");
 
-            string allUpdateQueries = String.Empty;
+            string allUpdateQueries = String.Empty, allUpdateQueriesWithErrors = String.Empty;
 
             WorldDatabase worldDatabase = new WorldDatabase(host, port, user, pass, worldDB);
 
@@ -835,11 +835,21 @@ namespace SAI_Comment_Converter
                 }
 
                 fullLine += '"' + " WHERE `source_type`=" + smartscript.source_type + " AND `entryorguid`=" + smartscript.entryorguid + " AND `id`=" + smartscript.id + ';';
-                allUpdateQueries += fullLine + "\n";
+
+                if (fullLine.Contains("_replaceBecauseOfError_"))
+                {
+                    fullLine.Replace("_replaceBecauseOfError_", String.Empty);
+                    allUpdateQueriesWithErrors += fullLine + "\n";
+                }
+                else
+                    allUpdateQueries += fullLine + "\n";
 
                 if (printOldComment)
                     allUpdateQueries += " -- Old comment: '" + smartscript.comment + "'"; //! Don't print the old comment in console
             }
+
+            if (allUpdateQueriesWithErrors.Length > 0)
+                allUpdateQueries = allUpdateQueries.Insert(0, "-- Errors in SQL: \n" + allUpdateQueriesWithErrors + "\n-- End of error-causing SQL\n\n\n");
 
             using (var outputFile = new StreamWriter("output.sql", true))
                 outputFile.WriteLine(allUpdateQueries);
