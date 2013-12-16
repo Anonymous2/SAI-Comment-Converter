@@ -4,6 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+
 using MySql.Data.MySqlClient;
 
 namespace SAI_Comment_Converter
@@ -1107,8 +1108,9 @@ namespace SAI_Comment_Converter
 
                 if (Console.ReadKey().Key == ConsoleKey.Enter)
                     goto WriteSqlInformation;
-                else
-                    Environment.Exit(0);
+
+                Environment.Exit(0);
+                return;
             }
             catch (Exception ex)
             {
