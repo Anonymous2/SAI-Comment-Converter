@@ -835,7 +835,7 @@ namespace SAI_Comment_Converter
                         continue;
                     }
 
-                    allUpdateQueries += '"' + " WHERE `source_type`=" + smartScript.source_type + " AND `entryorguid`=" + smartScript.entryorguid + " AND `id`=" + smartScript.id + ';';
+                    fullLine += '"' + " WHERE `source_type`=" + smartScript.source_type + " AND `entryorguid`=" + smartScript.entryorguid + " AND `id`=" + smartScript.id + ';';
                     allUpdateQueries += fullLine + "\n";
 
                     if (printOldComment)
