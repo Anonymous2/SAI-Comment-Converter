@@ -153,6 +153,9 @@ namespace SAI_Comment_Converter
 
                                 fullLine += await worldDatabase.GetGameobjectNameById(entry) + " - On Script";
                                 break;
+                            case SourceTypes.SourceTypeAreaTrigger:
+                                fullLine += "Areatrigger - On Script";
+                                break;
                             default:
                                 fullLine += "<Unknown source_type for actionlist source> - On Script";
                                 break;
