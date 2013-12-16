@@ -43,22 +43,45 @@ namespace SAI_Comment_Converter
             string printOldCommentStr = Console.ReadLine();
             bool printOldComment = printOldCommentStr == "1";
 
+            Console.WriteLine("\nConnecting...\n");
+
+            string allUpdateQueries = String.Empty;
+
             try
             {
                 WorldDatabase worldDatabase = new WorldDatabase(host, port, user, pass, worldDB);
 
+                if (!worldDatabase.CanConnectToDatabase(worldDatabase.connectionString))
+                {
+                    Console.WriteLine("\nA database connection could not be established with the given database information. Press any key to try again with new information.");
+                    Console.ReadKey();
+                    goto WriteSqlInformation;
+                }
+
                 List<SmartScript> smartScripts = await worldDatabase.GetSmartScripts();
 
                 if (smartScripts.Count <= 0)
-                    return;
+                {
+                    Console.WriteLine("\nNo smart scripts were found in the database. Press any key to try again with new database information.");
+                    Console.ReadKey();
+                    goto WriteSqlInformation;
+                }
+
+                Console.WriteLine("\nA database connection has been successfully established with the given database information. A total of " + smartScripts.Count + " scripts were found to be converted to proper commenting.\nPress any key to start the process!");
+                Console.ReadKey();
 
                 File.Delete("output.sql");
 
                 SmartScript smartScriptLink = null;
-                string allUpdateQueries = String.Empty;
 
-                foreach (SmartScript smartScript in smartScripts)
+                for (int i = 0; i < smartScripts.Count; ++i)
                 {
+                    SmartScript smartScript = smartScripts[i];
+
+                    decimal _i = (decimal)i;
+                    decimal count = (decimal)smartScripts.Count;
+                    decimal pct = (_i / count) * 100;
+                    ProgressBarHelper.RenderConsoleProgress((int)pct, '\u2590', Console.ForegroundColor, ((int)pct).ToString() + "%");
                     totalLoadedScripts++;
 
                     string fullLine = String.Empty;
@@ -812,12 +835,11 @@ namespace SAI_Comment_Converter
                         continue;
                     }
 
-                    fullLine += '"' + " WHERE `source_type`=" + smartScript.source_type + " AND `entryorguid`=" + smartScript.entryorguid + " AND `id`=" + smartScript.id + ';';
-                    Console.WriteLine(fullLine);
+                    allUpdateQueries += '"' + " WHERE `source_type`=" + smartScript.source_type + " AND `entryorguid`=" + smartScript.entryorguid + " AND `id`=" + smartScript.id + ';';
                     allUpdateQueries += fullLine + "\n";
 
                     if (printOldComment)
-                        fullLine += " -- Old comment: '" + smartScript.comment + "'"; //! Don't print the old comment in console
+                        allUpdateQueries += " -- Old comment: '" + smartScript.comment + "'"; //! Don't print the old comment in console
                 }
 
                 using (var outputFile = new StreamWriter("output.sql", true))
