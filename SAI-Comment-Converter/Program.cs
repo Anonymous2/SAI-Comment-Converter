@@ -141,13 +141,13 @@ namespace SAI_Comment_Converter
                         {
                             case SourceTypes.SourceTypeCreature:
                                 if (entry < 0)
-                                    entry = await worldDatabase.GetCreatureIdByGuid(-smartscript.entryorguid);
+                                    entry = await worldDatabase.GetCreatureIdByGuid(-entry);
 
                                 fullLine += await worldDatabase.GetCreatureNameById(entry) + " - On Script";
                                 break;
                             case SourceTypes.SourceTypeGameobject:
                                 if (entry < 0)
-                                    entry = await worldDatabase.GetGameobjectIdByGuid(-smartscript.entryorguid);
+                                    entry = await worldDatabase.GetGameobjectIdByGuid(-entry);
 
                                 fullLine += await worldDatabase.GetGameobjectNameById(entry) + " - On Script";
                                 break;
