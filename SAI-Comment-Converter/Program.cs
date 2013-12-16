@@ -113,14 +113,14 @@ namespace SAI_Comment_Converter
                                 entry = Convert.ToInt32(smartScriptsCallingActionLists[0].entryorguid);
                             else
                             {
-                                condition = String.Format("SELECT entryorguid, source_type FROM smart_scripts WHERE action_type=87 AND (action_param1={0} OR action_param2={1} OR action_param3={2} OR action_param4={3} OR action_param5={4} OR action_param6={5})", smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid);
+                                condition = String.Format("WHERE action_type=87 AND (action_param1={0} OR action_param2={1} OR action_param3={2} OR action_param4={3} OR action_param5={4} OR action_param6={5})", smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid);
                                 smartScriptsCallingActionLists = await worldDatabase.GetSmartScriptsWithCondition(condition);
 
                                 if (smartScriptsCallingActionLists != null && smartScriptsCallingActionLists.Count > 0)
                                     entry = Convert.ToInt32(smartScriptsCallingActionLists[0].entryorguid);
                                 else
                                 {
-                                    condition = "SELECT entryorguid, source_type, action_param1, action_param2 FROM smart_scripts WHERE action_type = 88";
+                                    condition = "WHERE action_type = 88";
                                     smartScriptsCallingActionLists = await worldDatabase.GetSmartScriptsWithCondition(condition);
 
                                     if (smartScriptsCallingActionLists != null && smartScriptsCallingActionLists.Count > 0)

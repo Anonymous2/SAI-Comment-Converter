@@ -163,16 +163,6 @@ namespace SAI_Comment_Converter
             return smartScripts;
         }
 
-        public async Task<string> GetSpellNameById(int id)
-        {
-            DataTable dt = await ExecuteQuery("SELECT spellName FROM spells_dbc WHERE id = " + id);
-
-            if (dt.Rows.Count == 0)
-                return "<Spell '" + id + "' not found!>";
-
-            return dt.Rows[0]["spellName"].ToString();
-        }
-
         public async Task<List<SmartScript>> GetSmartScriptsDistinctNonActionlist()
         {
             DataTable dt = await ExecuteQuery("SELECT DISTINCT * FROM smart_scripts WHERE source_type != 9 ORDER BY entryorguid");
@@ -241,6 +231,16 @@ namespace SAI_Comment_Converter
                 smartScripts.Add(BuildSmartScript(row));
 
             return smartScripts;
+        }
+
+        public async Task<string> GetSpellNameById(int id)
+        {
+            DataTable dt = await ExecuteQuery("SELECT spellName FROM spells_dbc WHERE id = " + id);
+
+            if (dt.Rows.Count == 0)
+                return "<Spell '" + id + "' not found!>";
+
+            return dt.Rows[0]["spellName"].ToString();
         }
 
         public async Task<string> GetQuestNameById(int id)
