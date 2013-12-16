@@ -74,7 +74,7 @@ namespace SAI_Comment_Converter
 
             for (int i = 0; i < smartScripts.Count; ++i)
             {
-                SmartScript smartScript = smartScripts[i];
+                SmartScript smartscript = smartScripts[i];
 
                 decimal _i = (decimal)i;
                 decimal count = (decimal)smartScripts.Count;
@@ -83,35 +83,37 @@ namespace SAI_Comment_Converter
                 totalLoadedScripts++;
 
                 string fullLine = String.Empty;
-                int entry = smartScript.entryorguid;
+                int entry = smartscript.entryorguid;
 
-                switch (smartScript.source_type)
+                switch ((SourceTypes)smartscript.source_type)
                 {
-                    case 0: //! Creature
-                        if (smartScript.entryorguid < 0)
-                            entry = await worldDatabase.GetCreatureIdByGuid(-smartScript.entryorguid);
+                    case SourceTypes.SourceTypeCreature:
+                        if (smartscript.entryorguid < 0)
+                            entry = await worldDatabase.GetCreatureIdByGuid(-smartscript.entryorguid);
 
-                        //! Event type
                         fullLine += await worldDatabase.GetCreatureNameById(entry) + " - ";
-                        fullLine += smartEventStrings[(SmartEvent)smartScript.event_type];
+                        fullLine += smartEventStrings[(SmartEvent)smartscript.event_type];
                         break;
-                    case 1: //! Gameobject
-                        if (smartScript.entryorguid < 0)
-                            entry = await worldDatabase.GetGameobjectIdByGuid(-smartScript.entryorguid);
+                    case SourceTypes.SourceTypeGameobject:
+                        if (smartscript.entryorguid < 0)
+                            entry = await worldDatabase.GetGameobjectIdByGuid(-smartscript.entryorguid);
 
-                        //! Event type
                         fullLine += await worldDatabase.GetGameobjectNameById(entry) + " - ";
-                        fullLine += smartEventStrings[(SmartEvent)smartScript.event_type];
+                        fullLine += smartEventStrings[(SmartEvent)smartscript.event_type];
                         break;
-                    case 9: //! Actionlist
-                        string condition = "WHERE action_type=80 AND action_param1=" + smartScript.entryorguid;
+                    case SourceTypes.SourceTypeAreaTrigger:
+                        fullLine += "Areatrigger - ";
+                        fullLine += smartEventStrings[(SmartEvent)smartscript.event_type];
+                        break;
+                    case SourceTypes.SourceTypeScriptedActionlist:
+                        string condition = "WHERE action_type=80 AND action_param1=" + smartscript.entryorguid;
                         List<SmartScript> smartScriptsCallingActionLists = await worldDatabase.GetSmartScriptsWithCondition(condition);
 
                         if (smartScriptsCallingActionLists != null && smartScriptsCallingActionLists.Count > 0)
                             entry = Convert.ToInt32(smartScriptsCallingActionLists[0].entryorguid);
                         else
                         {
-                            condition = String.Format("WHERE action_type=87 AND (action_param1={0} OR action_param2={1} OR action_param3={2} OR action_param4={3} OR action_param5={4} OR action_param6={5})", smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid, smartScript.entryorguid);
+                            condition = String.Format("WHERE action_type=87 AND (action_param1={0} OR action_param2={1} OR action_param3={2} OR action_param4={3} OR action_param5={4} OR action_param6={5})", smartscript.entryorguid, smartscript.entryorguid, smartscript.entryorguid, smartscript.entryorguid, smartscript.entryorguid, smartscript.entryorguid);
                             smartScriptsCallingActionLists = await worldDatabase.GetSmartScriptsWithCondition(condition);
 
                             if (smartScriptsCallingActionLists != null && smartScriptsCallingActionLists.Count > 0)
@@ -125,7 +127,7 @@ namespace SAI_Comment_Converter
                                 {
                                     foreach (SmartScript smartScriptCallingActionLists in smartScriptsCallingActionLists)
                                     {
-                                        if (smartScriptCallingActionLists.action_param1 <= smartScript.entryorguid && smartScriptCallingActionLists.action_param2 >= smartScript.entryorguid)
+                                        if (smartScriptCallingActionLists.action_param1 <= smartscript.entryorguid && smartScriptCallingActionLists.action_param2 >= smartscript.entryorguid)
                                         {
                                             entry = Convert.ToInt32(smartScriptCallingActionLists.entryorguid);
                                             break;
@@ -149,9 +151,8 @@ namespace SAI_Comment_Converter
                                 fullLine += "<Unknown source_type for actionlist source> - On Script";
                                 break;
                         }
-
                         break;
-                    case 2: //! Areatrigger
+                    default:
                         continue;
                 }
 
@@ -160,107 +161,107 @@ namespace SAI_Comment_Converter
                     if (smartScriptLink != null)
                     {
                         fullLine = fullLine.Replace("_previousLineComment_", smartEventStrings[(SmartEvent)smartScriptLink.event_type]);
-                        smartScript.event_param1 = Convert.ToInt32(smartScriptLink.event_param1);
-                        smartScript.event_param2 = Convert.ToInt32(smartScriptLink.event_param2);
-                        smartScript.event_param3 = Convert.ToInt32(smartScriptLink.event_param3);
-                        smartScript.event_param4 = Convert.ToInt32(smartScriptLink.event_param4);
+                        smartscript.event_param1 = Convert.ToInt32(smartScriptLink.event_param1);
+                        smartscript.event_param2 = Convert.ToInt32(smartScriptLink.event_param2);
+                        smartscript.event_param3 = Convert.ToInt32(smartScriptLink.event_param3);
+                        smartscript.event_param4 = Convert.ToInt32(smartScriptLink.event_param4);
 
                         if (smartScriptLink.link == 0)
                             smartScriptLink = null;
                     }
                 }
-                else if (smartScript.link > 0)
-                    smartScriptLink = smartScript;
+                else if (smartscript.link > 0)
+                    smartScriptLink = smartscript;
 
                 //! This must be called AFTER we check for _previousLineComment_ so that copied event types don't need special handling
                 if (fullLine.Contains("_eventParamOne_"))
-                    fullLine = fullLine.Replace("_eventParamOne_", smartScript.event_param1.ToString());
+                    fullLine = fullLine.Replace("_eventParamOne_", smartscript.event_param1.ToString());
 
                 if (fullLine.Contains("_eventParamTwo_"))
-                    fullLine = fullLine.Replace("_eventParamTwo_", smartScript.event_param2.ToString());
+                    fullLine = fullLine.Replace("_eventParamTwo_", smartscript.event_param2.ToString());
 
                 if (fullLine.Contains("_eventParamThree_"))
-                    fullLine = fullLine.Replace("_eventParamThree_", smartScript.event_param3.ToString());
+                    fullLine = fullLine.Replace("_eventParamThree_", smartscript.event_param3.ToString());
 
                 if (fullLine.Contains("_eventParamFour_"))
-                    fullLine = fullLine.Replace("_eventParamFour_", smartScript.event_param4.ToString());
+                    fullLine = fullLine.Replace("_eventParamFour_", smartscript.event_param4.ToString());
 
                 if (fullLine.Contains("_spellNameEventParamOne_"))
                 {
-                    if (smartScript.event_param1 > 0)
-                        fullLine = fullLine.Replace("_spellNameEventParamOne_", await worldDatabase.GetSpellNameById(smartScript.event_param1));
+                    if (smartscript.event_param1 > 0)
+                        fullLine = fullLine.Replace("_spellNameEventParamOne_", await worldDatabase.GetSpellNameById(smartscript.event_param1));
                     else
                         fullLine = fullLine.Replace(" '_spellNameEventParamOne_'", String.Empty);
                 }
 
                 if (fullLine.Contains("_targetCastingSpellName_"))
                 {
-                    if (smartScript.event_param3.ToString() != "0")
-                        fullLine = fullLine.Replace("_targetCastingSpellName_", await worldDatabase.GetSpellNameById(smartScript.event_param3));
+                    if (smartscript.event_param3.ToString() != "0")
+                        fullLine = fullLine.Replace("_targetCastingSpellName_", await worldDatabase.GetSpellNameById(smartscript.event_param3));
                     else
                         fullLine = fullLine.Replace(" '_targetCastingSpellName_'", String.Empty);
                 }
 
                 if (fullLine.Contains("_questNameEventParamOne_"))
                 {
-                    if (smartScript.event_param1 == 0) //! Any quest (SMART_EVENT_ACCEPTED_QUEST / SMART_EVENT_REWARD_QUEST)
+                    if (smartscript.event_param1 == 0) //! Any quest (SMART_EVENT_ACCEPTED_QUEST / SMART_EVENT_REWARD_QUEST)
                         fullLine = fullLine.Replace(" '_questNameEventParamOne_'", String.Empty);
                     else
-                        fullLine = fullLine.Replace("_questNameEventParamOne_", await worldDatabase.GetQuestNameById(smartScript.event_param1));
+                        fullLine = fullLine.Replace("_questNameEventParamOne_", await worldDatabase.GetQuestNameById(smartscript.event_param1));
                 }
 
                 if (fullLine.Contains("_hasAuraEventParamOne_"))
-                    fullLine = fullLine.Replace("_hasAuraEventParamOne_", smartScript.event_param1 > 0 ? "Has Aura" : "Aura Not Present");
+                    fullLine = fullLine.Replace("_hasAuraEventParamOne_", smartscript.event_param1 > 0 ? "Has Aura" : "Aura Not Present");
 
                 //! Action type
-                fullLine += " - " + smartActionStrings[(SmartAction)smartScript.action_type];
+                fullLine += " - " + smartActionStrings[(SmartAction)smartscript.action_type];
 
                 if (fullLine.Contains("_actionParamOne_"))
-                    fullLine = fullLine.Replace("_actionParamOne_", smartScript.action_param1.ToString());
+                    fullLine = fullLine.Replace("_actionParamOne_", smartscript.action_param1.ToString());
 
                 if (fullLine.Contains("_actionParamTwo_"))
-                    fullLine = fullLine.Replace("_actionParamTwo_", smartScript.action_param2.ToString());
+                    fullLine = fullLine.Replace("_actionParamTwo_", smartscript.action_param2.ToString());
 
                 if (fullLine.Contains("_actionParamThree_"))
-                    fullLine = fullLine.Replace("_actionParamThree_", smartScript.action_param3.ToString());
+                    fullLine = fullLine.Replace("_actionParamThree_", smartscript.action_param3.ToString());
 
                 if (fullLine.Contains("_actionParamFour_"))
-                    fullLine = fullLine.Replace("_actionParamFour_", smartScript.action_param4.ToString());
+                    fullLine = fullLine.Replace("_actionParamFour_", smartscript.action_param4.ToString());
 
                 if (fullLine.Contains("_actionParamFive_"))
-                    fullLine = fullLine.Replace("_actionParamFive_", smartScript.action_param5.ToString());
+                    fullLine = fullLine.Replace("_actionParamFive_", smartscript.action_param5.ToString());
 
                 if (fullLine.Contains("_actionParamSix_"))
-                    fullLine = fullLine.Replace("_actionParamSix_", smartScript.action_param6.ToString());
+                    fullLine = fullLine.Replace("_actionParamSix_", smartscript.action_param6.ToString());
 
                 if (fullLine.Contains("_spellNameActionParamOne_"))
                 {
-                    if (smartScript.action_param1.ToString() != "0")
-                        fullLine = fullLine.Replace("_spellNameActionParamOne_", await worldDatabase.GetSpellNameById(smartScript.action_param1));
+                    if (smartscript.action_param1.ToString() != "0")
+                        fullLine = fullLine.Replace("_spellNameActionParamOne_", await worldDatabase.GetSpellNameById(smartscript.action_param1));
                     else
                         fullLine = fullLine.Replace(" '_spellNameActionParamOne_'", String.Empty);
                 }
 
                 if (fullLine.Contains("_spellNameActionParamTwo_"))
                 {
-                    if (smartScript.action_param2.ToString() != "0")
-                        fullLine = fullLine.Replace("_spellNameActionParamTwo_", await worldDatabase.GetSpellNameById(smartScript.action_param2));
+                    if (smartscript.action_param2.ToString() != "0")
+                        fullLine = fullLine.Replace("_spellNameActionParamTwo_", await worldDatabase.GetSpellNameById(smartscript.action_param2));
                     else
                         fullLine = fullLine.Replace(" '_spellNameActionParamTwo_'", String.Empty);
                 }
 
                 if (fullLine.Contains("_questNameActionParamOne_"))
-                    fullLine = fullLine.Replace("_questNameActionParamOne_", await worldDatabase.GetQuestNameById(smartScript.action_param1));
+                    fullLine = fullLine.Replace("_questNameActionParamOne_", await worldDatabase.GetQuestNameById(smartscript.action_param1));
 
                 if (fullLine.Contains("_questNameCastCreatureOrGo_"))
-                    fullLine = fullLine.Replace("_questNameCastCreatureOrGo_", await worldDatabase.GetQuestNameForCastedByCreatureOrGo(smartScript.action_param1, smartScript.action_param1, smartScript.action_param1, smartScript.action_param1, smartScript.action_param2));
+                    fullLine = fullLine.Replace("_questNameCastCreatureOrGo_", await worldDatabase.GetQuestNameForCastedByCreatureOrGo(smartscript.action_param1, smartscript.action_param1, smartscript.action_param1, smartscript.action_param1, smartscript.action_param2));
 
                 if (fullLine.Contains("_questNameKillCredit_"))
-                    fullLine = fullLine.Replace("_questNameCastCreatureOrGo_", await worldDatabase.GetQuestNameForKilledMonster(smartScript.action_param1, smartScript.action_param1, smartScript.action_param1, smartScript.action_param1));
+                    fullLine = fullLine.Replace("_questNameCastCreatureOrGo_", await worldDatabase.GetQuestNameForKilledMonster(smartscript.action_param1, smartscript.action_param1, smartscript.action_param1, smartscript.action_param1));
 
                 if (fullLine.Contains("_reactStateParamOne_"))
                 {
-                    switch (smartScript.action_param1)
+                    switch (smartscript.action_param1)
                     {
                         case 0:
                             fullLine = fullLine.Replace("_reactStateParamOne_", "Passive");
@@ -279,30 +280,30 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_actionRandomParameters_"))
                 {
-                    string randomEmotes = smartScript.action_param1 + ", " + smartScript.action_param2;
+                    string randomEmotes = smartscript.action_param1 + ", " + smartscript.action_param2;
 
-                    if (smartScript.action_param3 > 0)
-                        randomEmotes += ", " + smartScript.action_param3;
+                    if (smartscript.action_param3 > 0)
+                        randomEmotes += ", " + smartscript.action_param3;
 
-                    if (smartScript.action_param4 > 0)
-                        randomEmotes += ", " + smartScript.action_param4;
+                    if (smartscript.action_param4 > 0)
+                        randomEmotes += ", " + smartscript.action_param4;
 
-                    if (smartScript.action_param5 > 0)
-                        randomEmotes += ", " + smartScript.action_param5;
+                    if (smartscript.action_param5 > 0)
+                        randomEmotes += ", " + smartscript.action_param5;
 
-                    if (smartScript.action_param6 > 0)
-                        randomEmotes += ", " + smartScript.action_param6;
+                    if (smartscript.action_param6 > 0)
+                        randomEmotes += ", " + smartscript.action_param6;
 
                     fullLine = fullLine.Replace("_actionRandomParameters_", randomEmotes);
                 }
 
                 if (fullLine.Contains("_creatureNameActionParamOne_"))
-                    fullLine = fullLine.Replace("_creatureNameActionParamOne_", await worldDatabase.GetCreatureNameById(smartScript.action_param1));
+                    fullLine = fullLine.Replace("_creatureNameActionParamOne_", await worldDatabase.GetCreatureNameById(smartscript.action_param1));
 
                 if (fullLine.Contains("_getUnitFlags_"))
                 {
                     string commentUnitFlag = "";
-                    int unitFlags = smartScript.action_param1;
+                    int unitFlags = smartscript.action_param1;
 
                     if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SERVER_CONTROLLED) != 0) commentUnitFlag += "Server Controlled & ";
                     if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NON_ATTACKABLE) != 0) commentUnitFlag += "Not Attackable & ";
@@ -340,7 +341,7 @@ namespace SAI_Comment_Converter
                 if (fullLine.Contains("_getNpcFlags_"))
                 {
                     string commentNpcFlag = "";
-                    int npcFlags = smartScript.action_param1;
+                    int npcFlags = smartscript.action_param1;
 
                     if ((npcFlags & (int)NpcFlags.UNIT_NPC_FLAG_NONE) != 0) commentNpcFlag += "None & ";
                     if ((npcFlags & (int)NpcFlags.UNIT_NPC_FLAG_GOSSIP) != 0) commentNpcFlag += "Gossip & ";
@@ -380,7 +381,7 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_startOrStopActionParamOne_"))
                 {
-                    if (smartScript.action_param1.ToString() == "0")
+                    if (smartscript.action_param1.ToString() == "0")
                         fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Stop");
                     else //! Even if above 1 or below 0 we start attacking/allow-combat-movement
                         fullLine = fullLine.Replace("_startOrStopActionParamOne_", "Start");
@@ -388,7 +389,7 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_enableDisableActionParamOne_"))
                 {
-                    if (smartScript.action_param1.ToString() == "0")
+                    if (smartscript.action_param1.ToString() == "0")
                         fullLine = fullLine.Replace("_enableDisableActionParamOne_", "Disable");
                     else //! Even if above 1 or below 0 we start attacking/allow-combat-movement
                         fullLine = fullLine.Replace("_enableDisableActionParamOne_", "Enable");
@@ -396,16 +397,16 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_incrementOrDecrementActionParamOne_"))
                 {
-                    if (smartScript.action_param1.ToString() == "1")
+                    if (smartscript.action_param1.ToString() == "1")
                         fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Increment");
-                    else if (smartScript.action_param2.ToString() == "1")
+                    else if (smartscript.action_param2.ToString() == "1")
                         fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Decrement");
                     //else //? What to do?
                 }
 
                 if (fullLine.Contains("_sheathActionParamOne_"))
                 {
-                    switch (smartScript.action_param1)
+                    switch (smartscript.action_param1)
                     {
                         case 0:
                             fullLine = fullLine.Replace("_sheathActionParamOne_", "Unarmed");
@@ -424,46 +425,46 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_forceDespawnActionParamOne_"))
                 {
-                    if (smartScript.action_param1 > 2)
-                        fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "In " + smartScript.action_param1 + " ms");
+                    if (smartscript.action_param1 > 2)
+                        fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "In " + smartscript.action_param1 + " ms");
                     else
                         fullLine = fullLine.Replace("_forceDespawnActionParamOne_", "Instant");
                 }
 
                 if (fullLine.Contains("_invincibilityHpActionParamsOneTwo_"))
                 {
-                    if (smartScript.action_param1 > 0)
-                        fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartScript.action_param1.ToString());
-                    else if (smartScript.action_param2 > 0)
-                        fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartScript.action_param2 + "%");
+                    if (smartscript.action_param1 > 0)
+                        fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartscript.action_param1.ToString());
+                    else if (smartscript.action_param2 > 0)
+                        fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartscript.action_param2 + "%");
                     else
                         fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", "<Unsupported parameters>");
                 }
 
                 if (fullLine.Contains("_onOffActionParamOne_"))
                 {
-                    if (smartScript.action_param1 == 1)
+                    if (smartscript.action_param1 == 1)
                         fullLine = fullLine.Replace("_onOffActionParamOne_", "On");
                     else
                         fullLine = fullLine.Replace("_onOffActionParamOne_", "Off");
                 }
 
                 if (fullLine.Contains("_gameobjectNameActionParamOne_"))
-                    fullLine = fullLine.Replace("_gameobjectNameActionParamOne_", await worldDatabase.GetGameobjectNameById(smartScript.action_param1));
+                    fullLine = fullLine.Replace("_gameobjectNameActionParamOne_", await worldDatabase.GetGameobjectNameById(smartscript.action_param1));
 
                 if (fullLine.Contains("_addItemBasedOnActionParams_"))
                 {
-                    fullLine = fullLine.Replace("_addItemBasedOnActionParams_", "'" + await worldDatabase.GetItemNameById(smartScript.action_param1) + "' ");
+                    fullLine = fullLine.Replace("_addItemBasedOnActionParams_", "'" + await worldDatabase.GetItemNameById(smartscript.action_param1) + "' ");
 
-                    if (smartScript.action_param2 > 1)
-                        fullLine += smartScript.action_param2 + " Times";
+                    if (smartscript.action_param2 > 1)
+                        fullLine += smartscript.action_param2 + " Times";
                     else
                         fullLine += "1 Time";
                 }
 
                 if (fullLine.Contains("_updateAiTemplateActionParamOne_"))
                 {
-                    switch ((SmartAiTemplates)smartScript.action_param1)
+                    switch ((SmartAiTemplates)smartscript.action_param1)
                     {
                         case SmartAiTemplates.SMARTAI_TEMPLATE_BASIC:
                             fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Basic");
@@ -491,26 +492,26 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_setOrientationTargetType_"))
                 {
-                    switch ((SmartTargetType)smartScript.target_type)
+                    switch ((SmartTargetType)smartscript.target_type)
                     {
                         case SmartTargetType.SMART_TARGET_SELF:
                             fullLine = fullLine.Replace("_setOrientationTargetType_", "Home Position");
                             break;
                         case SmartTargetType.SMART_TARGET_POSITION:
-                            fullLine = fullLine.Replace("_setOrientationTargetType_", smartScript.target_o.ToString());
+                            fullLine = fullLine.Replace("_setOrientationTargetType_", smartscript.target_o.ToString());
                             break;
                         default:
-                            fullLine = fullLine.Replace("_setOrientationTargetType_", await GetStringByTargetType(smartScript, worldDatabase));
+                            fullLine = fullLine.Replace("_setOrientationTargetType_", await GetStringByTargetType(smartscript, worldDatabase));
                             break;
                     }
                 }
 
                 if (fullLine.Contains("_getTargetType_"))
-                    fullLine = fullLine.Replace("_getTargetType_", await GetStringByTargetType(smartScript, worldDatabase));
+                    fullLine = fullLine.Replace("_getTargetType_", await GetStringByTargetType(smartscript, worldDatabase));
 
                 if (fullLine.Contains("_goStateActionParamOne_"))
                 {
-                    switch (smartScript.action_param1)
+                    switch (smartscript.action_param1)
                     {
                         case 0:
                             fullLine = fullLine.Replace("_goStateActionParamOne_", "Not Ready");
@@ -533,7 +534,7 @@ namespace SAI_Comment_Converter
                 if (fullLine.Contains("_getGoFlags_"))
                 {
                     string commentGoFlag = "";
-                    int goFlags = smartScript.action_param1;
+                    int goFlags = smartscript.action_param1;
 
                     if ((goFlags & (int)GoFlags.GO_FLAG_IN_USE) != 0) commentGoFlag += "In Use & ";
                     if ((goFlags & (int)GoFlags.GO_FLAG_LOCKED) != 0) commentGoFlag += "Locked & ";
@@ -556,7 +557,7 @@ namespace SAI_Comment_Converter
                 if (fullLine.Contains("_getDynamicFlags_"))
                 {
                     string commentDynamicFlag = "";
-                    int dynamicFlags = smartScript.action_param1;
+                    int dynamicFlags = smartscript.action_param1;
 
                     if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_NONE) != 0) commentDynamicFlag += "None & ";
                     if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_LOOTABLE) != 0) commentDynamicFlag += "Lootable & ";
@@ -578,11 +579,11 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_getBytes1Flags_"))
                 {
-                    switch ((UnitFieldBytes1Type)smartScript.action_param2)
+                    switch ((UnitFieldBytes1Type)smartscript.action_param2)
                     {
                         case UnitFieldBytes1Type.UnitStandStateType:
                             {
-                                switch ((UnitStandStateType)smartScript.action_param1)
+                                switch ((UnitStandStateType)smartscript.action_param1)
                                 {
                                     case UnitStandStateType.UNIT_STAND_STATE_STAND:
                                         fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Stand Up");
@@ -622,7 +623,7 @@ namespace SAI_Comment_Converter
                             }
                         case UnitFieldBytes1Type.UnitStandFlags:
                             {
-                                switch ((UnitStandFlags)smartScript.action_param1)
+                                switch ((UnitStandFlags)smartscript.action_param1)
                                 {
                                     case UnitStandFlags.UNIT_STAND_FLAGS_UNK1:
                                     case UnitStandFlags.UNIT_STAND_FLAGS_UNK4:
@@ -643,7 +644,7 @@ namespace SAI_Comment_Converter
                             }
                         case UnitFieldBytes1Type.UnitBytes1_Flags:
                             {
-                                switch ((UnitBytes1_Flags)smartScript.action_param1)
+                                switch ((UnitBytes1_Flags)smartscript.action_param1)
                                 {
                                     case UnitBytes1_Flags.UNIT_BYTE1_FLAG_UNK_3:
                                         fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown>");
@@ -665,7 +666,7 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_powerTypeActionParamOne_"))
                 {
-                    switch (smartScript.action_param1)
+                    switch (smartscript.action_param1)
                     {
                         case 0:
                             fullLine = fullLine.Replace("_powerTypeActionParamOne_", "Mana");
@@ -697,7 +698,7 @@ namespace SAI_Comment_Converter
                 if (fullLine.Contains("_getUnitFlags_"))
                 {
                     string commentUnitFlag = "";
-                    int unitFlags = smartScript.action_param1;
+                    int unitFlags = smartscript.action_param1;
 
                     if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SERVER_CONTROLLED) != 0) commentUnitFlag += "Server Controlled & ";
                     if ((unitFlags & (int)UnitFlags.UNIT_FLAG_NON_ATTACKABLE) != 0) commentUnitFlag += "Not Attackable & ";
@@ -735,29 +736,29 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_morphToEntryOrModelActionParams_"))
                 {
-                    if (smartScript.action_param1 > 0)
-                        fullLine = fullLine.Replace("_morphToEntryOrModelActionParams_", "Morph To Creature " + await worldDatabase.GetCreatureNameById(smartScript.action_param1));
-                    else if (smartScript.action_param2 > 0)
-                        fullLine = fullLine.Replace("_morphToEntryOrModelActionParams_", "Morph To Model " + smartScript.action_param2);
+                    if (smartscript.action_param1 > 0)
+                        fullLine = fullLine.Replace("_morphToEntryOrModelActionParams_", "Morph To Creature " + await worldDatabase.GetCreatureNameById(smartscript.action_param1));
+                    else if (smartscript.action_param2 > 0)
+                        fullLine = fullLine.Replace("_morphToEntryOrModelActionParams_", "Morph To Model " + smartscript.action_param2);
                     else
                         fullLine = fullLine.Replace("_morphToEntryOrModelActionParams_", "Demorph");
                 }
 
                 if (fullLine.Contains("_mountToEntryOrModelActionParams_"))
                 {
-                    if (smartScript.action_param1 > 0)
-                        fullLine = fullLine.Replace("_mountToEntryOrModelActionParams_", "Mount To Creature " + await worldDatabase.GetCreatureNameById(smartScript.action_param1));
-                    else if (smartScript.action_param2 > 0)
-                        fullLine = fullLine.Replace("_mountToEntryOrModelActionParams_", "Mount To Model " + smartScript.action_param2);
+                    if (smartscript.action_param1 > 0)
+                        fullLine = fullLine.Replace("_mountToEntryOrModelActionParams_", "Mount To Creature " + await worldDatabase.GetCreatureNameById(smartscript.action_param1));
+                    else if (smartscript.action_param2 > 0)
+                        fullLine = fullLine.Replace("_mountToEntryOrModelActionParams_", "Mount To Model " + smartscript.action_param2);
                     else
                         fullLine = fullLine.Replace("_mountToEntryOrModelActionParams_", "Dismount");
                 }
 
-                if (smartScript.event_phase_mask > 0)
+                if (smartscript.event_phase_mask > 0)
                 {
                     List<int> listOfSplitPhases = new List<int>();
 
-                    int event_phase_mask = smartScript.event_phase_mask;
+                    int event_phase_mask = smartscript.event_phase_mask;
                     int event_phase_mask2 = event_phase_mask;
                     int log2 = 0;
 
@@ -788,38 +789,38 @@ namespace SAI_Comment_Converter
                     fullLine += " " + String.Join(" & ", arrayOfSplitPhases) + ")";
                 }
 
-                if (smartScript.event_flags > 0)
+                if (smartscript.event_flags > 0)
                 {
-                    if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_NOT_REPEATABLE) != 0))
+                    if ((((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_NOT_REPEATABLE) != 0))
                         fullLine += " (No Repeat)";
 
-                    if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_0) != 0) && (((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_1) != 0) &&
-                        (((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_2) != 0) && (((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_3) != 0))
+                    if ((((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_0) != 0) && (((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_1) != 0) &&
+                        (((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_2) != 0) && (((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_3) != 0))
                         fullLine += " (Dungeon & Raid)";
                     else
                     {
-                        if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_0) != 0) && (((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_1) != 0))
+                        if ((((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_0) != 0) && (((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_1) != 0))
                             fullLine += " (Dungeon)";
                         else
                         {
-                            if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_0) != 0))
+                            if ((((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_0) != 0))
                                 fullLine += " (Normal Dungeon)";
-                            else if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_1) != 0))
+                            else if ((((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_1) != 0))
                                 fullLine += " (Heroic Dungeon)";
                         }
 
-                        if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_2) != 0) && (((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_3) != 0))
+                        if ((((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_2) != 0) && (((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_3) != 0))
                             fullLine += " (Raid)";
                         else
                         {
-                            if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_2) != 0))
+                            if ((((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_2) != 0))
                                 fullLine += " (Normal Raid)";
-                            else if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_3) != 0))
+                            else if ((((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DIFFICULTY_3) != 0))
                                 fullLine += " (Heroic Raid)";
                         }
                     }
 
-                    if ((((SmartEventFlags)smartScript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DEBUG_ONLY) != 0))
+                    if ((((SmartEventFlags)smartscript.event_flags & SmartEventFlags.SMART_EVENT_FLAG_DEBUG_ONLY) != 0))
                         fullLine += " (Debug)";
                 }
 
@@ -827,17 +828,17 @@ namespace SAI_Comment_Converter
                 fullLine = fullLine.Insert(0, "UPDATE `smart_scripts` SET `comment`=" + '"');
 
                 //! Don't update the script if the comment is already correct
-                if (cleanNewComment == smartScript.comment)
+                if (cleanNewComment == smartscript.comment)
                 {
                     totalSkippedScripts++;
                     continue;
                 }
 
-                fullLine += '"' + " WHERE `source_type`=" + smartScript.source_type + " AND `entryorguid`=" + smartScript.entryorguid + " AND `id`=" + smartScript.id + ';';
+                fullLine += '"' + " WHERE `source_type`=" + smartscript.source_type + " AND `entryorguid`=" + smartscript.entryorguid + " AND `id`=" + smartscript.id + ';';
                 allUpdateQueries += fullLine + "\n";
 
                 if (printOldComment)
-                    allUpdateQueries += " -- Old comment: '" + smartScript.comment + "'"; //! Don't print the old comment in console
+                    allUpdateQueries += " -- Old comment: '" + smartscript.comment + "'"; //! Don't print the old comment in console
             }
 
             using (var outputFile = new StreamWriter("output.sql", true))
@@ -850,9 +851,9 @@ namespace SAI_Comment_Converter
                 Process.Start("output.sql");
         }
 
-        private static async Task<string> GetStringByTargetType(SmartScript smartScript, WorldDatabase worldDatabase)
+        private static async Task<string> GetStringByTargetType(SmartScript smartscript, WorldDatabase worldDatabase)
         {
-            switch ((SmartTargetType)smartScript.target_type)
+            switch ((SmartTargetType)smartscript.target_type)
             {
                 case SmartTargetType.SMART_TARGET_SELF:
                     return "Self";
@@ -873,15 +874,15 @@ namespace SAI_Comment_Converter
                 case SmartTargetType.SMART_TARGET_CREATURE_RANGE:
                 case SmartTargetType.SMART_TARGET_CREATURE_DISTANCE:
                 case SmartTargetType.SMART_TARGET_CLOSEST_CREATURE:
-                    return "Closest Creature '" + await worldDatabase.GetCreatureNameById(smartScript.target_param1) + "'";
+                    return "Closest Creature '" + await worldDatabase.GetCreatureNameById(smartscript.target_param1) + "'";
                 case SmartTargetType.SMART_TARGET_CREATURE_GUID:
-                    return "Closest Creature '" + await worldDatabase.GetCreatureNameByGuid(smartScript.target_param1) + "'";
+                    return "Closest Creature '" + await worldDatabase.GetCreatureNameByGuid(smartscript.target_param1) + "'";
                 case SmartTargetType.SMART_TARGET_GAMEOBJECT_RANGE:
                 case SmartTargetType.SMART_TARGET_GAMEOBJECT_DISTANCE:
                 case SmartTargetType.SMART_TARGET_CLOSEST_GAMEOBJECT:
-                    return "Closest Gameobject '" + await worldDatabase.GetGameobjectNameById(smartScript.target_param1) + "'";
+                    return "Closest Gameobject '" + await worldDatabase.GetGameobjectNameById(smartscript.target_param1) + "'";
                 case SmartTargetType.SMART_TARGET_GAMEOBJECT_GUID:
-                    return "Closest Gameobject '" + await worldDatabase.GetGameobjectNameByGuid(smartScript.target_param1) + "'";
+                    return "Closest Gameobject '" + await worldDatabase.GetGameobjectNameByGuid(smartscript.target_param1) + "'";
                 case SmartTargetType.SMART_TARGET_INVOKER_PARTY:
                     return "Invoker's Party";
                 case SmartTargetType.SMART_TARGET_PLAYER_RANGE:
