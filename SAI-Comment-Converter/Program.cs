@@ -856,14 +856,6 @@ namespace SAI_Comment_Converter
                 Environment.Exit(0);
                 return;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("\n\n\n" + ex.Message);
-                Console.WriteLine("\nPress any key to start over. Warning: console buffer will be cleared.");
-                Console.ReadKey();
-                Console.Clear();
-                goto WriteSqlInformation;
-            }
 
             Console.WriteLine("\n\n\nThe converting has finished. A total of {0} scripts were loaded of which {1} were skipped because their comments already fit the correct codestyle.", totalLoadedScripts, totalSkippedScripts);
             Console.WriteLine("If you wish to open the output file with your selected .sql file editor, press the Enter key.");
