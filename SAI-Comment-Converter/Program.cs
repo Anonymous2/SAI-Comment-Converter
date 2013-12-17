@@ -309,7 +309,7 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_getUnitFlags_"))
                 {
-                    string commentUnitFlag = "";
+                    string commentUnitFlag = String.Empty;
                     int unitFlags = smartscript.action_param1;
 
                     if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SERVER_CONTROLLED) != 0) commentUnitFlag += "Server Controlled & ";
@@ -347,7 +347,7 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_getNpcFlags_"))
                 {
-                    string commentNpcFlag = "";
+                    string commentNpcFlag = String.Empty;
                     int npcFlags = smartscript.action_param1;
 
                     if ((npcFlags & (int)NpcFlags.UNIT_NPC_FLAG_NONE) != 0) commentNpcFlag += "None & ";
@@ -540,7 +540,7 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_getGoFlags_"))
                 {
-                    string commentGoFlag = "";
+                    string commentGoFlag = String.Empty;
                     int goFlags = smartscript.action_param1;
 
                     if ((goFlags & (int)GoFlags.GO_FLAG_IN_USE) != 0) commentGoFlag += "In Use & ";
@@ -563,7 +563,7 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_getDynamicFlags_"))
                 {
-                    string commentDynamicFlag = "";
+                    string commentDynamicFlag = String.Empty;
                     int dynamicFlags = smartscript.action_param1;
 
                     if ((dynamicFlags & (int)DynamicFlags.UNIT_DYNFLAG_NONE) != 0) commentDynamicFlag += "None & ";
@@ -704,7 +704,7 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_getUnitFlags_"))
                 {
-                    string commentUnitFlag = "";
+                    string commentUnitFlag = String.Empty;
                     int unitFlags = smartscript.action_param1;
 
                     if ((unitFlags & (int)UnitFlags.UNIT_FLAG_SERVER_CONTROLLED) != 0) commentUnitFlag += "Server Controlled & ";
@@ -759,6 +759,17 @@ namespace SAI_Comment_Converter
                         fullLine = fullLine.Replace("_mountToEntryOrModelActionParams_", "Mount To Model " + smartscript.action_param2);
                     else
                         fullLine = fullLine.Replace("_mountToEntryOrModelActionParams_", "Dismount");
+                }
+
+                if (fullLine.Contains("_startOrStopBasedOnTargetType_"))
+                {
+                    if (smartscript.target_type == 0)
+                    {
+                        fullLine = fullLine.Replace("_startOrStopBasedOnTargetType_", "Stop");
+                        fullLine = fullLine.Replace("_getTargetType_ ", String.Empty);
+                    }
+                    else
+                        fullLine = fullLine.Replace("_startOrStopBasedOnTargetType_", "Start");
                 }
 
                 if (smartscript.event_phase_mask > 0)
@@ -997,7 +1008,7 @@ namespace SAI_Comment_Converter
             smartEventStrings.Add(SmartEvent.SMART_EVENT_JUST_CREATED, "On Just Created");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_GOSSIP_HELLO, "On Gossip Hello");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_FOLLOW_COMPLETED, "On Follow Complete");
-            //smartEventStrings.Add(SmartEvent.SMART_EVENT_DUMMY_EFFECT, "");
+            //smartEventStrings.Add(SmartEvent.SMART_EVENT_DUMMY_EFFECT, String.Empty);
             smartEventStrings.Add(SmartEvent.SMART_EVENT_IS_BEHIND_TARGET, "On Behind Target");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_GO_STATE_CHANGED, "On Gameobject State Changed");
             smartEventStrings.Add(SmartEvent.SMART_EVENT_ON_SPELLCLICK, "On Spellclick");
@@ -1032,7 +1043,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_GROUPEVENTHAPPENS, "Quest Credit '_questNameActionParamOne_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_CASTEDCREATUREORGO, "Quest Credit '_questNameCastCreatureOrGo_'");
             smartActionStrings.Add(SmartAction.SMART_ACTION_REMOVEAURASFROMSPELL, "Remove Aura '_spellNameActionParamOne_'");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_FOLLOW, "Follow _getTargetType_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_FOLLOW, "_startOrStopBasedOnTargetType_ Follow _getTargetType_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE, "Set Random Phase(_actionRandomParameters_)");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RANDOM_PHASE_RANGE, "Set Phase Random Between _actionParamOne_-_actionParamTwo_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_RESET_GOBJECT, "Reset Gameobject");
