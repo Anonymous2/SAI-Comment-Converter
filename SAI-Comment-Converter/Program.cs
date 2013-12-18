@@ -441,9 +441,11 @@ namespace SAI_Comment_Converter
                 if (fullLine.Contains("_invincibilityHpActionParamsOneTwo_"))
                 {
                     if (smartscript.action_param1 > 0)
-                        fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartscript.action_param1.ToString());
+                        fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", "Set Invincibility Hp " + smartscript.action_param1.ToString());
                     else if (smartscript.action_param2 > 0)
-                        fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", smartscript.action_param2 + "%");
+                        fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", "Set Invincibility Hp " + smartscript.action_param2 + "%");
+                    else if (smartscript.action_param1 == 0 && smartscript.action_param2 == 0)
+                        fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", "Reset Invincibility Hp");
                     else
                         fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", "<Unsupported parameters>");
                 }
@@ -1056,7 +1058,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_FOR_HELP, "Call For Help");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_SHEATH, "Set Sheath _sheathActionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FORCE_DESPAWN, "Despawn _forceDespawnActionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INVINCIBILITY_HP_LEVEL, "Set Invincibility Hp _invincibilityHpActionParamsOneTwo_");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_SET_INVINCIBILITY_HP_LEVEL, "_invincibilityHpActionParamsOneTwo_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_MOUNT_TO_ENTRY_OR_MODEL, "_mountToEntryOrModelActionParams_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_PHASE_MASK, "Set Phase _actionParamOne_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_DATA, "Set Data _actionParamOne_ _actionParamTwo_");
