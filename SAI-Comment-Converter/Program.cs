@@ -766,7 +766,7 @@ namespace SAI_Comment_Converter
                     if (smartscript.target_type == 0)
                     {
                         fullLine = fullLine.Replace("_startOrStopBasedOnTargetType_", "Stop");
-                        fullLine = fullLine.Replace("_getTargetType_ ", String.Empty);
+                        fullLine = fullLine.Replace("_getTargetType_", String.Empty);
                     }
                     else
                         fullLine = fullLine.Replace("_startOrStopBasedOnTargetType_", "Start");
