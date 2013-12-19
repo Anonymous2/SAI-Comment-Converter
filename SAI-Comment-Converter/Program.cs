@@ -848,7 +848,6 @@ namespace SAI_Comment_Converter
                 }
 
                 string cleanNewComment = fullLine;
-                fullLine = fullLine.Insert(0, "UPDATE `smart_scripts` SET `comment`=" + '"');
 
                 //! Don't update the script if the comment is already correct
                 if (cleanNewComment == smartscript.comment)
@@ -857,6 +856,7 @@ namespace SAI_Comment_Converter
                     continue;
                 }
 
+                fullLine = fullLine.Insert(0, "UPDATE `smart_scripts` SET `comment`=" + '"');
                 fullLine += '"' + " WHERE `source_type`=" + smartscript.source_type + " AND `entryorguid`=" + smartscript.entryorguid + " AND `id`=" + smartscript.id + ';';
 
                 if (fullLine.Contains("_replaceBecauseOfError_"))
@@ -868,11 +868,11 @@ namespace SAI_Comment_Converter
                     allUpdateQueries += fullLine + "\n";
 
                 if (printOldComment)
-                    allUpdateQueries += " -- Old comment: '" + smartscript.comment + "'"; //! Don't print the old comment in console
+                    allUpdateQueries += " -- Old comment: '" + smartscript.comment + "'";
             }
 
             if (allUpdateQueriesWithErrors.Length > 0)
-                allUpdateQueries = allUpdateQueries.Insert(0, "-- Errors in SQL: \n" + allUpdateQueriesWithErrors + "\n-- End of error-causing SQL\n\n\n");
+                allUpdateQueries = allUpdateQueries.Insert(0, "-- Errors in SQL:\n" + allUpdateQueriesWithErrors + "-- End of error-causing SQL\n\n");
 
             using (var outputFile = new StreamWriter("output.sql", true))
                 outputFile.WriteLine(allUpdateQueries);
