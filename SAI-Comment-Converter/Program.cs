@@ -155,7 +155,7 @@ namespace SAI_Comment_Converter
                                 fullLine += "Areatrigger - On Script";
                                 break;
                             default:
-                                fullLine += "<Unknown source_type for actionlist source> - On Script";
+                                fullLine += "<_replaceBecauseOfError_Unknown source_type for actionlist source> - On Script";
                                 break;
                         }
                         break;
@@ -280,7 +280,7 @@ namespace SAI_Comment_Converter
                             fullLine = fullLine.Replace("_reactStateParamOne_", "Aggressive");
                             break;
                         default:
-                            fullLine = fullLine.Replace("_reactStateParamOne_", "<Unknown Reactstate>");
+                            fullLine = fullLine.Replace("_reactStateParamOne_", "<_replaceBecauseOfError_Unknown Reactstate>");
                             break;
                     }
                 }
@@ -424,7 +424,7 @@ namespace SAI_Comment_Converter
                             fullLine = fullLine.Replace("_sheathActionParamOne_", "Ranged");
                             break;
                         default:
-                            fullLine = fullLine.Replace("_sheathActionParamOne_", "<Unknown Sheath>");
+                            fullLine = fullLine.Replace("_sheathActionParamOne_", "<_replaceBecauseOfError_Unknown Sheath>");
                             break;
                     }
                 }
@@ -446,7 +446,7 @@ namespace SAI_Comment_Converter
                     else if (smartscript.action_param1 == 0 && smartscript.action_param2 == 0)
                         fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", "Reset Invincibility Hp");
                     else
-                        fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", "<Unsupported parameters>");
+                        fullLine = fullLine.Replace("_invincibilityHpActionParamsOneTwo_", "<_replaceBecauseOfError_Unsupported parameters>");
                 }
 
                 if (fullLine.Contains("_onOffActionParamOne_"))
@@ -493,7 +493,7 @@ namespace SAI_Comment_Converter
                             fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "Caged Creature Part");
                             break;
                         default:
-                            fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "<_updateAiTemplateActionParamOne_ Unknown ai template>");
+                            fullLine = fullLine.Replace("_updateAiTemplateActionParamOne_", "<_replaceBecauseOfError_Unknown ai template>");
                             break;
                     }
                 }
@@ -546,7 +546,7 @@ namespace SAI_Comment_Converter
                             fullLine = fullLine.Replace("_goStateActionParamOne_", "Deactivated");
                             break;
                         default:
-                            fullLine = fullLine.Replace("_goStateActionParamOne_", "<Unknown Gameobject State>");
+                            fullLine = fullLine.Replace("_goStateActionParamOne_", "<_replaceBecauseOfError_Unknown Gameobject State>");
                             break;
                     }
                 }
@@ -636,7 +636,7 @@ namespace SAI_Comment_Converter
                                         fullLine = fullLine.Replace("_getBytes1Flags_", "Standstate Submerged");
                                         break;
                                     default:
-                                        fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown bytes1 (UnitStandStateType)>");
+                                        fullLine = fullLine.Replace("_getBytes1Flags_", "<_replaceBecauseOfError_Unknown bytes1 (UnitStandStateType)>");
                                         break;
                                 }
                                 break;
@@ -657,7 +657,7 @@ namespace SAI_Comment_Converter
                                         fullLine = fullLine.Replace("_getBytes1Flags_", "Untrackable");
                                         break;
                                     default:
-                                        fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown bytes1 (UnitStandFlags)>");
+                                        fullLine = fullLine.Replace("_getBytes1Flags_", "<_replaceBecauseOfError_Unknown bytes1 (UnitStandFlags)>");
                                         break;
                                 }
                                 break;
@@ -676,7 +676,7 @@ namespace SAI_Comment_Converter
                                         fullLine = fullLine.Replace("_getBytes1Flags_", "Always Stand");
                                         break;
                                     default:
-                                        fullLine = fullLine.Replace("_getBytes1Flags_", "<Unknown bytes1 (UnitBytes1_Flags)>");
+                                        fullLine = fullLine.Replace("_getBytes1Flags_", "<_replaceBecauseOfError_Unknown bytes1 (UnitBytes1_Flags)>");
                                         break;
                                 }
                                 break;
@@ -710,7 +710,7 @@ namespace SAI_Comment_Converter
                             fullLine = fullLine.Replace("_powerTypeActionParamOne_", "Runic Power");
                             break;
                         default:
-                            fullLine = fullLine.Replace("_powerTypeActionParamOne_", "<Unknown Powertype>");
+                            fullLine = fullLine.Replace("_powerTypeActionParamOne_", "<_replaceBecauseOfError_Unknown Powertype>");
                             break;
                     }
                 }
