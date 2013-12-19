@@ -932,6 +932,8 @@ namespace SAI_Comment_Converter
                     return "Closest Enemy";
                 case SmartTargetType.SMART_TARGET_CLOSEST_FRIENDLY:
                     return "Closest Friendly Unit";
+                case SmartTargetType.SMART_TARGET_STORED:
+                    return "Stored Target " + smartscript.target_param1;
                 default:
                     return "<unsupported target type>";
             }
