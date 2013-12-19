@@ -514,6 +514,18 @@ namespace SAI_Comment_Converter
                     }
                 }
 
+                //! Has to be above '_getTargetType_' generating.
+                if (fullLine.Contains("_startOrStopBasedOnTargetType_"))
+                {
+                    if (smartscript.target_type == 0)
+                    {
+                        fullLine = fullLine.Replace("_startOrStopBasedOnTargetType_", "Stop");
+                        fullLine = fullLine.Replace("_getTargetType_", String.Empty);
+                    }
+                    else
+                        fullLine = fullLine.Replace("_startOrStopBasedOnTargetType_", "Start");
+                }
+
                 if (fullLine.Contains("_getTargetType_"))
                     fullLine = fullLine.Replace("_getTargetType_", await GetStringByTargetType(smartscript, worldDatabase));
 
@@ -760,17 +772,6 @@ namespace SAI_Comment_Converter
                         fullLine = fullLine.Replace("_mountToEntryOrModelActionParams_", "Mount To Model " + smartscript.action_param2);
                     else
                         fullLine = fullLine.Replace("_mountToEntryOrModelActionParams_", "Dismount");
-                }
-
-                if (fullLine.Contains("_startOrStopBasedOnTargetType_"))
-                {
-                    if (smartscript.target_type == 0)
-                    {
-                        fullLine = fullLine.Replace("_startOrStopBasedOnTargetType_", "Stop");
-                        fullLine = fullLine.Replace("_getTargetType_", String.Empty);
-                    }
-                    else
-                        fullLine = fullLine.Replace("_startOrStopBasedOnTargetType_", "Start");
                 }
 
                 int event_phase_mask = smartScriptLink != null ? smartScriptLink.event_phase_mask : smartscript.event_phase_mask;
