@@ -861,7 +861,7 @@ namespace SAI_Comment_Converter
 
                 if (fullLine.Contains("_replaceBecauseOfError_"))
                 {
-                    fullLine.Replace("_replaceBecauseOfError_", String.Empty);
+                    fullLine = fullLine.Replace("_replaceBecauseOfError_", String.Empty);
                     allUpdateQueriesWithErrors += fullLine + "\n";
                 }
                 else
