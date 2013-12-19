@@ -402,13 +402,12 @@ namespace SAI_Comment_Converter
                         fullLine = fullLine.Replace("_enableDisableActionParamOne_", "Enable");
                 }
 
-                if (fullLine.Contains("_incrementOrDecrementActionParamOne_"))
+                if (fullLine.Contains("_incrementOrDecrementPhaseActionParamsOneAndTwo_"))
                 {
-                    if (smartscript.action_param1.ToString() == "1")
-                        fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Increment");
-                    else if (smartscript.action_param2.ToString() == "1")
-                        fullLine = fullLine.Replace("_incrementOrDecrementActionParamOne_", "Decrement");
-                    //else //? What to do?
+                    if (smartscript.action_param1 != 0)
+                        fullLine = fullLine.Replace("_incrementOrDecrementPhaseActionParamsOneAndTwo_", "Increment Phase By " + smartscript.action_param2);
+                    else if (smartscript.action_param2 != 0)
+                        fullLine = fullLine.Replace("_incrementOrDecrementPhaseActionParamsOneAndTwo_", "Decrement Phase By " + smartscript.action_param2);
                 }
 
                 if (fullLine.Contains("_sheathActionParamOne_"))
@@ -1042,7 +1041,7 @@ namespace SAI_Comment_Converter
             smartActionStrings.Add(SmartAction.SMART_ACTION_AUTO_ATTACK, "_startOrStopActionParamOne_ Attacking");
             smartActionStrings.Add(SmartAction.SMART_ACTION_COMBAT_MOVEMENT, "_enableDisableActionParamOne_ Combat Movement");
             smartActionStrings.Add(SmartAction.SMART_ACTION_SET_EVENT_PHASE, "Set Event Phase _actionParamOne_");
-            smartActionStrings.Add(SmartAction.SMART_ACTION_INC_EVENT_PHASE, "_incrementOrDecrementActionParamOne_ Phase");
+            smartActionStrings.Add(SmartAction.SMART_ACTION_INC_EVENT_PHASE, "_incrementOrDecrementPhaseActionParamsOneAndTwo_");
             smartActionStrings.Add(SmartAction.SMART_ACTION_EVADE, "Evade");
             smartActionStrings.Add(SmartAction.SMART_ACTION_FLEE_FOR_ASSIST, "Flee For Assist");
             smartActionStrings.Add(SmartAction.SMART_ACTION_CALL_GROUPEVENTHAPPENS, "Quest Credit '_questNameActionParamOne_'");
