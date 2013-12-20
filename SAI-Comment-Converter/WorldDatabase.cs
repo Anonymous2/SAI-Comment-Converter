@@ -47,7 +47,8 @@ namespace SAI_Comment_Converter
             if (dt.Rows.Count == 0)
                 return "_replaceBecauseOfError_ GetCreatureNameById not found";
 
-            return dt.Rows[0]["name"].ToString();
+            string name = dt.Rows[0]["name"].ToString();
+            return name.Replace('"', '\'');
         }
 
         public async Task<string> GetCreatureNameByGuid(int guid)
@@ -57,7 +58,8 @@ namespace SAI_Comment_Converter
             if (dt.Rows.Count == 0)
                 return "_replaceBecauseOfError_ GetCreatureNameByGuid not found";
 
-            return dt.Rows[0]["name"].ToString();
+            string name = dt.Rows[0]["name"].ToString();
+            return name.Replace('"', '\'');
         }
 
         public async Task<string> GetGameobjectNameById(int id)
@@ -67,7 +69,8 @@ namespace SAI_Comment_Converter
             if (dt.Rows.Count == 0)
                 return "_replaceBecauseOfError_ GetGameobjectNameById not found";
 
-            return dt.Rows[0]["name"].ToString();
+            string name = dt.Rows[0]["name"].ToString();
+            return name.Replace('"', '\'');
         }
 
         public async Task<string> GetGameobjectNameByGuid(int guid)
@@ -77,7 +80,8 @@ namespace SAI_Comment_Converter
             if (dt.Rows.Count == 0)
                 return "_replaceBecauseOfError_ GetGameobjectNameByGuid not found";
 
-            return dt.Rows[0]["name"].ToString();
+            string name = dt.Rows[0]["name"].ToString();
+            return name.Replace('"', '\'');
         }
 
         public async Task<List<SmartScript>> GetSmartScripts()
