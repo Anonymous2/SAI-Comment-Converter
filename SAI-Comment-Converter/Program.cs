@@ -405,7 +405,7 @@ namespace SAI_Comment_Converter
                 if (fullLine.Contains("_incrementOrDecrementPhaseActionParamsOneAndTwo_"))
                 {
                     if (smartscript.action_param1 != 0)
-                        fullLine = fullLine.Replace("_incrementOrDecrementPhaseActionParamsOneAndTwo_", "Increment Phase By " + smartscript.action_param2);
+                        fullLine = fullLine.Replace("_incrementOrDecrementPhaseActionParamsOneAndTwo_", "Increment Phase By " + smartscript.action_param1);
                     else if (smartscript.action_param2 != 0)
                         fullLine = fullLine.Replace("_incrementOrDecrementPhaseActionParamsOneAndTwo_", "Decrement Phase By " + smartscript.action_param2);
                 }
